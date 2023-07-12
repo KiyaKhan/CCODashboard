@@ -1,12 +1,15 @@
+import { Head } from '@inertiajs/react'
 import React, { FC } from 'react'
 
 interface IndexProps{
-    
+
 }
 
 const Index:FC = () => {
     return (
-        <div>Index</div>
+        <>
+            <Head title='CCO Dashboard' />
+        </>
     )
 }
 

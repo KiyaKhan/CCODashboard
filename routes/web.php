@@ -16,7 +16,14 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/public',function(){
+    abort(403);
+})->name('public_path');
 Route::get('/', function () {
     return Inertia::render('Index');
 });
+
+
+
+
 
