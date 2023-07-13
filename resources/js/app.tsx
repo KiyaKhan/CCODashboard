@@ -4,10 +4,10 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import Layout from './Layouts/Layout';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
-
+import { ToastContainer, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
@@ -15,12 +15,14 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <Layout>
+            <>
+                <ToastContainer transition={Flip} autoClose={2500} pauseOnHover={false} theme='dark'/>
                 <App {...props} />
-            </Layout>
+            </>
         );
     },
     progress: {
+        delay:100,
         color: '#4B5563',
     },
 });

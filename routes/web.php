@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,11 +19,50 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/public',function(){
-    abort(403);
-})->name('public_path');
-Route::get('/', function () {
-    return Inertia::render('Index');
+
+
+Route::middleware(['auth'])->get('/', function () {
+    return Inertia::render('Index',[
+        'teams'=>Team::all(),
+        'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
+    ]);
+})->name('index');
+
+Route::middleware(['auth'])->get('/profile', function () {
+    
+
+    return Inertia::render('Profile',[
+        'teams'=>Team::all(),
+        'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
+    ]);
+})->name('profile');
+
+
+
+
+
+// Route::middleware(['auth'])->get('/',function(){
+//     abort(403);
+// })->name('public_path');
+
+
+
+
+
+
+
+
+
+
+Route::middleware('guest')->group(function () {
+    
+
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+                ->name('login');
+
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    
 });
 
 

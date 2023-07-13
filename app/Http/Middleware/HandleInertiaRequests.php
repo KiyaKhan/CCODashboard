@@ -41,4 +41,6 @@ class HandleInertiaRequests extends Middleware
             },
         ]);
     }
+
+    
 }
