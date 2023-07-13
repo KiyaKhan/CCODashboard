@@ -27,6 +27,7 @@ class ApiPostRegisterRequest extends FormRequest
             'first_name' => ['string', 'max:255','required'],
             'last_name' => ['string', 'max:255','required'],
             'company_id' => ['string', 'max:255','unique:users','required'],
+            'password' => ['string', 'confirmed','required','min:6'],
         ];
     }
 

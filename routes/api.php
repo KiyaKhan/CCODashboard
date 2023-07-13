@@ -28,8 +28,15 @@ Route::post('/test',function(Request $request){
         return response('Agent Not Found', 404);
     }
     Auth::login($user);
-    return $user;
+    return $user->createToken('jwt');
     //broadcast(new NewMessage($new_msg));
 });
 
 Route::post('/register',[ApiController::class,'register']);
+Route::get('/statuses',[ApiController::class,'statuses']);
+Route::post('/login',[ApiController::class,'login']);
+
+Route::middleware('auth:sanctum')->group(function(){
+    Route::post('/logout',[ApiController::class,'logout']);
+});
+

@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         
-        /*
+        
         $faker = Factory::create('en_US');
 
         User::create([
@@ -36,19 +36,7 @@ class DatabaseSeeder extends Seeder
             'user_level'=>1
         ]);
 
-        for ($i=1; $i < 64; $i++) {
-            
-            User::create([
-                'email' => $faker->safeEmail(),
-                'company_id'=>'EMP'.strval($i),
-                //password = admin
-                'password'=>Hash::make('123'),
-                'first_name'=>$faker->firstName(),
-                'last_name'=>$faker->lastName(),
-                'user_level'=>3
-            ]);
-        }
-
+        
         for ($i=1; $i < 6; $i++) {
             
             User::create([
@@ -61,6 +49,20 @@ class DatabaseSeeder extends Seeder
                 'user_level'=>2
             ]);
         }
+
+        for ($i=7; $i < 77; $i++) {
+            
+            User::create([
+                'email' => $faker->safeEmail(),
+                'company_id'=>'EMP'.strval($i),
+                //password = admin
+                'password'=>Hash::make('123'),
+                'first_name'=>$faker->firstName(),
+                'last_name'=>$faker->lastName(),
+                'user_level'=>3
+            ]);
+        }
+
 
         $leaders = User::where('user_level',2)->get();
 
@@ -78,7 +80,7 @@ class DatabaseSeeder extends Seeder
                 'team_id'=>Team::all()->random()->id
             ]);
         }
-        */
+        
         $statuses=[
             [
                 'name'=>'Available/Email'

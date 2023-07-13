@@ -46,7 +46,9 @@ Route::middleware(['auth'])->get('/profile', function () {
 // })->name('public_path');
 
 
-
+Route::middleware(['auth'])->group(function(){
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
 
 
 
