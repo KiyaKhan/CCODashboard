@@ -24,9 +24,9 @@ class ApiPostRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => ['string', 'max:255'],
-            'last_name' => ['string', 'max:255'],
-            'company_id' => ['string', 'max:255','unique:users'],
+            'first_name' => ['string', 'max:255','required'],
+            'last_name' => ['string', 'max:255','required'],
+            'company_id' => ['string', 'max:255','unique:users','required'],
         ];
     }
 
@@ -43,13 +43,7 @@ class ApiPostRegisterRequest extends FormRequest
         ]));
 
     }
-
-    public function messages()
-    {
-        return[
-            'first_name.required'=>'First name is required'
-        ];
-    }
+    
 
     
 
