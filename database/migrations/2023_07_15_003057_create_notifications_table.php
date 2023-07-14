@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('agent_logs', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedBigInteger('status_id')->index();
-            $table->unsignedBigInteger('agent_session_id')->index();
-            $table->timestamps();
+            $table->unsignedBigInteger('team_id')->index()->nullable();
+            $table->unsignedBigInteger('status_id')->index()->nullable();
+            $table->string('message');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
-            $table->foreign('agent_session_id')->references('id')->on('agent_sessions')->onDelete('cascade');
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('set null');
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('set null');
+
+            $table->timestamps();
         });
     }
 
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agent_logs');
+        Schema::dropIfExists('notifications');
     }
 };

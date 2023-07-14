@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Notification;
+use App\Models\Status;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -12,10 +13,9 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AgentLogInEvent  implements ShouldBroadcast
+class AgentChangeStatusEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
     public $user;
     public $notification;
     /**
@@ -23,14 +23,15 @@ class AgentLogInEvent  implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user,int $status_id)
     {
         $this->user=$user;
+        $status = Status::find($status_id);
         $this->notification= Notification::create([
             'user_id'=>$user->id,
             'team_id'=>$user->group->id,
-            'status_id'=>1,
-            'message'=>$user->first_name.' '.$user->last_name.' is now Online'
+            'status_id'=>$status_id,
+            'message'=>$user->first_name." ".$user->last_name." is now on '".$status->name."'."
         ]);
     }
 
@@ -39,7 +40,6 @@ class AgentLogInEvent  implements ShouldBroadcast
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    
     public function broadcastOn()
     {
         return  new PresenceChannel('global_channel');

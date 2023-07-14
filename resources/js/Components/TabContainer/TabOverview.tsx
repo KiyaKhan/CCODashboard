@@ -10,27 +10,27 @@ const TabOverview = () => {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <TabOverviewCards />
             </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-            <CardHeader>
-                    <CardTitle>Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="pl-2">
-                    <TabOverviewPanel />
-                </CardContent>
-            </Card>
-            <Card className="col-span-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Card className="col-span-2 lg:col-span-4">
                 <CardHeader>
-                    <CardTitle>Recent Notifications</CardTitle>
-                    <CardDescription>
-                        Agent Status
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <TabNotificationContainer />
-                </CardContent>
-            </Card>
-        </div>
+                        <CardTitle>Overview of Online Agents</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pl-2">
+                        <TabOverviewPanel />
+                    </CardContent>
+                </Card>
+                <Card className="col-span-2 lg:col-span-3">
+                    <CardHeader>
+                        <CardTitle>Recent Notifications</CardTitle>
+                        <CardDescription>
+                            Agent Status
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className='w-full'>
+                        <TabNotificationContainer />
+                    </CardContent>
+                </Card>
+            </div>
         </>
     )
 }

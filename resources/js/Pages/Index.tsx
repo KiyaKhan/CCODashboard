@@ -3,9 +3,10 @@ import NavBar from '@/Components/NavBar';
 import TabContainer from '@/Components/TabContainer/TabContainer';
 import { Button } from '@/Components/ui/button';
 import { Tabs } from '@/Components/ui/tabs';
+import useCurrentUser from '@/Hooks/useCurrentUser';
 import { ITeam, PageProps, User } from '@/types'
 import { Head, usePage } from '@inertiajs/react'
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 
 interface IndexProps{
     teams:ITeam[];
@@ -13,8 +14,9 @@ interface IndexProps{
 }
 
 const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
+    const {setCurrentUser} = useCurrentUser();
     const {user} = usePage<PageProps>().props.auth;
-    
+    useEffect(()=>setCurrentUser(user),[]);
     return (
         <>
             <Head title='CCO Dashboard' />
@@ -29,7 +31,6 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                         </div>
                     </div>
                     <Tabs defaultValue="overview" className="space-y-4">
-                        
                         <TabContainer />
                     </Tabs>
                 </div>

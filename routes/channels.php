@@ -22,6 +22,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('global_channel', function ($user) {
     if(Auth::check()){
-        return true;
+        return $user;
     }
 });

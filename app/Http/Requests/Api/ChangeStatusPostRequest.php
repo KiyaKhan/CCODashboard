@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class ApiPostRegisterRequest extends FormRequest
+class ChangeStatusPostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +23,7 @@ class ApiPostRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => ['string', 'max:255','required'],
-            'last_name' => ['string', 'max:255','required'],
-            'company_id' => ['string', 'max:255','unique:users','required'],
-            'password' => ['string', 'confirmed','required','min:6'],
-            'team_id' => ['required','exists:App\Models\Team,id']
+            'status_id' => ['required','exists:App\Models\Status,id']
         ];
     }
 
@@ -44,9 +40,4 @@ class ApiPostRegisterRequest extends FormRequest
         ]));
 
     }
-    
-
-    
-
-    
 }

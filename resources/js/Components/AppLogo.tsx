@@ -5,7 +5,7 @@ const AppLogo:FC<HTMLAttributes<HTMLImageElement>> = forwardRef(({className,...p
     return (
         <img {...props}
             className={twMerge('w-32 h-auto',className)}
-            src={`${route('public_path')}/logo/logo.png`} alt="D" />
+            src={`${route('index')}/logo/logo.png`} alt="D" />
     )
 })
 

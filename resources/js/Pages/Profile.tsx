@@ -1,7 +1,8 @@
 import NavBar from '@/Components/NavBar';
+import useCurrentUser from '@/Hooks/useCurrentUser';
 import { ITeam, PageProps, User } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 
 interface ProfileProps{
     teams:ITeam[];
@@ -9,7 +10,6 @@ interface ProfileProps{
 }
 
 const Profile:FC<ProfileProps> = ({available_team_leaders,teams}) => {
-    const {user} = usePage<PageProps>().props.auth;
     
     return (
         <>

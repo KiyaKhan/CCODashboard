@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\AgentChangeStatusEvent;
+use App\Events\AgentLogInEvent;
+use App\Listeners\AgentChangeStatusListener;
+use App\Listeners\AgentLogInEventListener;
+use App\Listeners\AgentLogOutListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,6 +23,15 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        AgentLogInEvent::class=>[
+            AgentLogInEventListener::class
+        ],
+        AgentChangeStatusEvent::class=>[
+            AgentChangeStatusListener::class
+        ],
+        AgentLogOutEvent::class=>[
+            AgentLogOutListener::class
+        ]
     ];
 
     /**

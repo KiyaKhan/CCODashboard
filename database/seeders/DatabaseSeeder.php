@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         
         $faker = Factory::create('en_US');
 
+         //ADMIN
         User::create([
              'id' =>1,  
             'email' => 'admin@admin.com',
@@ -36,30 +37,31 @@ class DatabaseSeeder extends Seeder
             'user_level'=>1
         ]);
 
-        
-        for ($i=1; $i < 6; $i++) {
+        //TEAM LEADERS
+        for ($i=100; $i < 107; $i++) {
             
             User::create([
                 'email' => $faker->safeEmail(),
                 'company_id'=>'EMP'.strval($i),
-                //password = admin
                 'password'=>Hash::make('123'),
                 'first_name'=>$faker->firstName(),
                 'last_name'=>$faker->lastName(),
-                'user_level'=>2
+                'user_level'=>2,
+                'status_id'=>10
             ]);
         }
 
-        for ($i=7; $i < 77; $i++) {
+        //AGENTS
+        for ($i=2; $i < 52; $i++) {
             
             User::create([
                 'email' => $faker->safeEmail(),
                 'company_id'=>'EMP'.strval($i),
-                //password = admin
                 'password'=>Hash::make('123'),
                 'first_name'=>$faker->firstName(),
                 'last_name'=>$faker->lastName(),
-                'user_level'=>3
+                'user_level'=>3,
+                'status_id'=>10
             ]);
         }
 
@@ -82,34 +84,45 @@ class DatabaseSeeder extends Seeder
         }
         
         $statuses=[
+            
             [
-                'name'=>'Available/Email'
-            ],
-            [
+                'id'=>1,
                 'name'=>'Available/Call'
             ],
             [
+                'id'=>2,
+                'name'=>'Available/Email'
+            ],
+            [
+                'id'=>3,
                 'name'=>'Break'
             ],
             [
+                'id'=>4,
                 'name'=>'Lunch'
             ],
             [
+                'id'=>5,
                 'name'=>'Training'
             ],
             [
+                'id'=>6,
                 'name'=>'Coaching'
             ],
             [
+                'id'=>7,
                 'name'=>'PC Issue'
             ],
             [
+                'id'=>8,
                 'name'=>'Floor Support'
             ],
             [
+                'id'=>9,
                 'name'=>'Off The Phone/Others'
             ],
             [
+                'id'=>10,
                 'name'=>'Offline'
             ]
         ];

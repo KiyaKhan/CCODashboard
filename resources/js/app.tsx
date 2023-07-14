@@ -8,6 +8,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EchoCointainer from './Containers/EchoCointainer';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
@@ -15,10 +16,13 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <>
-                <ToastContainer transition={Flip} autoClose={2500} pauseOnHover={false} theme='dark'/>
-                <App {...props} />
-            </>
+            
+                <>
+                    <EchoCointainer />
+                    <ToastContainer transition={Flip} autoClose={2500} pauseOnHover={false} theme='dark'/>
+                    <App {...props} />
+                </>
+            
         );
     },
     progress: {

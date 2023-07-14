@@ -42,4 +42,8 @@ class User extends Authenticatable
         return $this->hasOne(Team::class);
     }
 
+    public function group(){
+        return $this->belongsTo(Team::class,'team_id','id');
+    }
+
 }
