@@ -19,7 +19,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     useEffect(()=>setCurrentUser(user),[]);
     return (
         <>
-            <Head title='CCO Dashboard' />
+            <Head title='Dashboard' />
             <div className="flex flex-col">
                 <NavBar availableTeamLeaders={available_team_leaders} teams={teams} />
                 <div className="flex-1 space-y-4 p-8 pt-6">

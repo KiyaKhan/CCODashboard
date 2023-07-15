@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\AgentChangeStatusEvent;
 use App\Events\AgentLogInEvent;
+use App\Events\AgentLogOutEvent;
+use App\Events\AgentRegisteredEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\APi\ApiPostRegisterRequest;
 use App\Http\Requests\Api\ChangeStatusPostRequest;
@@ -21,7 +23,27 @@ class ApiController extends Controller
 {
     private $session_id;
     public function register(ApiPostRegisterRequest $request){
-        return $request;
+        $user=User::create([
+            "company_id"=> $request->company_id,
+            "first_name"=> $request->first_name,
+            "last_name"=> $request->last_name,
+            "team_id"=> $request->team_id,
+            "site"=> $request->site,
+            "password"=> Hash::make($request->password),
+        ]);
+        broadcast(new AgentRegisteredEvent($user));
+        return response([
+            'message'=>'Registration succesful',
+            'user'=>[
+                "company_id"=>$user->company_id,
+                "first_name"=>$user->first_name,
+                "last_name"=>$user->last_name,
+                "site"=>$user->site,
+                "team"=>[
+                    "team_name"=>$user->group->name,
+                    "team_leader"=>$user->group->user->first_name.' '.$user->group->user->last
+                ]
+            ]], 201);
     }
 
     public function statuses(){
@@ -61,6 +83,7 @@ class ApiController extends Controller
                 'firstName'=>$user->first_name,
                 'lastName'=>$user->last_name,
                 'session_id'=>$this->session_id,
+                "site"=>$user->site,
                 'team'=>[
                     'team_id'=>$user->group->id,
                     'name'=>$user->group->name,
@@ -108,7 +131,7 @@ class ApiController extends Controller
                 'status_id'=>10
             ]);
         });
-
+        broadcast(new AgentLogOutEvent($request->user()));
         $request->user()->tokens()->delete();
 
         return 'Succesfully Logged Out!';
@@ -140,7 +163,9 @@ class ApiController extends Controller
         $user=$request->user();
         $session_id=$request->session_id;
         $status_id=$request->status_id;
-        DB::transaction(function () use ($user,$session_id,$status_id) {
+        $overtime_reason=$request->overtime_reason;
+        $early_departure_reason=$request->early_departure_reason;
+        DB::transaction(function () use ($user,$session_id,$status_id,$overtime_reason,$early_departure_reason) {
             $agent_session=AgentSession::where([
                 'id'=>$session_id
             ])->first();
@@ -148,7 +173,9 @@ class ApiController extends Controller
             AgentLog::create([
                 'agent_session_id'=>$session_id,
                 'user_id'=>$user->id,
-                'status_id'=>$status_id
+                'status_id'=>$status_id,
+                'overtime_reason'=>$overtime_reason,
+                'early_departure_reason'=>$early_departure_reason,
             ]);
             
             $agent_session->update([

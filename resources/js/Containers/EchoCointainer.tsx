@@ -11,7 +11,13 @@ const EchoCointainer:FC = () => {
         })
         .listen('AgentChangeStatusEvent',(e:any)=>{
             console.log(e);
-        });;
+        })
+        .listen('AgentLogOutEvent',(e:any)=>{
+            console.log(e);
+        })
+        .listen('AgentRegisteredEvent',(e:any)=>{
+            console.log(e);
+        })
         console.log(echo);
         return ()=>window.Echo.leaveChannel('conversation_all');
     },[currentUser]);

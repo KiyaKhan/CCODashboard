@@ -1,5 +1,5 @@
 import { ITeam, PageProps, User } from '@/types'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -12,6 +12,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { usePage } from '@inertiajs/react';
 import { BsCheck,BsPlusCircle } from 'react-icons/bs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import useSelectedTeam from '@/Hooks/useSelectedTeam';
 
 interface TeamSwitcherProps{
     teams:ITeam[];
@@ -20,10 +21,11 @@ interface TeamSwitcherProps{
 }
 
 const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeaders}) => {
+    const {selectTeam,selectedTeam} = useSelectedTeam();
     const {user} = usePage<PageProps>().props.auth;
     const [open, setOpen] = useState(false);
     const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState<ITeam>(teams[0]);
+    useEffect(()=>selectTeam(teams[0]),[]);
     return (
         <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
             <Popover open={open} onOpenChange={setOpen}>
@@ -36,7 +38,7 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
                     className={cn("w-[200px] justify-between", className)}
                 >
                     <AvatarContainer user={user}/>
-                    {selectedTeam.name}
+                    {selectedTeam?.name}
                     <RxCaretSort className="ml-auto h-4 w-4 shrink-0 opacity-50" />
                 </Button>
                 </PopoverTrigger>
@@ -51,7 +53,7 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
                                 <CommandItem
                                 key={team.id}
                                 onSelect={() => {
-                                    setSelectedTeam(team)
+                                    selectTeam(team)
                                     setOpen(false)
                                 }}
                                 className="text-sm"
@@ -61,7 +63,7 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
                                 <BsCheck
                                     className={cn(
                                     "ml-auto h-4 w-4",
-                                    selectedTeam.id === team.id
+                                    selectedTeam?.id === team.id
                                         ? "opacity-100"
                                         : "opacity-0"
                                     )}

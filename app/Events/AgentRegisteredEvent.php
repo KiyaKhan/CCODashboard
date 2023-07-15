@@ -12,7 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AgentLogOutEvent  implements ShouldBroadcast
+class AgentRegisteredEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
@@ -29,7 +29,7 @@ class AgentLogOutEvent  implements ShouldBroadcast
             'user_id'=>$user->id,
             'team_id'=>$user->group->id,
             'status_id'=>10,
-            'message'=>$user->first_name.' '.$user->last_name.' has Logged Out'
+            'message'=>$user->first_name." ".$user->last_name." has Registered."
         ]);
     }
 

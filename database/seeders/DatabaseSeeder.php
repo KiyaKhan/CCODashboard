@@ -21,13 +21,66 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        
+        $statuses=[
+            
+            [
+                'id'=>1,
+                'name'=>'Calls'
+            ],
+            [
+                'id'=>2,
+                'name'=>'Emails'
+            ],
+            [
+                'id'=>3,
+                'name'=>'Break'
+            ],
+            [
+                'id'=>4,
+                'name'=>'Bio Break'
+            ],
+            [
+                'id'=>5,
+                'name'=>'Lunch'
+            ],
+            [
+                'id'=>6,
+                'name'=>'Training'
+            ],
+            [
+                'id'=>7,
+                'name'=>'Coaching'
+            ],
+            [
+                'id'=>8,
+                'name'=>'Meeting'
+            ],
+            [
+                'id'=>9,
+                'name'=>'System Issue'
+            ],
+            [
+                'id'=>11,
+                'name'=>'Floor Support'
+            ],
+            [
+                'id'=>12,
+                'name'=>'Special Assignment'
+            ],
+            [
+                'id'=>10,
+                'name'=>'Offline'
+            ]
+        ];
+        foreach($statuses as $status){
+            Status::create(['id'=>$status['id'],'name'=>$status['name']]);
+        }
         
         $faker = Factory::create('en_US');
 
          //ADMIN
         User::create([
-             'id' =>1,  
+            'id' =>1,  
             'email' => 'admin@admin.com',
             'company_id'=>'admin',
             //password = admin
@@ -69,10 +122,14 @@ class DatabaseSeeder extends Seeder
         $leaders = User::where('user_level',2)->get();
 
         foreach($leaders as $leader){
-            Team::create([
+            $team=Team::create([
                 'user_id'=>$leader->id,
                 'name'=>'Team '.$leader->first_name
             ]);
+            $leader->update([
+                'team_id'=>$team->id
+            ]);
+
         }
         
         $users = User::where('user_level',3)->whereNull('team_id')->get();
@@ -83,51 +140,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         
-        $statuses=[
-            
-            [
-                'id'=>1,
-                'name'=>'Available/Call'
-            ],
-            [
-                'id'=>2,
-                'name'=>'Available/Email'
-            ],
-            [
-                'id'=>3,
-                'name'=>'Break'
-            ],
-            [
-                'id'=>4,
-                'name'=>'Lunch'
-            ],
-            [
-                'id'=>5,
-                'name'=>'Training'
-            ],
-            [
-                'id'=>6,
-                'name'=>'Coaching'
-            ],
-            [
-                'id'=>7,
-                'name'=>'PC Issue'
-            ],
-            [
-                'id'=>8,
-                'name'=>'Floor Support'
-            ],
-            [
-                'id'=>9,
-                'name'=>'Off The Phone/Others'
-            ],
-            [
-                'id'=>10,
-                'name'=>'Offline'
-            ]
-        ];
-        foreach($statuses as $status){
-            Status::create(['name'=>$status['name']]);
-        }
+        
     }
 }

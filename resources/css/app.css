@@ -76,6 +76,7 @@
     body {
       @apply bg-background text-foreground;
     }
+    
   }
   
   
@@ -91,3 +92,9 @@
   #nprogress .spinner-icon {
     @apply  !min-h-[3.5rem] !min-w-[3.5rem] !border-[0.3rem]  
   }
+
+  tspan{
+    @apply !tracking-tighter !break-all 
+  }
+
+  

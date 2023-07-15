@@ -46,4 +46,8 @@ class User extends Authenticatable
         return $this->belongsTo(Team::class,'team_id','id');
     }
 
+    public function status(){
+        return $this->belongsTo(Status::class);
+    }
+
 }

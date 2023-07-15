@@ -5,18 +5,22 @@ export interface User {
     id: number;
     user_level:1|2|3;
     first_name: string;
+    company_id:string;
+    site:'Manila'|'Leyte'
+    status:IStatus;
+    group:ITeam;
+    team?:ITeam;
     last_name: string;
     email: string;
     email_verified_at: string;
-    google_id:string|null;
+    updated_at:string;
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;
-        my_stores:IStore[];
     };
-    current_store:IStore;
+    statuses:IStatus[];
 };
 
 
@@ -35,6 +39,10 @@ export interface ITeam{
     users:User[];
 }
 
+export interface IStatus{
+    id:number;
+    name:string;
+}
 
 declare global {
     interface Window {

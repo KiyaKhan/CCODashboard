@@ -7,11 +7,11 @@ import TabNotificationContainer from './TabNotificationContainer';
 const TabOverview = () => {
     return (
         <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                 <TabOverviewCards />
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-2 lg:col-span-4">
+            <div className="grid gap-3 grid-cols-1 lg:grid-cols-8">
+                <Card className="col-span-1  lg:col-span-6">
                 <CardHeader>
                         <CardTitle>Overview of Online Agents</CardTitle>
                     </CardHeader>
@@ -19,7 +19,7 @@ const TabOverview = () => {
                         <TabOverviewPanel />
                     </CardContent>
                 </Card>
-                <Card className="col-span-2 lg:col-span-3">
+                <Card className="col-span-1  lg:col-span-2">
                     <CardHeader>
                         <CardTitle>Recent Notifications</CardTitle>
                         <CardDescription>

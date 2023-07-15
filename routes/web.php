@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Team;
@@ -21,7 +22,7 @@ use Inertia\Inertia;
 
 
 
-Route::middleware(['auth'])->get('/', function () {
+Route::middleware(['auth','is_admin'])->get('/', function () {
     return Inertia::render('Index',[
         'teams'=>Team::all(),
         'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
@@ -29,8 +30,6 @@ Route::middleware(['auth'])->get('/', function () {
 })->name('index');
 
 Route::middleware(['auth'])->get('/profile', function () {
-    
-
     return Inertia::render('Profile',[
         'teams'=>Team::all(),
         'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
@@ -45,6 +44,12 @@ Route::middleware(['auth'])->get('/profile', function () {
 //     abort(403);
 // })->name('public_path');
 
+Route::middleware(['auth','is_admin'])->group(function(){
+    Route::prefix('agents')->name('agents.')->group(function(){
+        Route::get('/agents',[AgentController::class,'index'])->name('index');
+
+    });
+});
 
 Route::middleware(['auth'])->group(function(){
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

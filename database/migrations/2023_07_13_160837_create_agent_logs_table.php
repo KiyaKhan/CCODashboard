@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('status_id')->index();
             $table->unsignedBigInteger('agent_session_id')->index();
+            $table->string('overtime_reason')->nullable();
+            $table->string('early_departure_reason')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
