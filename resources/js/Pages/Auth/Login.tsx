@@ -5,14 +5,15 @@ import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import useCurrentUser from '@/Hooks/useCurrentUser';
+import useToggleDark from '@/Hooks/useToggleDark';
 import { Head, useForm } from '@inertiajs/react';
 import React, { FC, FormEventHandler, useEffect } from 'react'
 import {LuLoader2} from 'react-icons/lu';
 
 const Login:FC = () => {
     
-    const {setCurrentUser,currentUser} = useCurrentUser();
-    
+    const {setCurrentUser} = useCurrentUser();
+    const {toggleTheme,isDark} = useToggleDark();
     const { data, setData, post, processing, errors } = useForm({
         company_id: '',
         password: '',
@@ -23,7 +24,10 @@ const Login:FC = () => {
         post(route('login'));
     }
 
-    useEffect(()=>setCurrentUser(undefined),[]);
+    useEffect(()=>{
+        setCurrentUser(undefined);
+        if(!isDark)toggleTheme();
+    },[]);
     
     return (
         <>

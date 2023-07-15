@@ -20,9 +20,9 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     return (
         <>
             <Head title='Dashboard' />
-            <div className="flex flex-col">
+            <div className="flex flex-col h-screen">
                 <NavBar availableTeamLeaders={available_team_leaders} teams={teams} />
-                <div className="flex-1 space-y-4 p-8 pt-6">
+                <div className="flex-1 space-y-4 p-8 pt-6 h-full">
                     <div className="flex items-center justify-between space-y-2">
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                         <div className="flex items-center space-x-2">
@@ -30,7 +30,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                             <Button className='font-semibold'>Download Report</Button>
                         </div>
                     </div>
-                    <Tabs defaultValue="overview" className="space-y-4">
+                    <Tabs defaultValue="overview" className="space-y-4 ">
                         <TabContainer />
                     </Tabs>
                 </div>

@@ -9,13 +9,14 @@ const TabOverviewPanel:FC = () => {
     const sampleData = statuses.filter(({id})=>id!==10).map(({name})=>({name,total: Math.floor(Math.random() * 5) + 1,}));
     return (
         <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={sampleData}>
+            <BarChart data={sampleData} >
                 <XAxis
                     dataKey="name"
                     stroke="#22c55e"
-                    fontSize={11}
+                    fontSize={9}
                     tickLine={true}
                     axisLine={true}
+                    interval={0}
                     />
                 <YAxis
                 stroke="#22c55e"
@@ -25,10 +26,10 @@ const TabOverviewPanel:FC = () => {
                 //tickFormatter={(value) => `$${value}`}
                 />
                 <Tooltip 
-                    itemStyle={{ backgroundColor: 'black' }} 
-                    wrapperStyle={{ backgroundColor: 'black' }} 
-                    contentStyle={{ backgroundColor: 'black' }} 
-                    labelStyle={{ backgroundColor: 'black' }}/>
+                    itemStyle={{ backgroundColor: 'black',color:'white' }} 
+                    wrapperStyle={{ backgroundColor: 'black',color:'white' }} 
+                    contentStyle={{ backgroundColor: 'black',color:'white' }} 
+                    labelStyle={{ backgroundColor: 'black',color:'white' }}/>
                 <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
             </BarChart>
         </ResponsiveContainer>
@@ -38,5 +39,15 @@ const TabOverviewPanel:FC = () => {
 export default TabOverviewPanel
 
 
+
+const CustomizedAxisTick = (props:any) => {
+    const { x, y, payload } = props
+  
+    return (
+      <g transform={`\`translate(${x},${y})\``}>
+        <text dy={16} textAnchor='middle' fill='#666'>{payload.value}</text>
+      </g>
+    )
+  }
 
 
