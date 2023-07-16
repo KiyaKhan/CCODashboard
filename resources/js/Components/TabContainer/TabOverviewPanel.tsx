@@ -40,14 +40,3 @@ export default TabOverviewPanel
 
 
 
-const CustomizedAxisTick = (props:any) => {
-    const { x, y, payload } = props
-  
-    return (
-      <g transform={`\`translate(${x},${y})\``}>
-        <text dy={16} textAnchor='middle' fill='#666'>{payload.value}</text>
-      </g>
-    )
-  }
-
-

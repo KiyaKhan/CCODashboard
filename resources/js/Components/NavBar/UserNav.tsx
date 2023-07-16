@@ -5,11 +5,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Button } from '../ui/button';
 import AvatarContainer from '../AvatarContainer';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import useNewTeamDialog from '@/Hooks/useNewTeamDialog';
 
 
 
 const UserNav:FC = () => {
     const {user} = usePage<PageProps>().props.auth;
+    const {setShowNewTeamDialog} = useNewTeamDialog();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -34,7 +36,7 @@ const UserNav:FC = () => {
                 <DropdownMenuItem>
                     Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem>New Team</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=>router.post('logout')}>

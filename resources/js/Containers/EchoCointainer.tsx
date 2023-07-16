@@ -1,8 +1,10 @@
 import useCurrentUser from '@/Hooks/useCurrentUser';
+import useEcho from '@/Hooks/useEcho';
 import { FC, useEffect } from 'react'
 
 const EchoCointainer:FC = () => {
     const {currentUser} = useCurrentUser();
+    const {setEcho} = useEcho();
     useEffect(()=>{
         if(!currentUser)return;
         const echo=window.Echo.join('global_channel')
@@ -17,8 +19,8 @@ const EchoCointainer:FC = () => {
         })
         .listen('AgentRegisteredEvent',(e:any)=>{
             console.log(e);
-        })
-        console.log(echo);
+        }); 
+        setEcho(echo);
         return ()=>window.Echo.leaveChannel('conversation_all');
     },[currentUser]);
     return (

@@ -35,7 +35,7 @@ const Login:FC = () => {
             <div className='flex flex-col lg:flex-row relative !dark'  style={{ backgroundImage: `url(${route('index')}/logo/bg.jpg)` }}>
                 <div className='hidden lg:flex flex-col space-y-3.5 items-center justify-center w-[49.875%] '>
                     
-                    <img className='w-96 h-auto' src={`${route('index')}/logo/splash.png`} alt="" />
+                    <img className='w-96 h-auto ' src={`${route('index')}/logo/splash.png`} alt="" />
                     
                     
                     <h1 className='text-4xl tracking-wider font-bold  text-white'>

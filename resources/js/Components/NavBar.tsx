@@ -3,9 +3,10 @@ import TeamSwitcher from './NavBar/TeamSwitcher'
 import { ITeam, User } from '../types/index';
 import MainNav from './NavBar/MainNav';
 import UserNav from './NavBar/UserNav';
-import { BsLightbulb } from 'react-icons/bs';
+import { FaLightbulb } from 'react-icons/fa';
 import { Button } from './ui/button';
 import useToggleDark from '@/Hooks/useToggleDark';
+import { BsMoonStars } from 'react-icons/bs';
 
 interface NavBarProps {
     teams:ITeam[];
@@ -13,7 +14,7 @@ interface NavBarProps {
 }
 
 const NavBar:FC<NavBarProps> = ({teams,availableTeamLeaders}) => {
-    const {toggleTheme} = useToggleDark();
+    const {toggleTheme,isDark} = useToggleDark();
     return (
         <div className='border-b'>
             <div className="flex h-16 items-center px-4">
@@ -21,7 +22,11 @@ const NavBar:FC<NavBarProps> = ({teams,availableTeamLeaders}) => {
                 <MainNav className="mx-6" />
                 <div className="ml-auto flex items-center space-x-4">
                     <Button onClick={toggleTheme} size='icon' className='bg-white border-black dark:bg-black dark:border-white'>
-                        <BsLightbulb size={24} className='dark:text-white text-black' />
+                        {
+                            !isDark?<BsMoonStars size={20} className='dark:text-white text-black' />:<FaLightbulb size={20} className='dark:text-white text-black' />
+                        }
+                        
+                        
                     </Button>
                     <UserNav />
                 </div>

@@ -44,6 +44,16 @@ export interface IStatus{
     name:string;
 }
 
+export interface INotification{
+    id:number;
+    user_id:number;
+    team_id:number;
+    status_id:number;
+    message:string;
+    created_at:string;
+    updated_at:string;
+}
+
 declare global {
     interface Window {
         Pusher: any;

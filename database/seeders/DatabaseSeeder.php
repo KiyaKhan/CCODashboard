@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         //TEAM LEADERS
-        for ($i=100; $i < 107; $i++) {
+        for ($i=100; $i < 102; $i++) {
             
             User::create([
                 'email' => $faker->safeEmail(),
@@ -105,7 +105,7 @@ class DatabaseSeeder extends Seeder
         }
 
         //AGENTS
-        for ($i=2; $i < 52; $i++) {
+        for ($i=1; $i < 10; $i++) {
             
             User::create([
                 'email' => $faker->safeEmail(),

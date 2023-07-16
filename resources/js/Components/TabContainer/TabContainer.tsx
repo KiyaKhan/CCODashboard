@@ -1,10 +1,24 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import TabOverview from './TabOverview'
 import TabAgents from './TabAgents'
 import TabNotifications from './TabNotifications'
+import useSelectedTeam from '@/Hooks/useSelectedTeam'
 
-const TabContainer = () => {
+const TabContainer:FC = () => {
+    
+    const {selectedTeam} = useSelectedTeam();
+
+    if(!selectedTeam){
+        return (
+            <div className='w-full h-full flex items-center justify-center'>
+                <h1 className='text-2xl font-semibold tracking-wide'>
+                    No Team Selected
+                </h1>
+            </div>
+        )
+    }
+
     return (
         <>
             <TabsList>

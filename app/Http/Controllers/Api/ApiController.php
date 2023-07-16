@@ -29,6 +29,7 @@ class ApiController extends Controller
             "last_name"=> $request->last_name,
             "team_id"=> $request->team_id,
             "site"=> $request->site,
+            "status_id"=> 10,
             "password"=> Hash::make($request->password),
         ]);
         broadcast(new AgentRegisteredEvent($user));

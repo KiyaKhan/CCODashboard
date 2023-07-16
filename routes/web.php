@@ -25,13 +25,18 @@ use Inertia\Inertia;
 Route::middleware(['auth','is_admin'])->get('/', function () {
     return Inertia::render('Index',[
         'teams'=>Team::all(),
+        //'teams'=>Team::where('id',0)->get(),
         'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
     ]);
 })->name('index');
 
+
+
+
 Route::middleware(['auth'])->get('/profile', function () {
     return Inertia::render('Profile',[
         'teams'=>Team::all(),
+        
         'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
     ]);
 })->name('profile');
@@ -45,9 +50,9 @@ Route::middleware(['auth'])->get('/profile', function () {
 // })->name('public_path');
 
 Route::middleware(['auth','is_admin'])->group(function(){
+    Route::get('/get_dashboard_data',[AgentController::class,'get_data'])->name('get_data');
     Route::prefix('agents')->name('agents.')->group(function(){
         Route::get('/agents',[AgentController::class,'index'])->name('index');
-
     });
 });
 

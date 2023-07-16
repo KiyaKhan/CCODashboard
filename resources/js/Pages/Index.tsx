@@ -6,17 +6,40 @@ import { Tabs } from '@/Components/ui/tabs';
 import useCurrentUser from '@/Hooks/useCurrentUser';
 import { ITeam, PageProps, User } from '@/types'
 import { Head, usePage } from '@inertiajs/react'
-import React, { FC, useEffect } from 'react'
-
+import React, { FC, useEffect, useState } from 'react'
+import { BiCircle } from 'react-icons/bi';
+import useSelectedTeam from '@/Hooks/useSelectedTeam';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 interface IndexProps{
     teams:ITeam[];
     available_team_leaders:User[];
 }
 
 const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
+    const {selectTeam,selectedTeam} = useSelectedTeam();
     const {setCurrentUser} = useCurrentUser();
     const {user} = usePage<PageProps>().props.auth;
-    useEffect(()=>setCurrentUser(user),[]);
+    const [loading,setLoading] = useState<boolean>(false);
+    useEffect(()=>{
+        setCurrentUser(user);
+        if(teams) selectTeam(teams[0]);
+    },[]);
+
+    useEffect(()=>{
+        if(!selectedTeam)return;
+        const team_id=selectedTeam.id
+        setLoading(true);
+        axios.get(route('get_data',{
+            team_id
+        }))
+        .then(({data})=>{
+            console.log(data);
+        })
+        .catch(e=>toast.error('Something went wront. Please refresh the page and try again'))
+        .finally(()=>setLoading(false));
+    },[selectedTeam])
+
     return (
         <>
             <Head title='Dashboard' />
@@ -30,8 +53,8 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                             <Button className='font-semibold'>Download Report</Button>
                         </div>
                     </div>
-                    <Tabs defaultValue="overview" className="space-y-4 ">
-                        <TabContainer />
+                    <Tabs defaultValue="overview" className="space-y-4 h-full w-full">
+                        {loading?<div className='w-full flex items-center justify-center'><BiCircle size={96}  className='text-sky-500 animate-ping mt-48' /></div>:<TabContainer />}
                     </Tabs>
                 </div>
             </div>

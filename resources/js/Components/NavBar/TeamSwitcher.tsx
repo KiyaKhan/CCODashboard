@@ -13,6 +13,7 @@ import { usePage } from '@inertiajs/react';
 import { BsCheck,BsPlusCircle } from 'react-icons/bs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
+import useNewTeamDialog from '@/Hooks/useNewTeamDialog';
 
 interface TeamSwitcherProps{
     teams:ITeam[];
@@ -21,11 +22,11 @@ interface TeamSwitcherProps{
 }
 
 const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeaders}) => {
-    const {selectTeam,selectedTeam} = useSelectedTeam();
+
     const {user} = usePage<PageProps>().props.auth;
     const [open, setOpen] = useState(false);
-    const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
-    useEffect(()=>selectTeam(teams[0]),[]);
+    const {showNewTeamDialog, setShowNewTeamDialog} = useNewTeamDialog();
+    const {selectTeam,selectedTeam} = useSelectedTeam();
     return (
         <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
             <Popover open={open} onOpenChange={setOpen}>
