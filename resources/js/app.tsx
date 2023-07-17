@@ -19,7 +19,7 @@ createInertiaApp({
             
                 <>
                     <EchoCointainer />
-                    <ToastContainer transition={Flip} autoClose={2500} pauseOnHover={false} theme='dark'/>
+                    <ToastContainer transition={Flip} autoClose={10000} pauseOnHover={false} theme='dark'/>
                     <App {...props} />
                 </>
             

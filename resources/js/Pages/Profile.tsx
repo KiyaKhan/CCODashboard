@@ -20,6 +20,9 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams}) => {
                     <div className="flex items-center justify-between space-y-2">
                         <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
                     </div>
+                    <div className='h-full w-full flex items-center justify-center py-20'>
+                        <p className='text-4xl font-semibold tracking-wider'>Work In Progress...</p>
+                    </div>
                 </div>
             </div>
         </>

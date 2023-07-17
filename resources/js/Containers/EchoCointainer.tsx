@@ -1,6 +1,13 @@
 import useCurrentUser from '@/Hooks/useCurrentUser';
 import useEcho from '@/Hooks/useEcho';
+import { INotification, User } from '@/types';
 import { FC, useEffect } from 'react'
+import { toast } from 'react-toastify';
+
+type EchoEvent ={
+    notification:INotification;
+    user:User;
+}
 
 const EchoCointainer:FC = () => {
     const {currentUser} = useCurrentUser();
@@ -8,16 +15,20 @@ const EchoCointainer:FC = () => {
     useEffect(()=>{
         if(!currentUser)return;
         const echo=window.Echo.join('global_channel')
-        .listen('AgentLogInEvent',(e:any)=>{
+        .listen('AgentLogInEvent',(e:EchoEvent)=>{
+            toast.info(e.notification.message);
             console.log(e);
         })
-        .listen('AgentChangeStatusEvent',(e:any)=>{
+        .listen('AgentChangeStatusEvent',(e:EchoEvent)=>{
+            toast.info(e.notification.message);
             console.log(e);
         })
-        .listen('AgentLogOutEvent',(e:any)=>{
+        .listen('AgentLogOutEvent',(e:EchoEvent)=>{
+            toast.info(e.notification.message);
             console.log(e);
         })
-        .listen('AgentRegisteredEvent',(e:any)=>{
+        .listen('AgentRegisteredEvent',(e:EchoEvent)=>{
+            toast.info(e.notification.message);
             console.log(e);
         }); 
         setEcho(echo);

@@ -21,7 +21,9 @@ class AgentController extends Controller
             ->orWhere('first_name','like','%'.$filter.'%')
             ->orWhere('last_name','like','%'.$filter.'%');
         })
-        ->where('status_id','like','%'.$status_id.'%')
+        ->when($status_id,function($q) use($status_id){
+            $q->where('status_id',$status_id);
+        })
         ->get();
     }
 

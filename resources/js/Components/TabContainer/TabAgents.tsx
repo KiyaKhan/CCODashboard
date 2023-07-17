@@ -53,11 +53,9 @@ const TabAgents:FC = () => {
         }); 
     },[]);
 
-    if(!agentData||loading){
+    if(!agentData){
         return(
-            <div className='w-full flex items-center justify-center'>
-                <BiCircle size={96}  className='text-sky-500 animate-ping mt-48' />
-            </div>
+            <Loader />
         )
     }
 
@@ -96,9 +94,18 @@ const TabAgents:FC = () => {
                 </div>
             </div>
             <Separator />
-            <DataTable columns={agentColumns} data={agentData} />
+            {!loading?<DataTable columns={agentColumns} data={agentData} />:<Loader />}
+            
         </>
     )
 }
 
 export default TabAgents
+
+const Loader:FC = () =>{
+    return(
+        <div className='w-full flex items-center justify-center'>
+            <BiCircle size={96}  className='text-sky-500 animate-ping mt-48' />
+        </div>
+    )
+} 

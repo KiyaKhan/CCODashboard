@@ -4,7 +4,7 @@ import TabContainer from '@/Components/TabContainer/TabContainer';
 import { Button } from '@/Components/ui/button';
 import { Tabs } from '@/Components/ui/tabs';
 import useCurrentUser from '@/Hooks/useCurrentUser';
-import { ITeam, PageProps, User } from '@/types'
+import { INotification, ITeam, PageProps, User } from '@/types'
 import { Head, usePage } from '@inertiajs/react'
 import React, { FC, useEffect, useState } from 'react'
 import { BiCircle } from 'react-icons/bi';
@@ -16,11 +16,22 @@ interface IndexProps{
     available_team_leaders:User[];
 }
 
+type GetDataResponse = {
+    data:{
+        recent_notifications:INotification[],
+        team_size:number,
+        total_on_call:number,
+        total_on_email:number,
+        total_on_lunch_or_break:number,
+        total_online:number
+    };
+}
+
 const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     const {selectTeam,selectedTeam} = useSelectedTeam();
     const {setCurrentUser} = useCurrentUser();
     const {user} = usePage<PageProps>().props.auth;
-    const [loading,setLoading] = useState<boolean>(false);
+    const [loading,setLoading] = useState<boolean>(true);
     useEffect(()=>{
         setCurrentUser(user);
         if(teams) selectTeam(teams[0]);
@@ -33,7 +44,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
         axios.get(route('get_data',{
             team_id
         }))
-        .then(({data})=>{
+        .then(({data}:GetDataResponse)=>{ 
             console.log(data);
         })
         .catch(e=>toast.error('Something went wront. Please refresh the page and try again'))
