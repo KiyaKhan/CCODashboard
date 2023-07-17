@@ -29,17 +29,30 @@ class AgentController extends Controller
 
     public function get_data(Request $request){
         $team_id=$request->team_id;
-        $recent_notifications = Notification::where('team_id',$team_id)->limit(10)->orderBy('created_at','desc')->get();
+        $recent_notifications = Notification::with(['user'])->where('team_id',$team_id)->limit(5)->orderBy('created_at','desc')->get();
         $user=User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id);
         return [
             'recent_notifications'=>$recent_notifications,
             'dashboard_cards'=>[
                 'team_size'=>$user->count(),
-                'total_online'=>$user->whereNot('status_id',10)->count(),
-                'total_on_lunch_or_break'=>$user->whereIn('status_id',[3,4,5])->count(),
-                'total_on_call'=>$user->where('status_id',1)->count(),
-                'total_on_email'=>$user->where('status_id',2)->count(),
+                'total_online'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereNot('status_id',10)->count(),
+                'total_on_lunch_or_break'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereIn('status_id',[3,4,5])->count(),
+                'total_on_call'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[1])->count(),
+                'total_on_email'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[2])->count(),
             ]
+        ];
+    }
+
+
+    public function get_card_data(Request $request){
+        $team_id=$request->team_id;
+        $user=User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id);
+        return [
+            'team_size'=>$user->count(),
+            'total_online'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereNot('status_id',10)->count(),
+            'total_on_lunch_or_break'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereIn('status_id',[3,4,5])->count(),
+            'total_on_call'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[1])->count(),
+            'total_on_email'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[2])->count(),
         ];
     }
 }

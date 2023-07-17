@@ -11,6 +11,8 @@ import { BiCircle } from 'react-icons/bi';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import useDashboardInfo from '@/Hooks/useDashboardInfo';
+import EchoCointainer from '@/Containers/EchoCointainer';
 interface IndexProps{
     teams:ITeam[];
     available_team_leaders:User[];
@@ -19,11 +21,13 @@ interface IndexProps{
 type GetDataResponse = {
     data:{
         recent_notifications:INotification[],
-        team_size:number,
-        total_on_call:number,
-        total_on_email:number,
-        total_on_lunch_or_break:number,
-        total_online:number
+        dashboard_cards:{
+            team_size:number,
+            total_on_call:number,
+            total_on_email:number,
+            total_on_lunch_or_break:number,
+            total_online:number
+        }
     };
 }
 
@@ -32,6 +36,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     const {setCurrentUser} = useCurrentUser();
     const {user} = usePage<PageProps>().props.auth;
     const [loading,setLoading] = useState<boolean>(true);
+    const {setRecentNotifications,setAgentBreakdown} = useDashboardInfo();
     useEffect(()=>{
         setCurrentUser(user);
         if(teams) selectTeam(teams[0]);
@@ -45,7 +50,8 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
             team_id
         }))
         .then(({data}:GetDataResponse)=>{ 
-            console.log(data);
+            setRecentNotifications(data.recent_notifications);
+            setAgentBreakdown(data.dashboard_cards)
         })
         .catch(e=>toast.error('Something went wront. Please refresh the page and try again'))
         .finally(()=>setLoading(false));
@@ -69,6 +75,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                     </Tabs>
                 </div>
             </div>
+            <EchoCointainer />
         </>
     )
 }

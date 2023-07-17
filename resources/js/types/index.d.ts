@@ -49,6 +49,8 @@ export interface INotification{
     user_id:number;
     team_id:number;
     status_id:number;
+    user:User;
+    status:IStatus;
     message:string;
     created_at:string;
     updated_at:string;
