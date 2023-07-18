@@ -1,9 +1,9 @@
 import useCurrentUser from '@/Hooks/useCurrentUser';
 import useDashboardInfo from '@/Hooks/useDashboardInfo';
 import useEcho from '@/Hooks/useEcho';
+import useGetAgents from '@/Hooks/useGetAgents';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import { INotification, PageProps, User } from '@/types';
-import { usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
@@ -16,19 +16,27 @@ type EchoEvent ={
 const EchoCointainer:FC = () => {
     
     const {setEcho} = useEcho();
-    const {appendRecentNotifications,setAgentBreakdown} = useDashboardInfo();
+    const {appendRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
     const {selectedTeam} = useSelectedTeam();
+    const { previousFilters,previousStatusId,getAgents,isAgentsTabOpen } =useGetAgents();
     const refreshCards = useCallback(async() =>{
         console.log(selectedTeam);
         if(!selectedTeam) return;
-        console.log('refreshCards');
         axios.get(route('get_card_data',{
             team_id:selectedTeam.id
         }))
-        .then(({data})=>{
-            console.log(data);
-            setAgentBreakdown(data);
-        })
+        .then(({data})=>setAgentBreakdown(data))
+        .catch(e=>toast.error('Something went wrong. Please refresh the page'))
+    },[selectedTeam,setAgentBreakdown]);
+
+
+    const refreshBar = useCallback(async() =>{
+        console.log(selectedTeam);
+        if(!selectedTeam) return;
+        axios.get(route('get_bar_chart_data',{
+            team_id:selectedTeam.id
+        }))
+        .then(({data})=>setBarChart(data))
         .catch(e=>toast.error('Something went wrong. Please refresh the page'))
     },[selectedTeam,setAgentBreakdown]);
     
@@ -38,31 +46,41 @@ const EchoCointainer:FC = () => {
         
         setEcho(null);
         const echo=window.Echo.join('global_channel')
-        .listen('AgentLogInEvent',async (e:EchoEvent)=>{
+        .listen('AgentLogInEvent', (e:EchoEvent)=>{
             toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
-            await refreshCards();
+            refreshCards();
+            refreshBar();
+            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+
         })
-        .listen('AgentChangeStatusEvent',async (e:EchoEvent)=>{
+        .listen('AgentChangeStatusEvent', (e:EchoEvent)=>{
             toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
-            await refreshCards();
-            console.log(e);
+            refreshCards();
+            refreshBar();
+            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+
         })
-        .listen('AgentLogOutEvent',async (e:EchoEvent)=>{
+        .listen('AgentLogOutEvent', (e:EchoEvent)=>{
             toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
-            await refreshCards();
-            console.log(e);
+            refreshCards();
+            refreshBar();
+            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+
         })
         .listen('AgentRegisteredEvent',(e:EchoEvent)=>{
             toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
-            console.log(e);
+            refreshBar();
+            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+
         }); 
         setEcho(echo    );
-        return ()=>window.Echo.leave('global_channel');
-    },[selectedTeam]);
+        //return ()=>window.Echo.leave('global_channel');
+    },[selectedTeam,previousFilters
+        ,previousStatusId,isAgentsTabOpen]);
     return (
         <></>
     )

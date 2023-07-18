@@ -1,7 +1,5 @@
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
-import axios from 'axios';
 import {FC,FormEventHandler,useEffect,useMemo,useState} from 'react'
-import { toast } from 'react-toastify';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import {  BsPlusCircle } from 'react-icons/bs';
@@ -11,28 +9,22 @@ import { DataTable } from '../DataTable/DataTable';
 import { Input } from '../ui/input';
 import { usePage } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { BiCircle } from 'react-icons/bi'
-import useEcho from '@/Hooks/useEcho';
+import { BiCircle } from 'react-icons/bi';
+import useGetAgents from '@/Hooks/useGetAgents';
+import {useCallback} from 'react';
 
 const TabAgents:FC = () => {
-    const {Echo} = useEcho();
     const {statuses} = usePage<PageProps>().props;
-    const {selectedTeam,loadingTeam} = useSelectedTeam();
+    const {selectedTeam} = useSelectedTeam();
     const [loading,setLoading] = useState(false);
-    const [agents,setAgents] = useState<User[]>();
     const [filters,setFilters] = useState("");
-    const getAgents = (statusID?:string) =>{
+    const {getAgents:FetchAgents,setAgentsTabOpen,agents} = useGetAgents();
+    const getAgents = useCallback(async(statusID?:string) =>{
         if(!selectedTeam)return ;
         setLoading(true);
-        axios.get(route('agents.index',{
-            team_id:selectedTeam.id,
-            filter:filters,
-            status_id:statusID||""
-        }))
-        .then(({data})=>setAgents(data))
-        .catch(e=>toast.error('Internal Error. Please refresh the page then try again...'))
-        .finally(()=>setLoading(false));
-    }
+        const agents = await FetchAgents(selectedTeam.id,filters,statusID||"")
+        setLoading(false);
+    },[,selectedTeam,setLoading]);
 
     const onSubmit:FormEventHandler = (e) =>{
         e.preventDefault();
@@ -48,9 +40,8 @@ const TabAgents:FC = () => {
     },[selectedTeam]);
 
     useEffect(()=>{
-        Echo.listen('AgentLogInEvent',(e:any)=>{
-            console.log('AgentLogInEvent from TabAgents.tsx');
-        }); 
+        setAgentsTabOpen(true);
+        return()=>setAgentsTabOpen(false);
     },[]);
 
     if(!agentData){
@@ -102,7 +93,7 @@ const TabAgents:FC = () => {
 
 export default TabAgents
 
-const Loader:FC = () =>{
+export const Loader:FC = () =>{
     return(
         <div className='w-full flex items-center justify-center'>
             <BiCircle size={96}  className='text-sky-500 animate-ping mt-48' />

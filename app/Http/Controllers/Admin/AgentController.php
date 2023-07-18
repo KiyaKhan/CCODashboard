@@ -39,6 +39,19 @@ class AgentController extends Controller
                 'total_on_lunch_or_break'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereIn('status_id',[3,4,5])->count(),
                 'total_on_call'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[1])->count(),
                 'total_on_email'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[2])->count(),
+            ],
+            'bar_chart'=>[
+                ['name'=>'calls','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',1)->count()],
+                ['name'=>'emails','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',2)->count()],
+                ['name'=>'break','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',3)->count()],
+                ['name'=>'bio_break','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',4)->count()],
+                ['name'=>'lunch','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',5)->count()],
+                ['name'=>'training','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',6)->count()],
+                ['name'=>'coaching','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',7)->count()],
+                ['name'=>'meeting','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',8)->count()],
+                ['name'=>'system_issue','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',9)->count()],
+                ['name'=>'floor_support','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',11)->count()],
+                ['name'=>'special_assignment','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',12)->count()],
             ]
         ];
     }
@@ -53,6 +66,23 @@ class AgentController extends Controller
             'total_on_lunch_or_break'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->whereIn('status_id',[3,4,5])->count(),
             'total_on_call'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[1])->count(),
             'total_on_email'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',[2])->count(),
+        ];
+    }
+
+    public function get_bar_chart_data(Request $request){
+        $team_id=$request->team_id;
+        return [
+            ['name'=>'calls','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',1)->count()],
+            ['name'=>'emails','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',2)->count()],
+            ['name'=>'break','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',3)->count()],
+            ['name'=>'bio_break','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',4)->count()],
+            ['name'=>'lunch','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',5)->count()],
+            ['name'=>'training','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',6)->count()],
+            ['name'=>'coaching','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',7)->count()],
+            ['name'=>'meeting','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',8)->count()],
+            ['name'=>'system_issue','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',9)->count()],
+            ['name'=>'floor_support','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',11)->count()],
+            ['name'=>'special_assignment','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',12)->count()],
         ];
     }
 }

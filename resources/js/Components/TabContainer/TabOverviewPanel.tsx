@@ -1,15 +1,21 @@
+import useDashboardInfo from '@/Hooks/useDashboardInfo';
 import { PageProps } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Loader } from './TabAgents';
 const TabOverviewPanel:FC = () => {
     
-    const {statuses} = usePage<PageProps>().props;
     
-    const sampleData = statuses.filter(({id})=>id!==10).map(({name})=>({name,total: Math.floor(Math.random() * 5) + 1,}));
+    
+    const {barChart} = useDashboardInfo();
+    if(!barChart){
+        <Loader />
+    }
+    
     return (
         <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={sampleData} >
+            <BarChart data={barChart} >
                 <XAxis
                     dataKey="name"
                     stroke="#22c55e"
@@ -30,7 +36,7 @@ const TabOverviewPanel:FC = () => {
                     wrapperStyle={{ backgroundColor: 'black',color:'white' }} 
                     contentStyle={{ backgroundColor: 'black',color:'white' }} 
                     labelStyle={{ backgroundColor: 'black',color:'white' }}/>
-                <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
+                <Bar dataKey='total' fill="#adfa1d" radius={[4, 4, 0, 0]} />
             </BarChart>
         </ResponsiveContainer>
     )

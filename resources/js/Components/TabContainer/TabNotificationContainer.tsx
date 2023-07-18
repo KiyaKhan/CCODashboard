@@ -51,7 +51,7 @@ const NotificationItem:FC<{
     return(
         <div className="flex items-center">
             <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">{notification.message}</p>
+                <p className="text-xs font-medium leading-none">{notification.message}</p>
                 <p className="text-xs text-muted-foreground">
                 {format(parseISO(notification.created_at),'Pp')}
                 </p>

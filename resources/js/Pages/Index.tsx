@@ -5,13 +5,13 @@ import { Button } from '@/Components/ui/button';
 import { Tabs } from '@/Components/ui/tabs';
 import useCurrentUser from '@/Hooks/useCurrentUser';
 import { INotification, ITeam, PageProps, User } from '@/types'
-import { Head, usePage } from '@inertiajs/react'
+import { Head, Link, usePage } from '@inertiajs/react'
 import React, { FC, useEffect, useState } from 'react'
 import { BiCircle } from 'react-icons/bi';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import useDashboardInfo from '@/Hooks/useDashboardInfo';
+import useDashboardInfo, { AgentBreakdown, BarChart } from '@/Hooks/useDashboardInfo';
 import EchoCointainer from '@/Containers/EchoCointainer';
 interface IndexProps{
     teams:ITeam[];
@@ -21,13 +21,8 @@ interface IndexProps{
 type GetDataResponse = {
     data:{
         recent_notifications:INotification[],
-        dashboard_cards:{
-            team_size:number,
-            total_on_call:number,
-            total_on_email:number,
-            total_on_lunch_or_break:number,
-            total_online:number
-        }
+        dashboard_cards:AgentBreakdown,
+        bar_chart:BarChart
     };
 }
 
@@ -36,7 +31,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     const {setCurrentUser} = useCurrentUser();
     const {user} = usePage<PageProps>().props.auth;
     const [loading,setLoading] = useState<boolean>(true);
-    const {setRecentNotifications,setAgentBreakdown} = useDashboardInfo();
+    const {setRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
     useEffect(()=>{
         setCurrentUser(user);
         if(teams) selectTeam(teams[0]);
@@ -51,11 +46,12 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
         }))
         .then(({data}:GetDataResponse)=>{ 
             setRecentNotifications(data.recent_notifications);
-            setAgentBreakdown(data.dashboard_cards)
+            setAgentBreakdown(data.dashboard_cards);
+            setBarChart(data.bar_chart);
         })
         .catch(e=>toast.error('Something went wront. Please refresh the page and try again'))
         .finally(()=>setLoading(false));
-    },[selectedTeam])
+    },[selectedTeam]);
 
     return (
         <>

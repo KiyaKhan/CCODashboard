@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -52,6 +51,7 @@ Route::middleware(['auth'])->get('/profile', function () {
 Route::middleware(['auth','is_admin'])->group(function(){
     Route::get('/get_dashboard_data',[AgentController::class,'get_data'])->name('get_data');
     Route::get('/get_card_data',[AgentController::class,'get_card_data'])->name('get_card_data');
+    Route::get('/get_bar_chart_data',[AgentController::class,'get_bar_chart_data'])->name('get_bar_chart_data');
     Route::prefix('agents')->name('agents.')->group(function(){
         Route::get('/agents',[AgentController::class,'index'])->name('index');
     });

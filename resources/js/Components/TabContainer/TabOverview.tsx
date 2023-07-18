@@ -16,7 +16,7 @@ const TabOverview = () => {
                 <TabOverviewCards />
             </div>
             <div className="grid gap-3 grid-cols-1 lg:grid-cols-8">
-                <Card className="col-span-1  lg:col-span-6">
+                <Card className="col-span-1  lg:col-span-5">
                 <CardHeader>
                         <CardTitle>Overview of Online Agents</CardTitle>
                     </CardHeader>
@@ -24,7 +24,7 @@ const TabOverview = () => {
                         <TabOverviewPanel />
                     </CardContent>
                 </Card>
-                <Card className="col-span-1  lg:col-span-2">
+                <Card className="col-span-1  lg:col-span-3">
                     <CardHeader>
                         <CardTitle>Recent Notifications</CardTitle>
                         <CardDescription>
