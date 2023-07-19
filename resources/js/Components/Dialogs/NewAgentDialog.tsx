@@ -39,6 +39,7 @@ const NewAgentDialog:FC = () => {
                             <Label htmlFor='company_id' className='text-sm' >Company ID:</Label>
                             <Input id="company_id" />
                         </div>
+                        
                     </div>
                     <DialogFooter>
                         <Button type="button">Continue...</Button>
