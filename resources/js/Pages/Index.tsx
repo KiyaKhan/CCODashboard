@@ -28,12 +28,9 @@ type GetDataResponse = {
 
 const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     const {selectTeam,selectedTeam} = useSelectedTeam();
-    const {setCurrentUser} = useCurrentUser();
-    const {user} = usePage<PageProps>().props.auth;
     const [loading,setLoading] = useState<boolean>(true);
     const {setRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
     useEffect(()=>{
-        setCurrentUser(user);
         if(teams) selectTeam(teams[0]);
     },[]);
 

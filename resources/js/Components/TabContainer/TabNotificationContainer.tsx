@@ -2,7 +2,8 @@ import React, { FC, useCallback, useEffect, useState } from 'react'
 import AvatarContainer from '../AvatarContainer'
 import useDashboardInfo from '@/Hooks/useDashboardInfo'
 import { INotification } from '@/types';
-import { format, formatDistanceToNow, parseISO } from 'date-fns';
+import {  formatDistanceToNow, parseISO } from 'date-fns';
+import { format,  } from 'date-fns';
 
 const TabNotificationContainer:FC = () => {
     const {recentNotifications} = useDashboardInfo();

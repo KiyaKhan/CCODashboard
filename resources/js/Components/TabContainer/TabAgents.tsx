@@ -12,19 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { BiCircle } from 'react-icons/bi';
 import useGetAgents from '@/Hooks/useGetAgents';
 import {useCallback} from 'react';
+import { Dialog, DialogTrigger } from '../ui/dialog';
+import NewAgentDialog from '../Dialogs/NewAgentDialog';
 
 const TabAgents:FC = () => {
     const {statuses} = usePage<PageProps>().props;
     const {selectedTeam} = useSelectedTeam();
-    const [loading,setLoading] = useState(false);
+    const [loading,setLoading] = useState(true);
     const [filters,setFilters] = useState("");
     const {getAgents:FetchAgents,setAgentsTabOpen,agents} = useGetAgents();
     const getAgents = useCallback(async(statusID?:string) =>{
         if(!selectedTeam)return ;
         setLoading(true);
-        const agents = await FetchAgents(selectedTeam.id,filters,statusID||"")
+        await FetchAgents(selectedTeam.id,filters,statusID||"")
         setLoading(false);
-    },[,selectedTeam,setLoading]);
+    },[,selectedTeam,setLoading,FetchAgents]);
 
     const onSubmit:FormEventHandler = (e) =>{
         e.preventDefault();
@@ -78,10 +80,15 @@ const TabAgents:FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between flex-1 lg:flex-none">
-                    <Button className='font-semibold' >
-                        <BsPlusCircle className='mr-1.5 h-5 w-5' />
-                        <span>Add New Agent</span>
-                    </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className='font-semibold' >
+                                <BsPlusCircle className='mr-1.5 h-5 w-5' />
+                                <span>Add New Agent</span>
+                            </Button>
+                        </DialogTrigger>
+                        <NewAgentDialog />
+                    </Dialog>
                 </div>
             </div>
             <Separator />
@@ -99,4 +106,7 @@ export const Loader:FC = () =>{
             <BiCircle size={96}  className='text-sky-500 animate-ping mt-48' />
         </div>
     )
-} 
+}
+
+
+

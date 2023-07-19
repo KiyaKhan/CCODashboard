@@ -2,6 +2,7 @@ import useCurrentUser from '@/Hooks/useCurrentUser';
 import useDashboardInfo from '@/Hooks/useDashboardInfo';
 import useEcho from '@/Hooks/useEcho';
 import useGetAgents from '@/Hooks/useGetAgents';
+import useGetNotifications from '@/Hooks/useGetNotifications';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import { INotification, PageProps, User } from '@/types';
 import axios from 'axios';
@@ -19,8 +20,9 @@ const EchoCointainer:FC = () => {
     const {appendRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
     const {selectedTeam} = useSelectedTeam();
     const { previousFilters,previousStatusId,getAgents,isAgentsTabOpen } =useGetAgents();
+    
+    const { getNotifications,isNotificationsTabOpen } =useGetNotifications();
     const refreshCards = useCallback(async() =>{
-        console.log(selectedTeam);
         if(!selectedTeam) return;
         axios.get(route('get_card_data',{
             team_id:selectedTeam.id
@@ -31,7 +33,6 @@ const EchoCointainer:FC = () => {
 
 
     const refreshBar = useCallback(async() =>{
-        console.log(selectedTeam);
         if(!selectedTeam) return;
         axios.get(route('get_bar_chart_data',{
             team_id:selectedTeam.id
@@ -51,7 +52,8 @@ const EchoCointainer:FC = () => {
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
-            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+            if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
+            if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
         })
         .listen('AgentChangeStatusEvent', (e:EchoEvent)=>{
@@ -59,7 +61,8 @@ const EchoCointainer:FC = () => {
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
-            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+            if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
+            if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
         })
         .listen('AgentLogOutEvent', (e:EchoEvent)=>{
@@ -67,20 +70,21 @@ const EchoCointainer:FC = () => {
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
-            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+            if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
+            if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
         })
         .listen('AgentRegisteredEvent',(e:EchoEvent)=>{
             toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
             refreshBar();
-            if(isAgentsTabOpen)getAgents(selectedTeam!.id,previousFilters,previousStatusId)
+            if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
+            if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
         }); 
         setEcho(echo    );
-        //return ()=>window.Echo.leave('global_channel');
-    },[selectedTeam,previousFilters
-        ,previousStatusId,isAgentsTabOpen]);
+        return ()=>window.Echo.leave('global_channel');
+    },[selectedTeam,previousFilters,previousStatusId,isAgentsTabOpen,isNotificationsTabOpen]);
     return (
         <></>
     )

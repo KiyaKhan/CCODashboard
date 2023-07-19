@@ -40,6 +40,7 @@
         "clsx": "^1.2.1",
         "cmdk": "^0.2.0",
         "date-fns": "^2.30.0",
+        "date-fns-tz": "^2.0.0",
         "react-day-picker": "^8.8.0",
         "react-icons": "^4.10.1",
         "react-toastify": "^9.1.3",

@@ -52,6 +52,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
     Route::get('/get_dashboard_data',[AgentController::class,'get_data'])->name('get_data');
     Route::get('/get_card_data',[AgentController::class,'get_card_data'])->name('get_card_data');
     Route::get('/get_bar_chart_data',[AgentController::class,'get_bar_chart_data'])->name('get_bar_chart_data');
+    Route::get('/notifications',[AgentController::class,'notifications'])->name('notifications');
     Route::prefix('agents')->name('agents.')->group(function(){
         Route::get('/agents',[AgentController::class,'index'])->name('index');
     });

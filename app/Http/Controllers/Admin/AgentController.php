@@ -85,4 +85,15 @@ class AgentController extends Controller
             ['name'=>'special_assignment','total'=>User::whereNot('id',1)->whereNotNull('team_id')->where('team_id',$team_id)->where('status_id',12)->count()],
         ];
     }
+
+    public function notifications(Request $request){
+        
+        $team_id=$request->team_id;
+        return Notification::with(['user'])
+            ->when($team_id,function($q) use($team_id){
+                $q->where('team_id',$team_id);
+            })
+            ->orderBy('created_at','desc')
+            ->get();
+    }
 }
