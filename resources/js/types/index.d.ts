@@ -21,6 +21,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
         user: User;
     };
     statuses:IStatus[];
+    teams:ITeam[];
 };
 
 
@@ -54,6 +55,19 @@ export interface INotification{
     message:string;
     created_at:string;
     updated_at:string;
+}
+
+export interface IAgentStatus{
+    id:nubmer, 
+    user_id:number,
+    user:User;
+    status_id:number,
+    status:IStatus; 
+    agent_session_id:number, 
+    overtime_reason:string|null, 
+    early_departure_reason:string|null, 
+    created_at:string, 
+    updated_at:string,
 }
 
 declare global {

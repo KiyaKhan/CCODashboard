@@ -41,7 +41,7 @@ const EchoCointainer:FC = () => {
         .catch(e=>toast.error('Something went wrong. Please refresh the page'))
     },[selectedTeam,setAgentBreakdown]);
     
-
+    useEffect(()=>console.log(previousFilters),[previousFilters]);
 
     useEffect(()=>{
         
@@ -63,6 +63,7 @@ const EchoCointainer:FC = () => {
             refreshBar();
             if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
             if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
+            console.log(previousFilters);
 
         })
         .listen('AgentLogOutEvent', (e:EchoEvent)=>{
@@ -82,7 +83,7 @@ const EchoCointainer:FC = () => {
             if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
         }); 
-        setEcho(echo    );
+        setEcho(echo);
         return ()=>window.Echo.leave('global_channel');
     },[selectedTeam,previousFilters,previousStatusId,isAgentsTabOpen,isNotificationsTabOpen]);
     return (

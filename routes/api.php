@@ -23,9 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::get('/teams',[ApiController::class,'teams']);
+Route::get('/teams',[ApiController::class,'teams'])->name('api.teams');;
 Route::get('/statuses',[ApiController::class,'statuses']);
-Route::post('/register',[ApiController::class,'register']);
+Route::post('/register',[ApiController::class,'register'])->name('register');
 Route::post('/login',[ApiController::class,'login']);
 
 Route::middleware('auth:sanctum')->group(function(){

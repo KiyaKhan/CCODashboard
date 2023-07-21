@@ -24,7 +24,7 @@ const useGetNotifications = create<GetNotifications>(set=>({
             const {data} = await axios.get(route('notifications',{
                 team_id:teamId,
             }));
-            console.log(data);
+            
             set({ notifications:data});
         } catch (error) {
             toast.error('Something went wrong. Please refresh the page and try again.')

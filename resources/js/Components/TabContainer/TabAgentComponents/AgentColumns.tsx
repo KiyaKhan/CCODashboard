@@ -43,6 +43,6 @@ export const agentColumns: ColumnDef<AgentTableColumn>[] = [
     {
         header: "Actions",
         id:"actions",
-        cell:({row})=><AgentCellActions  />
+        cell:({row})=><AgentCellActions company_id={row.original.company_id} />
     }
 ]

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Status;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -32,6 +33,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'teams'=>Team::all(),
             'statuses'=>Status::all(),
             'auth' => [
                 'user' => $request->user(),

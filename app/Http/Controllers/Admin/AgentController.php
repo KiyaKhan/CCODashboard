@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentLog;
 use App\Models\Notification;
 use App\Models\Team;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AgentController extends Controller
 {
@@ -95,5 +99,58 @@ class AgentController extends Controller
             })
             ->orderBy('created_at','desc')
             ->get();
+    }
+
+    public function new(Request $request){
+        $request->validate([
+            'first_name' => ['string', 'max:255','required'],
+            'last_name' => ['string', 'max:255','required'],
+            'company_id' => ['string', 'max:255','unique:users','required'],
+            'password' => ['string','required','min:6'],
+            'team_id' => ['required','exists:App\Models\Team,id'],
+            'site'=> ['required',Rule::in(['Manila', 'Leyte'])]
+        ]);
+
+
+        User::create([
+            "company_id"=> $request->company_id,
+            "first_name"=> $request->first_name,
+            "last_name"=> $request->last_name,
+            "team_id"=> $request->team_id,
+            "site"=> $request->site,
+            "status_id"=> 10,
+            "password"=> Hash::make($request->password),
+        ]);
+    }
+
+    public function get_non_leaders(){
+        return User::whereNotIn('user_level',[1,2])->get();
+    }
+
+    public function status_logs(Request $request){
+        $user=User::where('company_id',$request->company_id)->firstorFail();
+        $breakdown= AgentLog::select(DB::raw('agent_session_id,date(created_at) as date'))
+            ->where('user_id',$user->id)
+            ->groupBy(DB::raw('agent_session_id,date(created_at)'))
+            ->orderBy('date','desc')
+            ->limit(3)
+            ->get();
+            
+        return [
+            'logs'=>AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->get(),
+            'name'=>$user->first_name.' '.$user->last_name
+        ];
+        
+            
+    }
+
+
+    public function test(){
+        AgentLog::find(193)->update([
+            'created_at'=>Carbon::parse('2023-07-21 22:00'),
+            'updated_at'=>Carbon::parse('2023-07-21 22:00')
+        ]);
+        
+        return 'done';
     }
 }

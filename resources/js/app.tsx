@@ -8,6 +8,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import NewAgentDialog from './Components/Dialogs/NewAgentDialog';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
@@ -17,7 +18,7 @@ createInertiaApp({
         root.render(
             
                 <>
-                    
+                    <NewAgentDialog />
                     <ToastContainer transition={Flip} autoClose={10000} pauseOnHover={false} theme='dark'/>
                     <App {...props} />
                 </>

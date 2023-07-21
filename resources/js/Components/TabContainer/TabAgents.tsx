@@ -12,8 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { BiCircle } from 'react-icons/bi';
 import useGetAgents from '@/Hooks/useGetAgents';
 import {useCallback} from 'react';
-import { Dialog, DialogTrigger } from '../ui/dialog';
-import NewAgentDialog from '../Dialogs/NewAgentDialog';
 
 const TabAgents:FC = () => {
     const {statuses} = usePage<PageProps>().props;
@@ -24,9 +22,9 @@ const TabAgents:FC = () => {
     const getAgents = useCallback(async(statusID?:string) =>{
         if(!selectedTeam)return ;
         setLoading(true);
-        await FetchAgents(selectedTeam.id,filters,statusID||"")
+        await FetchAgents(selectedTeam.id,filters,statusID||"");
         setLoading(false);
-    },[,selectedTeam,setLoading,FetchAgents]);
+    },[,selectedTeam,setLoading,FetchAgents,filters]);
 
     const onSubmit:FormEventHandler = (e) =>{
         e.preventDefault();
@@ -77,18 +75,6 @@ const TabAgents:FC = () => {
                             }
                         </SelectContent>
                     </Select>
-                </div>
-                
-                <div className="flex items-center justify-between flex-1 lg:flex-none">
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button className='font-semibold' >
-                                <BsPlusCircle className='mr-1.5 h-5 w-5' />
-                                <span>Add New Agent</span>
-                            </Button>
-                        </DialogTrigger>
-                        <NewAgentDialog />
-                    </Dialog>
                 </div>
             </div>
             <Separator />

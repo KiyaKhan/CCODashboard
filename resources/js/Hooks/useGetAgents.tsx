@@ -23,6 +23,7 @@ const useGetAgents = create<GetAgents>(set=>({
         isAgentsTabOpen:open
     }),
     getAgents: async (teamId:number,filters:string,statusId:string)=>{
+        
         if(!teamId)return undefined;
         set({
             previousFilters:statusId||"",

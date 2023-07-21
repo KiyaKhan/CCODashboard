@@ -6,12 +6,17 @@ import { Button } from '../ui/button';
 import AvatarContainer from '../AvatarContainer';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import useNewTeamDialog from '@/Hooks/useNewTeamDialog';
+import { Dialog, DialogTrigger } from '../ui/dialog';
+import { BsPlusCircle } from 'react-icons/bs';
+import NewAgentDialog from '../Dialogs/NewAgentDialog';
+import useNewAgentDialog from '@/Hooks/useNewAgentDialog';
 
 
 
 const UserNav:FC = () => {
     const {user} = usePage<PageProps>().props.auth;
     const {setShowNewTeamDialog} = useNewTeamDialog();
+    const {setShowNewAgentDialog} = useNewAgentDialog();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -37,6 +42,9 @@ const UserNav:FC = () => {
                     Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>setShowNewAgentDialog(true)}>
+                    Add New Agent
+                </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=>router.post('logout')}>

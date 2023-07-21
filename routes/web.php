@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Team;
@@ -55,6 +56,14 @@ Route::middleware(['auth','is_admin'])->group(function(){
     Route::get('/notifications',[AgentController::class,'notifications'])->name('notifications');
     Route::prefix('agents')->name('agents.')->group(function(){
         Route::get('/agents',[AgentController::class,'index'])->name('index');
+        Route::get('/get_non_leaders',[AgentController::class,'get_non_leaders'])->name('get_non_leaders');
+        Route::get('/status_logs',[AgentController::class,'status_logs'])->name('status_logs');
+        Route::post('/new',[AgentController::class,'new'])->name('new');
+    });
+
+
+    Route::prefix('teams')->name('teams.')->group(function(){
+        Route::post('/store',[TeamController::class,'store'])->name('store');
     });
 });
 
@@ -79,6 +88,8 @@ Route::middleware('guest')->group(function () {
     
 });
 
+
+Route::get('test',[AgentController::class,'test']);
 
 
 

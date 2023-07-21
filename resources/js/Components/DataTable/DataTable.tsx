@@ -43,10 +43,12 @@ export function DataTable<TData, TValue>({
         getPaginationRowModel:getPaginationRowModel(),
         onColumnFiltersChange:setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        autoResetPageIndex:false,
         state:{
-            columnFilters
+            columnFilters,
         }
     });
+    
 
     return (
         <div>
