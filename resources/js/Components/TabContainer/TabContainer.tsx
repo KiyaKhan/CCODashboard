@@ -23,12 +23,9 @@ const TabContainer:FC = () => {
         <>
             <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="agents">
-                    Agents
-                </TabsTrigger>
-                <TabsTrigger value="notifications">
-                    Notifications
-                </TabsTrigger>
+                <TabsTrigger value="agents">Agents</TabsTrigger>
+                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="logs">Activity Log</TabsTrigger>
             </TabsList>
 
 
@@ -42,6 +39,9 @@ const TabContainer:FC = () => {
             </TabsContent>
             <TabsContent value="notifications" className="space-y-4">
                 <TabNotifications />
+            </TabsContent>
+            <TabsContent value="logs" className="space-y-4">
+                Activity Log
             </TabsContent>
         </>
     )
