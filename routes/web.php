@@ -89,8 +89,6 @@ Route::middleware('guest')->group(function () {
 });
 
 
-Route::get('test',[AgentController::class,'test']);
-
 
 
 

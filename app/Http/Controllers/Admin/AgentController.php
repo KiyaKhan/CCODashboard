@@ -137,7 +137,7 @@ class AgentController extends Controller
             ->get();
             
         return [
-            'logs'=>AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->get(),
+            'logs'=>AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->orderBy('created_at','asc')->get(),
             'name'=>$user->first_name.' '.$user->last_name
         ];
         
@@ -145,12 +145,4 @@ class AgentController extends Controller
     }
 
 
-    public function test(){
-        AgentLog::find(193)->update([
-            'created_at'=>Carbon::parse('2023-07-21 22:00'),
-            'updated_at'=>Carbon::parse('2023-07-21 22:00')
-        ]);
-        
-        return 'done';
-    }
 }
