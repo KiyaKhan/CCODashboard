@@ -120,7 +120,7 @@ interface LogTableProps{
 }
 
 const LogTable:FC<LogTableProps> = ({logs,dt}) =>{
-    if(!logs){
+    if(!logs||logs.length<1){
         return(
             <div className='w-full items-center justify-center'>
                 <div className='flex flex-col py-10 space-y-5 items-center justify-between'>
@@ -134,11 +134,12 @@ const LogTable:FC<LogTableProps> = ({logs,dt}) =>{
     
     
     const tblRows:logRow[] = useMemo(()=>logs.map((log,idx)=>{
+        
         let duration = idx===0?"Logged In - ":"";
         if(log.status_id===10) {
             duration="Logged Out"
         }
-        if(log.status_id!==10 ) {
+        if(log.status_id!==10 && logs[idx+1]) {
             duration += differenceInMinutes(parseISO(logs[idx+1].created_at),parseISO(log.created_at),{roundingMethod:'ceil'}).toString() + ' mins.'
         }
         return {...log,duration};

@@ -81,6 +81,7 @@ class ApiController extends Controller
         return [
             'accessToken'=>$accessToken->plainTextToken,
             'user'=>[
+                'user_id'=>$user->id,
                 'firstName'=>$user->first_name,
                 'lastName'=>$user->last_name,
                 'session_id'=>$this->session_id,
