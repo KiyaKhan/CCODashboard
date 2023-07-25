@@ -140,8 +140,32 @@ class AgentController extends Controller
             'logs'=>AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->orderBy('created_at','asc')->get(),
             'name'=>$user->first_name.' '.$user->last_name
         ];
-        
+    }
+
+
+    public function status_logs_full(Request $request){
+        /*
+        $request=
+            "id" => "9",
+            "dateRange" => array:2 [
+                "from" => "2023-07-16T16:00:00.000Z"
+                "to" => "2023-07-24T16:11:31.946Z"
+            ]
+        */
+        $user=User::where('id',$request->id)->firstorFail();
+        $from=Carbon::parse($request->dateRange['from'])->format('Y-m-d');
+        $to=isset($request->dateRange['to'])?Carbon::parse($request->dateRange['to'])->format('Y-m-d'):null;
+        $breakdown= AgentLog::select(DB::raw('agent_session_id,date(created_at) as date'))
+            ->where('user_id',$user->id)
+            ->where('created_at','>=',$from)
+            ->when($to,function($q) use($to){
+                $q->where('created_at','<=',$to);
+            })
+            ->groupBy(DB::raw('agent_session_id,date(created_at)'))
+            ->orderBy('date','desc')
+            ->get();
             
+        return AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->orderBy('created_at','asc')->get();
     }
 
 

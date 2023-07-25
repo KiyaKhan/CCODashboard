@@ -78,15 +78,15 @@ interface LogDialogContentProps{
 
 const LogDialogContent:FC<LogDialogContentProps> = ({statusLogs}) =>{
 
-    const uniqueAgentSessionIds = [...new Set(statusLogs.map((sLog) => sLog.agent_session_id))];
+    const uniqueAgentSessionIds = [...new Set(statusLogs.map((sLog) => sLog.agent_session_id))].reverse();
     const tab1:IAgentStatus[]|null = uniqueAgentSessionIds[0]?statusLogs.filter(({agent_session_id})=>agent_session_id===uniqueAgentSessionIds[0]):null;
     const tab2:IAgentStatus[]|null = uniqueAgentSessionIds[1]?statusLogs.filter(({agent_session_id})=>agent_session_id===uniqueAgentSessionIds[1]):null;
     const tab3:IAgentStatus[]|null = uniqueAgentSessionIds[2]?statusLogs.filter(({agent_session_id})=>agent_session_id===uniqueAgentSessionIds[2]):null;
     
     
-    const tab1Dates=useMemo(()=>[...new Set(tab1?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))].reverse(),[tab1]);
-    const tab2Dates=useMemo(()=>[...new Set(tab2?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))].reverse(),[tab2]);
-    const tab3Dates=useMemo(()=>[...new Set(tab3?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))].reverse(),[tab3]);
+    const tab1Dates=useMemo(()=>[...new Set(tab1?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))],[tab1]);
+    const tab2Dates=useMemo(()=>[...new Set(tab2?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))],[tab2]);
+    const tab3Dates=useMemo(()=>[...new Set(tab3?.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))],[tab3]);
     
     const tab1Label:string = useMemo(()=> tab1Dates?.length>0? tab1Dates.length===2? `${tab1Dates[1]} - ${tab1Dates[0]}`:tab1Dates[0]:"No Data...",[tab1Dates]);
     const tab2Label:string = useMemo(()=> tab2Dates?.length>0? tab2Dates.length===2? `${tab2Dates[1]} - ${tab2Dates[0]}`:tab2Dates[0]:"No Data...",[tab2Dates]);

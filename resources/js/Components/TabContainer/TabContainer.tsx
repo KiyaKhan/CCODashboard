@@ -4,6 +4,7 @@ import TabOverview from './TabOverview'
 import TabAgents from './TabAgents'
 import TabNotifications from './TabNotifications'
 import useSelectedTeam from '@/Hooks/useSelectedTeam'
+import TabActivityLogs from './TabActivityLogs'
 
 const TabContainer:FC = () => {
     
@@ -25,7 +26,7 @@ const TabContainer:FC = () => {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="agents">Agents</TabsTrigger>
                 <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                <TabsTrigger value="logs">Activity Log</TabsTrigger>
+                <TabsTrigger value="logs">Activity Logs</TabsTrigger>
             </TabsList>
 
 
@@ -41,7 +42,7 @@ const TabContainer:FC = () => {
                 <TabNotifications />
             </TabsContent>
             <TabsContent value="logs" className="space-y-4">
-                Activity Log
+                <TabActivityLogs />
             </TabsContent>
         </>
     )

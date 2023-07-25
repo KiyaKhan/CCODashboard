@@ -58,6 +58,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::get('/agents',[AgentController::class,'index'])->name('index');
         Route::get('/get_non_leaders',[AgentController::class,'get_non_leaders'])->name('get_non_leaders');
         Route::get('/status_logs',[AgentController::class,'status_logs'])->name('status_logs');
+        Route::get('/status_logs_full',[AgentController::class,'status_logs_full'])->name('status_logs_full');
         Route::post('/new',[AgentController::class,'new'])->name('new');
     });
 

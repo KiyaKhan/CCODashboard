@@ -78,12 +78,14 @@ class ApiController extends Controller
             $this->session_id=$session->id;
         });
         broadcast(new AgentLogInEvent($user));
+        $current_session=AgentSession::find($this->session_id);
         return [
             'accessToken'=>$accessToken->plainTextToken,
             'user'=>[
                 'user_id'=>$user->id,
                 'firstName'=>$user->first_name,
                 'lastName'=>$user->last_name,
+                'login_time'=>$current_session->created_at,
                 'session_id'=>$this->session_id,
                 "site"=>$user->site,
                 'team'=>[
