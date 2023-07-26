@@ -76,3 +76,56 @@ declare global {
         Echo:Echo
     }
 }
+
+
+
+type reportResponse = {
+    report_items:{
+        agent:User;
+        breakdown:{
+            calls:number;
+            emails:number;
+            break:number;
+            bio_break:number;
+            lunch:number;
+            training:number;
+            coaching:number;
+            meeting:number;
+            system_issue:number;
+            floor_support:number;
+            special_assignment:number;
+        }
+    }[];
+    from:string;
+    to:string;
+}
+
+type formattedReport = {
+    Month:string;
+    ["Week Ending"]:string;
+    Date:string;
+    Site:string;
+    Project:string;
+    ["DDC ID#"]:string;
+    Name:string;
+    ["Total Hours"]:string;
+    ["Login Time"]:string;
+    ["Online - Calls"]:string;
+    ["Online - Emails"]:string;
+    Break:string;
+    ["Bio Break"]:string;
+    Lunch	:string;
+    Training	:string;
+    Coaching	:string;
+    Meeting	:string;
+    ["System Issue"]	:string;
+    ["Floor Support"]	:string;
+    ["Special Assignment"]	:string;
+    ["Early Departure Time"]	:string;
+    ["Overtime Hours"]	:string;
+    ["End of Shift Time"]	:string;
+    ["Unallocated Hours"]	:string;
+    ["Special Assignment Remarks"]	:string;
+    ["Early Departure Reason"]	:string;
+    ["Overtime Reason"]	:string;
+}

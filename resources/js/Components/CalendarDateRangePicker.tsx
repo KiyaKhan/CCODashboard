@@ -1,5 +1,5 @@
 import { cn } from '@/Libs/Utils'
-import React, { FC } from 'react'
+import React, { Dispatch, FC, SetStateAction } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Button } from './ui/button';
 import { addDays, format } from "date-fns";
@@ -7,11 +7,13 @@ import { DateRange } from "react-day-picker"
 import { RxCalendar } from 'react-icons/rx';
 import { Calendar } from './ui/calendar';
 
-const CalendarDateRangePicker:FC<{className?:string}> = ({className}) => {
-    const [date, setDate] = React.useState<DateRange | undefined>({
-        from: addDays(new Date,-30),
-        to: new Date,
-    })
+interface CalendarDateRangePickerProps{
+    className?:string;
+    date?:DateRange,
+    setDate:Dispatch<SetStateAction<DateRange | undefined>>
+}
+
+const CalendarDateRangePicker:FC<CalendarDateRangePickerProps> = ({className,date,setDate}) => {
     return (
         <div className={cn("grid gap-2", className)}>
             <Popover>
@@ -46,7 +48,7 @@ const CalendarDateRangePicker:FC<{className?:string}> = ({className}) => {
                     defaultMonth={date?.from}
                     selected={date}
                     onSelect={setDate}
-                    numberOfMonths={2}
+                    numberOfMonths={1}
                 />
                 </PopoverContent>
             </Popover>

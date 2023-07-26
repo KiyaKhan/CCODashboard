@@ -33,7 +33,7 @@ const Login:FC = () => {
         <>
             <Head title='Log In' />
             <div className='flex flex-col lg:flex-row relative !dark'  style={{ backgroundImage: `url(${route('index')}/logo/bg.jpg)` }}>
-                <div className='hidden lg:flex flex-col space-y-3.5 items-center justify-center w-[49.875%] '>
+                <div className='hidden lg:flex flex-col gap-y-3.5 items-center justify-center w-[49.875%] '>
                     
                     <img className='w-96 h-auto ' src={`${route('index')}/logo/splash.png`} alt="" />
                     
@@ -41,7 +41,7 @@ const Login:FC = () => {
                     <h1 className='text-4xl tracking-wider font-bold  text-white'>
                         Welcome To CCO Dashboard
                     </h1>
-                    <p className='font-semibold'>and</p>
+                    
                     <h3 className='text-2xl tracking-wider font-bold  text-white'>
                         Reliability Management System
                     </h3>

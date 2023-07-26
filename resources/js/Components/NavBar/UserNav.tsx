@@ -35,7 +35,7 @@ const UserNav:FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>router.get('profile')}>
                     Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem>

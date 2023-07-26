@@ -65,8 +65,8 @@ const TabActivityLogs:FC = () => {
         setLoadingSelectedAgent(true);
         try {
             const {data} = await axios.get(route('agents.status_logs_full',{id,dateRange})) as {data:IAgentStatus[]};
-            const temp = await logsBySessionId(data);
-            setLogs(temp);
+            const formattedLog = await logsBySessionId(data);
+            setLogs(formattedLog);
         } catch (error) {
             toast.error('Internal Error. Please refresh the page');
         } finally{
@@ -86,7 +86,7 @@ const TabActivityLogs:FC = () => {
         .then(({data})=>setAgents(data))
         .catch(()=>toast.error('Internal Error. Please refresh the page'))
         .finally(()=>setLoading(false));
-    },[])
+    },[]);
 
     if(loading) {
         return (

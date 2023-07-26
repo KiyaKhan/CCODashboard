@@ -65,6 +65,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
 
     Route::prefix('teams')->name('teams.')->group(function(){
         Route::post('/store',[TeamController::class,'store'])->name('store');
+        Route::get('/reports',[TeamController::class,'reports'])->name('reports');
     });
 });
 

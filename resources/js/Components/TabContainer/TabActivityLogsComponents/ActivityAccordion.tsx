@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import { LogsBySessionId } from '../TabActivityLogs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/Components/ui/accordion';
+import ActivityAccordionContent from './ActivityAccordionContent';
 
 interface ActivityAccordionProps {
     logsBySessionId:LogsBySessionId[];
@@ -11,10 +12,10 @@ const ActivityAccordion:FC<ActivityAccordionProps> = ({logsBySessionId}) => {
         <Accordion type="single" collapsible className="w-full">
             {
                 logsBySessionId.map(log=>(
-                    <AccordionItem value={log.sessionId.toString()}>
+                    <AccordionItem key={log.sessionId} value={log.sessionId.toString()}>
                         <AccordionTrigger>{log.dates}</AccordionTrigger>
                         <AccordionContent>
-                            TODO: Display Logs Here
+                            <ActivityAccordionContent log={log} />
                         </AccordionContent>
                     </AccordionItem>
                 ))
@@ -24,4 +25,6 @@ const ActivityAccordion:FC<ActivityAccordionProps> = ({logsBySessionId}) => {
     )
 }
 
-export default ActivityAccordion
+export default ActivityAccordion;
+
+
