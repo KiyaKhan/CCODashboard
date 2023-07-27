@@ -19,6 +19,7 @@ import { parseISO } from 'date-fns';
 import { Separator } from '@radix-ui/react-select';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
+import TimeInputToolTip from './TimeInputToolTip';
 
 
 
@@ -102,7 +103,8 @@ const ActivityEditDialog:FC = () => {
                     </p>
                 </DialogDescription>
             </DialogHeader>
-            <div className='p-2.5 flex flex-col space-y-3.5'>
+            <div className='border-b border-b-muted-foreground' />
+            <div className=' flex flex-col space-y-3.5'>
                 <div className='flex flex-col space-y-2.5'>
                     <Label htmlFor='status' >Select Status:</Label>
                     <Popover  open={open} onOpenChange={setOpen}>
@@ -147,7 +149,7 @@ const ActivityEditDialog:FC = () => {
                 
                 <TimeInputToolTip>
                     <div className='flex flex-col space-y-1.5'>
-                        <div className='flex items-center space-x-1.5'><span>TimeStamp: (PH)</span> <BsFillQuestionDiamondFill size={18} /> </div>
+                        <p>Timestamp (in PH Time)</p>
                             <div className='flex items-center justify-center space-x-1.5'>
                                 <div className='flex items-center justify-center space-x-0.5'>
                                     <div className='hover:opacity-75 transition-opacity duration-300 flex flex-col justify-center items-center relative'>
@@ -209,18 +211,3 @@ const ActivityEditDialog:FC = () => {
 }
 
 export default ActivityEditDialog;
-
-const TimeInputToolTip:FC<{children:ReactNode}> = ({children}) =>{
-    return(
-        <TooltipProvider delayDuration={50}>
-            <Tooltip>
-                <TooltipTrigger asChild>{children}</TooltipTrigger>
-                <TooltipContent side='bottom'>
-                    <p className='font-semibold'>!! IMPORTANT !!</p>
-                    <p>Please make sure you are using Manila Time.</p> 
-                    <p>It will be automatically converted to Eastern Time when updating.</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-    );
-}
