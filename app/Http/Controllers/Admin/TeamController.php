@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentLog;
+use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
@@ -68,15 +69,10 @@ class TeamController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    
+    public function edit(Request $request)
     {
-        //
+        
     }
 
     /**

@@ -51,6 +51,10 @@ class ApiController extends Controller
         return Status::whereNot('id',10)->get();
     }
 
+    public function statuses_all(){
+        return Status::all();
+    }
+
     public function login(Request $request){
         $user=User::with(['group','group.user'])->where('company_id',$request->company_id)->first();
         if(!$user){

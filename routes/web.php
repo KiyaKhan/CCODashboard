@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\AgentLogController;
+use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
@@ -66,6 +68,11 @@ Route::middleware(['auth','is_admin'])->group(function(){
     Route::prefix('teams')->name('teams.')->group(function(){
         Route::post('/store',[TeamController::class,'store'])->name('store');
         Route::get('/reports',[TeamController::class,'reports'])->name('reports');
+    });
+
+
+    Route::prefix('agent_log')->name('agent_log.')->group(function(){
+        Route::get('/edit',[AgentLogController::class,'edit'])->name('edit');
     });
 });
 
