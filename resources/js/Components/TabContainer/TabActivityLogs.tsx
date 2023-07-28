@@ -16,6 +16,7 @@ import { Calendar } from '../ui/calendar';
 import { BsSearch } from 'react-icons/bs';
 import { formatInTimeZone } from 'date-fns-tz';
 import ActivityAccordion from './TabActivityLogsComponents/ActivityAccordion';
+import useActivityLogs from '@/Hooks/useActivityLogs';
 
 type AgentPopoverData={
     id:number;
@@ -34,30 +35,17 @@ const TabActivityLogs:FC = () => {
     const [loading,setLoading] = useState(true);
     const [loadingSelectedAgent,setLoadingSelectedAgent] = useState(false);
     const [open,setOpen] = useState(false);
-    const [logs,setLogs]=useState<LogsBySessionId[]>();
     const [selectedAgent,setSelectedAgent] = useState<AgentPopoverData>();
     const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
         from: subDays(new Date(),2),
         to: new Date()
-    })
+    });
+    const {logs,setLogs}=useActivityLogs();
     const agentPopoverData:AgentPopoverData[]|undefined = useMemo(()=>agents?.map(agent=>({id:agent.id,name:`${agent.first_name} ${agent.last_name}, ${agent.company_id}`})),[agents]);
 
 
     
-    const logsBySessionId:(logs: IAgentStatus[]) => Promise<LogsBySessionId[]> = async (logs:IAgentStatus[]) =>{
-        const uniqueAgentSessionIds:number[] = [...new Set(logs.map((log) => log.agent_session_id))].reverse();
-        const logsPerId:LogsBySessionId[] = uniqueAgentSessionIds.map(sessionId=>{
-            const logsByThisId:IAgentStatus[] = logs.filter(({agent_session_id})=>agent_session_id===sessionId);
-            const datesOfThisId=[...new Set(logsByThisId.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))];
-            const dateLabel = datesOfThisId.length===2? `${datesOfThisId[1]} - ${datesOfThisId[0]}`:datesOfThisId[0];
-            return {
-                sessionId,
-                dates:dateLabel,
-                logs:logsByThisId
-            }
-        });
-        return logsPerId;
-    };
+    
 
     const getActivityLogs = useCallback(async ()=>{
         if(!selectedAgent) return toast.info('Select Agent First....');
@@ -79,6 +67,7 @@ const TabActivityLogs:FC = () => {
     
     useEffect(()=>{
         if(!selectedTeam) return;
+        setLogs([]);
         setLoading(true);
         axios.get(route('agents.index',{
             team_id:selectedTeam.id,
@@ -188,3 +177,19 @@ const TabActivityLogs:FC = () => {
 }
 
 export default TabActivityLogs
+
+
+export const logsBySessionId:(logs: IAgentStatus[]) => Promise<LogsBySessionId[]> = async (logs:IAgentStatus[]) =>{
+    const uniqueAgentSessionIds:number[] = [...new Set(logs.map((log) => log.agent_session_id))].reverse();
+    const logsPerId:LogsBySessionId[] = uniqueAgentSessionIds.map(sessionId=>{
+        const logsByThisId:IAgentStatus[] = logs.filter(({agent_session_id})=>agent_session_id===sessionId);
+        const datesOfThisId=[...new Set(logsByThisId.map((log) => formatInTimeZone( parseISO( log.created_at),'America/New_York','PPPP')))];
+        const dateLabel = datesOfThisId.length===2? `${datesOfThisId[1]} - ${datesOfThisId[0]}`:datesOfThisId[0];
+        return {
+            sessionId,
+            dates:dateLabel,
+            logs:logsByThisId
+        }
+    });
+    return logsPerId;
+};

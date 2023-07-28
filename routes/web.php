@@ -72,7 +72,10 @@ Route::middleware(['auth','is_admin'])->group(function(){
 
 
     Route::prefix('agent_log')->name('agent_log.')->group(function(){
+        Route::get('/create',[AgentLogController::class,'create'])->name('create');
         Route::get('/edit',[AgentLogController::class,'edit'])->name('edit');
+        Route::post('/update',[AgentLogController::class,'update'])->name('update');
+        Route::post('/store',[AgentLogController::class,'store'])->name('store');
     });
 });
 

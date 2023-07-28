@@ -11,8 +11,10 @@ export type ActivityTableColumn = {
     duration:string;
     early_departure_reason?:string;
     overtime_reason?:string;
+    special_project_remark?:string;
     user_id:string;
     id:string;
+    session_id:string;
 }
 
 
@@ -44,8 +46,13 @@ export const activityTableColumns: ColumnDef<ActivityTableColumn>[] = [
         cell:({row})=>row.original.overtime_reason||""
     },
     {
+        accessorKey: "special_project_remark",
+        header: "Special Project Remark",
+        cell:({row})=>row.original.special_project_remark||""
+    },
+    {
         header: "Actions",
         id:"actions",
-        cell:({row})=><ActivityCellActions user_id={row.original.user_id.toString()} agent_log_id={row.original.id.toString()} />
+        cell:({row})=><ActivityCellActions session_id={row.original.session_id} user_id={row.original.user_id.toString()} agent_log_id={row.original.id.toString()} />
     }
 ]

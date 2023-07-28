@@ -58,16 +58,26 @@ export interface INotification{
 }
 
 export interface IAgentStatus{
-    id:nubmer, 
-    user_id:number,
+    id:nubmer; 
+    user_id:number;
     user:User;
-    status_id:number,
+    status_id:number;
     status:IStatus; 
-    agent_session_id:number, 
-    overtime_reason:string|null, 
-    early_departure_reason:string|null, 
-    created_at:string, 
-    updated_at:string,
+    agent_session_id:number; 
+    overtime_reason:string|null; 
+    early_departure_reason:string|null; 
+    special_project_remark:string|null;
+    created_at:string; 
+    updated_at:string;
+}
+
+export interface IAgentSession{
+    id:number;
+    user_id:number;
+    user:User;
+    created_at:string; 
+    updated_at:string;
+
 }
 
 declare global {

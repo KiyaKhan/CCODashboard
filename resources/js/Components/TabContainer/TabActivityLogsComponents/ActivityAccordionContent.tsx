@@ -28,9 +28,11 @@ const ActivityAccordionContent:FC<ActivityAccordionContentProps> = ({log : Agent
             manila: formatInTimeZone(parseISO(log.created_at), 'Asia/Manila', 'yyyy-MM-dd HH:mm'),
             duration,
             early_departure_reason : log.early_departure_reason||"",
+            special_project_remark : log.special_project_remark||"",
             overtime_reason : log.overtime_reason||"",
             user_id : log.user_id.toString(),
             id : log.id.toString(),
+            session_id:log.agent_session_id.toString()
 
         }
     }),[logs])

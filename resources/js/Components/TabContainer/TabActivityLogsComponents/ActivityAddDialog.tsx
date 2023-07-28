@@ -1,48 +1,41 @@
-import ReactLoader from '@/Components/ReactLoader';
 import { Button } from '@/Components/ui/button';
+import { Calendar } from '@/Components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/Components/ui/command';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog'
-import { Input } from '@/Components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { Label } from '@/Components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/popover';
-
-
-import useShowActivityEditDialog from '@/Hooks/useShowActivityEditDialog';
+import useShowActivityAddDialog from '@/Hooks/useShowActivityAddDialog';
 import { cn } from '@/Libs/Utils';
-import { IAgentStatus, IStatus } from '@/types';
-import axios from 'axios';
-import React, {  ChangeEventHandler, FC, FocusEventHandler, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
-import { BsCheckLg, BsFillQuestionDiamondFill } from 'react-icons/bs';
-import { RiExpandUpDownFill } from 'react-icons/ri';
-import { toast } from 'react-toastify';
-import { addDays, format, parseISO } from 'date-fns';
-import { Separator } from '@radix-ui/react-select';
-import { formatInTimeZone } from 'date-fns-tz';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
-import TimeInputToolTip from './TimeInputToolTip';
+import { IAgentSession, IAgentStatus, IStatus } from '@/types';
+import { format, parseISO } from 'date-fns';
+import {ChangeEventHandler, FC, FocusEventHandler, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import { BiCalendar } from 'react-icons/bi';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { Calendar } from '@/Components/ui/calendar';
-import { LogsBySessionId, logsBySessionId } from '../TabActivityLogs';
+import { BsCheckLg } from 'react-icons/bs';
+import { RiExpandUpDownFill } from 'react-icons/ri';
+import TimeInputToolTip from './TimeInputToolTip';
+import { Input } from '@/Components/ui/input';
+import ReactLoader from '@/Components/ReactLoader';
 import useActivityLogs from '@/Hooks/useActivityLogs';
+import { formatInTimeZone } from 'date-fns-tz';
+import axios from 'axios';
+import { LogsBySessionId, logsBySessionId } from '../TabActivityLogs';
+import { toast } from 'react-toastify';
+import { User } from '../../../types/index';
 
-
-
-const ActivityEditDialog:FC = () => {
-    const {setShowActivityEditDialog,ShowActivityEditDialog,agentLogIdToEdit} = useShowActivityEditDialog();
-    const [originalStatus,setOriginalStatus] = useState<IAgentStatus>();
-    const [loadingStatus,setLoadingStatus] = useState(false);
-    const [updating,setUpdating] = useState(false);
+const ActivityAddDialog:FC = () => {
+    const {setShowActivityAddDialog,showActivityAddDialog,agentSessionId} = useShowActivityAddDialog();
     const [open,setOpen] = useState(false);
     const [statuses,setStatuses] = useState<IStatus[]>();
-    const [time,setTime] = useState<{hh:string;mm:string;}>({hh:"01",mm:"00"});
     const [currentStatus,setCurrentStatus] = useState<IStatus>();
     const [date, setDate] = useState<Date>();
-    
+    const [time,setTime] = useState<{hh:string;mm:string;}>({hh:"01",mm:"00"});
+    const [loadingStatus,setLoadingStatus] = useState(false);
+    const [updating,setUpdating] = useState(false);
     const {logs,setLogs}=useActivityLogs();
-    const [earlyDepartureReason,setEarlyDepartureReason] = useState<string>();
-    const [overTimeReason,setOverTimeReason] = useState<string>();
-    const [specialProjectRemark,setSpecialProjectRemark] = useState<string>();
+    const [user,setUser]= useState<User>();
+    const [earlyDepartureReason,setEarlyDepartureReason] = useState<string>("");
+    const [overTimeReason,setOverTimeReason] = useState<string>("");
+    const [specialProjectRemark,setSpecialProjectRemark] = useState<string>("");
 
     const handleInputChange:ChangeEventHandler<HTMLInputElement> = useCallback(({target})=>{
         const { id,value } = target;
@@ -65,23 +58,20 @@ const ActivityEditDialog:FC = () => {
         setTime(val=>({...val,[id]:t}));
     },[time]);
 
-    
 
     const handleSubmit = useCallback(()=>{
-        if(!originalStatus) return;
         if(!date) return toast.info('Select Proper Date');
         if(!currentStatus || currentStatus?.id<1) return toast.info('Select Proper Status');
-        
-        const agent_log_id = originalStatus?.id;
+
         const {hh,mm} = time;
         const t = `${hh}:${mm}:00`;
         const dt=`${date.getFullYear().toString()}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getDate().toString().padStart(2,"0")}`
         const wholeDt= `${dt} ${t}`;
         const IsoDate= formatInTimeZone(wholeDt,'America/New_York','PPpp');
         setUpdating(true);
-        axios.post(route('agent_log.update'),{
-            agent_log_id,
+        axios.post(route('agent_log.store'),{
             status_id:currentStatus.id,
+            agent_session_id:agentSessionId,
             early_departure_reason:currentStatus.id===10?earlyDepartureReason:"",
             overtime_reason:currentStatus.id===10?overTimeReason:"",
             special_project_remark:currentStatus.id===12?specialProjectRemark:"",
@@ -90,53 +80,41 @@ const ActivityEditDialog:FC = () => {
         .then(async({data}:{data:IAgentStatus[]})=>{
             const formattedLog:LogsBySessionId[] =  await logsBySessionId(data);
             setLogs(logs!.map(lg=>lg.sessionId===formattedLog[0].sessionId?formattedLog[0]:lg));
-            setShowActivityEditDialog(false);
+            setShowActivityAddDialog(false);
         })
         .catch(()=>toast.error('Internal Error. Please try again.'))
         .finally(()=>setUpdating(false));
-    },[time,date,originalStatus?.id,logs,currentStatus?.id,earlyDepartureReason,overTimeReason,specialProjectRemark]);
+    },[time,date,agentSessionId,logs,currentStatus?.id,earlyDepartureReason,overTimeReason,specialProjectRemark]);
+
 
     useEffect(()=>{
-        if(!ShowActivityEditDialog)return;
-        if(!agentLogIdToEdit) return;
-        setLoadingStatus(true);
+        if(!showActivityAddDialog)return;
+        if(!agentSessionId) return;
         setEarlyDepartureReason("");
         setOverTimeReason("");
         setSpecialProjectRemark("");
-        axios.get(route('agent_log.edit',{
-            agent_log_id:agentLogIdToEdit
+        setLoadingStatus(true);
+        axios.get(route('agent_log.create',{
+            agent_session_id:agentSessionId
         }))
-        .then(({data}:{data:{statuses:IStatus[];agent_log:IAgentStatus}})=>{
-            const {statuses:Statuses,agent_log} = data;
+        .then(({data}:{data:{statuses:IStatus[];agent_session:IAgentSession}})=>{
+            const {statuses:Statuses,agent_session} = data;
             setStatuses(Statuses);
-            setOriginalStatus(agent_log);
-            setCurrentStatus(agent_log.status);
-            const time=parseISO(agent_log.created_at);
-            
-            const hr=time.getHours().toString().padStart(2,"0");
-            const mn=time.getMinutes().toString().padStart(2,"0");
-            setTime({hh:hr,mm:mn});
-            setDate(parseISO(agent_log.created_at));
+            setDate(parseISO(agent_session.created_at));
+            setUser(agent_session.user);
         })
         .catch(e=>toast.error('Internal Error. Please try again.'))
         .finally(()=>setLoadingStatus(false));
-    },[ShowActivityEditDialog]);
-    
+    },[showActivityAddDialog,agentSessionId]);
 
     const Content:ReactNode = useMemo(()=>(
         <>
             <DialogHeader>
-                <DialogTitle>Edit Status</DialogTitle>
+                <DialogTitle>Add Status</DialogTitle>
                 <DialogDescription asChild className='flex flex-col space-y-0.5'>
                     <>
                         <div>
-                            Agent:&nbsp;{originalStatus?`${originalStatus.user.first_name} ${originalStatus.user.last_name}, ${originalStatus.user.company_id}`:'Server Error...'}
-                        </div>
-                        <div>
-                            {originalStatus? formatInTimeZone( parseISO( originalStatus.created_at),'America/New_York','yyyy-MM-dd HH:mm zzz') :'Server Error...'}
-                        </div>
-                        <div>
-                            {originalStatus? formatInTimeZone( parseISO( originalStatus.created_at),'Asia/Manila','yyyy-MM-dd HH:mm zzz') :'Server Error...'}
+                            Agent:&nbsp;{user?`${user.first_name} ${user.last_name}, ${user.company_id}`:'Server Error...'}
                         </div>
                     </>
                 </DialogDescription>
@@ -168,7 +146,7 @@ const ActivityEditDialog:FC = () => {
                                     <CommandItem
                                         key={status.id}
                                         onSelect={val => {
-                                        setCurrentStatus(val === status.name ? undefined : status)
+                                        setCurrentStatus(val === status.name ? {id:-1,name:""} : status)
                                         setOpen(false)
                                         }}>
                                             <BsCheckLg
@@ -255,14 +233,14 @@ const ActivityEditDialog:FC = () => {
                 }
             </div>
             <DialogFooter>
-                <Button disabled={updating} onClick={()=>setShowActivityEditDialog(false)} variant='secondary' size='sm' className='font-semibold'>Cancel</Button>
+                <Button disabled={updating} onClick={()=>setShowActivityAddDialog(false)} variant='secondary' size='sm' className='font-semibold'>Cancel</Button>
                 <Button disabled={updating} onClick={handleSubmit} variant='outline' size='sm' className='font-semibold'>Update</Button>
             </DialogFooter>
         </>
     ),[statuses,currentStatus,open,time,date,updating,earlyDepartureReason,overTimeReason,specialProjectRemark]);
 
     return (
-        <Dialog open={ShowActivityEditDialog} onOpenChange={setShowActivityEditDialog} >
+        <Dialog open={showActivityAddDialog} onOpenChange={setShowActivityAddDialog} >
             <DialogContent className='max-w-xs text-sm'>
                 {loadingStatus? <div className='py-40'> <ReactLoader /> </div> :Content}
             </DialogContent>
@@ -270,4 +248,4 @@ const ActivityEditDialog:FC = () => {
     )
 }
 
-export default ActivityEditDialog;
+export default ActivityAddDialog;

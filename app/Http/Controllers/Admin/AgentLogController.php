@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentLog;
+use App\Models\AgentSession;
 use App\Models\Status;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AgentLogController extends Controller
@@ -14,9 +16,9 @@ class AgentLogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -24,9 +26,12 @@ class AgentLogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return [
+            'agent_session'=>AgentSession::with(['user'])->findOrFail($request->agent_session_id),
+            'statuses'=>Status::all()
+        ];
     }
 
     /**
@@ -37,7 +42,19 @@ class AgentLogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $session = AgentSession::findOrFail($request->agent_session_id);
+        
+        $agent_log = AgentLog::create([
+            'user_id'=>$session->user_id,
+            'status_id'=>$request->status_id,
+            'agent_session_id'=>$request->agent_session_id,
+            'overtime_reason'=>$request->overtime_reason,
+            'early_departure_reason'=>$request->early_departure_reason,
+            'special_project_remark'=>$request->special_project_remark,
+            'created_at'=>Carbon::parse($request->timestamp),
+            'updated_at'=>Carbon::parse($request->timestamp)
+        ]);
+        return AgentLog::with(['status'])->where('agent_session_id',$agent_log->agent_session_id)->orderBy('created_at','asc')->get();
     }
 
     /**
@@ -72,9 +89,18 @@ class AgentLogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $agent_log=AgentLog::findOrFail($request->agent_log_id);
+        $agent_log->update([
+            'status_id'=>$request->status_id,
+            'overtime_reason'=>$request->overtime_reason,
+            'early_departure_reason'=>$request->early_departure_reason,
+            'special_project_remark'=>$request->special_project_remark,
+            'created_at'=>Carbon::parse($request->timestamp),
+            'updated_at'=>Carbon::parse($request->timestamp)
+        ]);
+        return AgentLog::with(['status'])->where('agent_session_id',$agent_log->agent_session_id)->orderBy('created_at','asc')->get();
     }
 
     /**
