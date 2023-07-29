@@ -5,9 +5,11 @@ use App\Http\Controllers\Admin\AgentLogController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,15 +35,8 @@ Route::middleware(['auth','is_admin'])->get('/', function () {
 })->name('index');
 
 
+//Route::post('/settings/update_password',[SettingsController::class,'update_password'])->name('settings.update_password');
 
-
-Route::middleware(['auth'])->get('/profile', function () {
-    return Inertia::render('Profile',[
-        'teams'=>Team::all(),
-        
-        'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
-    ]);
-})->name('profile');
 
 
 
@@ -76,11 +71,25 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::get('/edit',[AgentLogController::class,'edit'])->name('edit');
         Route::post('/update',[AgentLogController::class,'update'])->name('update');
         Route::post('/store',[AgentLogController::class,'store'])->name('store');
+        Route::post('/destroy',[AgentLogController::class,'destroy'])->name('destroy');
     });
 });
 
 Route::middleware(['auth'])->group(function(){
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::prefix('profile')->name('profile.')->group(function(){
+        
+        Route::get('/index', function () {
+            return Inertia::render('Profile',[
+                'teams'=>Team::all(),
+                
+                'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get(),
+                'user'=>User::find(Auth::id())
+            ]);
+        })->name('index');
+        Route::post('password', [PasswordController::class, 'update'])->name('password.update');
+        Route::post('update', [ProfileController::class, 'update'])->name('update');
+    });
 });
 
 

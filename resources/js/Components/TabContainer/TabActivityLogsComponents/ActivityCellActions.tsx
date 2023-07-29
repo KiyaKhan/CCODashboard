@@ -1,10 +1,13 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/alert-dialog';
 import { Button } from '@/Components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
+import useActivityLogs from '@/Hooks/useActivityLogs';
 import useShowActivityEditDialog from '@/Hooks/useShowActivityEditDialog';
+import axios from 'axios';
 import React, { FC, ReactNode, useCallback, useState } from 'react'
 import { LuEdit } from 'react-icons/lu';
 import { MdDeleteForever } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 interface ActivityCellActionsProps{
     user_id:string;
@@ -15,10 +18,33 @@ interface ActivityCellActionsProps{
 const ActivityCellActions:FC<ActivityCellActionsProps> = ({user_id,agent_log_id,session_id}) => {
     const {setShowActivityEditDialog} = useShowActivityEditDialog();
     const [showConfirmation,setShowConfirmation] = useState(false);
-
+    const {logs,setLogs} = useActivityLogs();
+    const [deleting,setdDeleting] = useState(false);
     const handleEdit = useCallback(()=>{
         setShowActivityEditDialog(true,agent_log_id.toString());
     },[user_id,agent_log_id]);
+
+    const handleDelete = useCallback(async()=>{
+        if(!logs) return;
+        setdDeleting(true);
+        axios.post(route('agent_log.destroy'),{
+            agent_log_id
+        })
+        .then(()=>{
+            setLogs(logs.map(lg=>{
+                const {logs:LOGS,...rest} = lg;
+                const updatedLog=LOGS.filter(LG=>LG.id.toString()!==agent_log_id);
+                return {
+                    logs:updatedLog,
+                    ...rest
+                };
+            }));
+            setShowConfirmation(false);
+            toast.success('Deleted...',{position:'top-center',delay:1000});
+        })
+        .catch(e=>toast.error('Internal Error. Please refresh the page'))
+        .finally(()=>setdDeleting(false));
+    },[agent_log_id,logs]);
 
 
     return (
@@ -37,7 +63,20 @@ const ActivityCellActions:FC<ActivityCellActionsProps> = ({user_id,agent_log_id,
                     </Button>
                 </ActivityCellActionTooltip>
             </div>
-            <ActivityDeleteConfirmation open={showConfirmation} onClose={()=>setShowConfirmation(false)} onConfirm={()=>{}} />
+            <AlertDialog open={showConfirmation} >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This may cause conflict. Are you sure?
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleting} onClick={()=>setShowConfirmation(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction disabled={deleting} onClick={handleDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     )
 }
@@ -63,29 +102,6 @@ const ActivityCellActionTooltip:FC<ActivityCellActionTooltipProps> = ({label,chi
     </TooltipProvider>);
 }
 
-interface ActivityDeleteConfirmation{
-    open?:boolean;
-    onConfirm:()=>void;
-    onClose:()=>void;
-}
 
-const ActivityDeleteConfirmation:FC<ActivityDeleteConfirmation> = ({onClose,onConfirm,open}) =>{
-    return(
-        <AlertDialog open={open} >
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
-}
+
 

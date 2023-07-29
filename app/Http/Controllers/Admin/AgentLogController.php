@@ -109,8 +109,9 @@ class AgentLogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $agent_log=AgentLog::findOrFail($request->agent_log_id);
+        $agent_log->delete();
     }
 }

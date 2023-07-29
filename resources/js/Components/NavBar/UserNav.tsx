@@ -35,19 +35,19 @@ const UserNav:FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                <DropdownMenuItem onClick={()=>router.get('profile')}>
+                <DropdownMenuItem onClick={()=>router.get(route('profile.index'))}>
                     Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                     Settings
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=>setShowNewAgentDialog(true)}>
                     Add New Agent
                 </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={()=>router.post('logout')}>
+                <DropdownMenuItem onClick={()=>router.post(route('logout'))}>
                     Log out
                 </DropdownMenuItem>
             </DropdownMenuContent>

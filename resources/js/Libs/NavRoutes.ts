@@ -19,9 +19,9 @@ const navLinks:{
     },
     {
         label:'Profile',
-        onClick:()=>router.get(route('profile')),
-        active:route().current()?.includes('profile'),
-        link:'profile'
+        onClick:()=>router.get(route('profile.index')),
+        active:route().current()?.includes('profile.index'),
+        link:'profile.index'
     },
     // {
     //     label:'Users',
