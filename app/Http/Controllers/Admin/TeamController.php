@@ -51,8 +51,10 @@ class TeamController extends Controller
             ]);
     
             $user->update([
-                'team_id'=>$new_team->id
+                'team_id'=>$new_team->id,
+                'user_level'=>2
             ]);
+            
         });
 
         

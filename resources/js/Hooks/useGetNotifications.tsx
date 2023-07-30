@@ -9,7 +9,7 @@ interface GetNotifications{
     isNotificationsTabOpen:boolean;
     notifications?:INotification[];
     setNotificationsTabOpen:(open:boolean)=>void;
-    getNotifications: (teamId:number)=> Promise<void> 
+    getNotifications: (teamId:number,date?:Date)=> Promise<void> 
 }
 
 const useGetNotifications = create<GetNotifications>(set=>({
@@ -18,11 +18,12 @@ const useGetNotifications = create<GetNotifications>(set=>({
     setNotificationsTabOpen:(open:boolean)=>set({
         isNotificationsTabOpen:open
     }),
-    getNotifications: async (teamId:number)=>{
+    getNotifications: async (teamId:number,date?:Date)=>{
         if(!teamId)return undefined;
         try {
             const {data} = await axios.get(route('notifications',{
                 team_id:teamId,
+                date:date||new Date
             }));
             
             set({ notifications:data});

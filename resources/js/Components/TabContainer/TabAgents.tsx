@@ -33,7 +33,7 @@ const TabAgents:FC = () => {
 
     
 
-    const agentData:AgentTableColumn[]|undefined = useMemo(()=>agents?.map(({company_id,site,first_name,last_name,status,group,updated_at})=>({company_id,name:`${first_name} ${last_name}`,status:status.name,site,team:group.name,since:updated_at})),[agents])
+    const agentData:AgentTableColumn[]|undefined = useMemo(()=>agents?.map(({id,company_id,site,team_id,first_name,last_name,status,group,updated_at,})=>({ team_leader_id: selectedTeam?.user_id.toString()||"" , user_id:id.toString(), company_id,name:`${first_name} ${last_name}`,status:status.name,site,team:group.name,since:updated_at,team_id:team_id.toString()})),[selectedTeam?.user_id,agents])
 
     useEffect(()=>{
         getAgents();
@@ -78,8 +78,7 @@ const TabAgents:FC = () => {
                 </div>
             </div>
             <Separator />
-            {!loading?<DataTable columns={agentColumns} data={agentData} />:<Loader />}
-            
+            <div className='min-w-[48rem]  overflow-x-auto'>{!loading?<DataTable columns={agentColumns} data={agentData} />:<Loader />}</div>
         </>
     )
 }

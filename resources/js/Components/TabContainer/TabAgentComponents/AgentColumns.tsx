@@ -11,6 +11,9 @@ export type AgentTableColumn = {
     status:string;
     team:string;
     since:string;
+    team_id:string;
+    user_id:string;
+    team_leader_id:string;
 }
 
 
@@ -30,6 +33,12 @@ export const agentColumns: ColumnDef<AgentTableColumn>[] = [
     {
         accessorKey: "team",
         header: "Team",
+        cell:({row})=>(
+            <div className='flex flex-col space-y-0.5 items-center justify-center'>
+                <span>{row.original.team}</span>
+                <span className='text-muted-foreground text-[0.7rem]'>{row.original.user_id===row.original.team_leader_id?'Team Leader':'Agent'}</span>
+            </div>
+        )
     },
     {
         accessorKey: "status",
@@ -41,8 +50,8 @@ export const agentColumns: ColumnDef<AgentTableColumn>[] = [
         cell:({row})=>formatDistanceToNow(new Date(row.original.since))
     },
     {
-        header: "Actions",
+        header: "",
         id:"actions",
-        cell:({row})=><AgentCellActions company_id={row.original.company_id} />
+        cell:({row})=><AgentCellActions user_id={row.original.user_id} company_id={row.original.company_id} team_id={row.original.team_id} />
     }
 ]

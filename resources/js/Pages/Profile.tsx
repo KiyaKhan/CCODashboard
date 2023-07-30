@@ -7,8 +7,12 @@ import useCurrentUser from '@/Hooks/useCurrentUser';
 import { cn } from '@/Libs/Utils';
 import { ITeam, PageProps, User } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import React, { ChangeEventHandler, FC, FormEventHandler, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEventHandler, FC, FormEventHandler, Fragment, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
+import {  PiPasswordFill } from 'react-icons/pi'
+import { IconType } from 'react-icons';
+import { BiSolidUserCircle } from 'react-icons/bi';
+import { RiLogoutBoxRLine } from 'react-icons/ri';
 
 interface ProfileProps{
     teams:ITeam[];
@@ -30,7 +34,12 @@ type PasswordType = {
     password_confirmation:string;
 }
 
-
+type ProfileSidebarItems ={
+    onClick:()=>void;
+    Icon:IconType;
+    label:string;
+    variant?:"secondary" | "outline" | "link" | "default" | "destructive" | "ghost" | null | undefined;
+}
 
 const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
     const [panel,setPanel] = useState<'PROFILE'|'PASSWORD'>('PROFILE');
@@ -98,26 +107,26 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
                         <div className='flex-1 flex flex-col space-y-5 '>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='company_id' className='font-semibold tracking-wide'>Company ID</Label>
-                                <Input required onChange={handleChange} value={data.company_id} id='company_id' />
+                                <Input disabled={processing}  required onChange={handleChange} value={data.company_id} id='company_id' />
                                 {errors.company_id&&<p className='text-xs text-destructive'>{errors.company_id}</p>}
                             </div>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='email' className='font-semibold tracking-wide'>Email</Label>
-                                <Input required onChange={handleChange} value={data.email} id='email' />
+                                <Input disabled={processing}  required onChange={handleChange} value={data.email} id='email' />
                                 {errors.email&&<p className='text-xs text-destructive'>{errors.email}</p>}
                             </div>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='first_name' className='font-semibold tracking-wide'>First Name</Label>
-                                <Input required onChange={handleChange} value={data.first_name} id='first_name' />
+                                <Input disabled={processing}  required onChange={handleChange} value={data.first_name} id='first_name' />
                                 {errors.first_name&&<p className='text-xs text-destructive'>{errors.first_name}</p>}
                             </div>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='last_name' className='font-semibold tracking-wide'>Last Name</Label>
-                                <Input required onChange={handleChange} value={data.last_name} id='last_name' />
+                                <Input disabled={processing}  required onChange={handleChange} value={data.last_name} id='last_name' />
                                 {errors.last_name&&<p className='text-xs text-destructive'>{errors.last_name}</p>}
                             </div>
                         </div>
-                        <Button type='submit' className='ml-auto font-bold  my-3.5' size='sm'>Submit</Button>
+                        <Button  disabled={processing} type='submit' className='ml-auto font-bold  my-3.5' size='sm'>Submit</Button>
                     </div>
                 </form>
             );
@@ -131,26 +140,46 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
                         <div className='flex-1 flex flex-col space-y-5 '>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='current_password' className='font-semibold tracking-wide'>Old Password</Label>
-                                <Input required type='password' onChange={handlePwChange} value={pwData.current_password} id='current_password' />
+                                <Input disabled={processingPw} required type='password' onChange={handlePwChange} value={pwData.current_password} id='current_password' />
                                 {pwErrors.current_password&&<p className='text-xs text-destructive'>{pwErrors.current_password}</p>}
                             </div>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='password' className='font-semibold tracking-wide'>New Password</Label>
-                                <Input required type='password' onChange={handlePwChange} value={pwData.password} id='password' />
+                                <Input disabled={processingPw} required type='password' onChange={handlePwChange} value={pwData.password} id='password' />
                                 {pwErrors.password&&<p className='text-xs text-destructive'>{pwErrors.password}</p>}
                             </div>
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='password_confirmation' className='font-semibold tracking-wide'>Confirm New Password</Label>
-                                <Input required type='password' onChange={handlePwChange} value={pwData.password_confirmation} id='password_confirmation' />
+                                <Input disabled={processingPw} required type='password' onChange={handlePwChange} value={pwData.password_confirmation} id='password_confirmation' />
                                 {pwErrors.password_confirmation&&<p className='text-xs text-destructive'>{pwErrors.password_confirmation}</p>}
                             </div>
                         </div>
-                        <Button type='submit' className='ml-auto font-bold  my-3.5' size='sm'>Submit</Button>
+                        <Button disabled={processingPw} type='submit' className='ml-auto font-bold  my-3.5' size='sm'>Submit</Button>
                     </div>
                 </form>
             );
         }
-    },[panel,data,pwData]);
+    },[panel,data,pwData,processing,processingPw]);
+
+    const profileSidebarItems:ProfileSidebarItems[]=useMemo(()=>[
+        {
+            onClick:()=>setPanel('PROFILE'),
+            Icon:BiSolidUserCircle,
+            label:'Profile',
+            variant:panel==='PROFILE'?'secondary':'outline'
+        },
+        {
+            onClick:()=>setPanel('PASSWORD'),
+            Icon:PiPasswordFill,
+            label:'Password',
+            variant:panel==='PASSWORD'?'secondary':'outline'
+        },
+        {
+            onClick:()=>router.post(route('logout')),
+            Icon:RiLogoutBoxRLine,
+            label:'Log Out'
+        }
+    ],[panel]);
     
     return (
         <>
@@ -165,12 +194,22 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
                         </div>
                         <Separator />
                         <div className='flex space-x-5 '>
-                            <div className='h-full flex flex-col space-y-3.5 w-52'>
-                                <p onClick={()=>setPanel('PROFILE')} className={cn('px-3.5 py-1.5 hover:opacity-75 duration-300 cursor-pointer transition-opacity rounded-lg',panel==='PROFILE'&&'bg-secondary')}>Profile</p>
-                                <p onClick={()=>setPanel('PASSWORD')} className={cn('px-3.5 py-1.5 hover:opacity-75 duration-300 cursor-pointer transition-opacity rounded-lg',panel==='PASSWORD'&&'bg-secondary')}>Password</p>
-                                <Button onClick={()=>router.post(route('logout'))} className='text-base' variant='outline' >Log Out</Button>
+                            <div className='h-full flex flex-col space-y-3.5 w-auto sm:w-52'>
+                                {
+                                    profileSidebarItems.map(({onClick,Icon,label,variant})=>(
+                                        <Fragment key={label}>
+                                            <Button disabled={processing||processingPw} onClick={onClick} variant={variant||'outline'} className='hidden sm:flex space-x-1.5 items-center  text-base justify-start'  >
+                                                <Icon size={24} />
+                                                <span>{label}</span>
+                                            </Button>
+                                            <Button disabled={processing||processingPw} onClick={onClick} variant={variant||'outline'} size='icon' className='flex sm:hidden'  >
+                                                <Icon size={24} />
+                                            </Button>
+                                        </Fragment>
+                                    ))
+                                }
                             </div>
-                            <div className='w-96'>
+                            <div className='w-full sm:w-96'>
                                 {panelContent}
                             </div>
                         </div>

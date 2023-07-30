@@ -14,15 +14,16 @@ const MainNav:FC<HTMLAttributes<HTMLElement>> = ({className,...props}) => {
             {...props}
             >
             {
-                navLinks.map(link=>(
-                    //TODO:CHange to Inertia Links
+                navLinks.map(({Icon,...link})=>(
+                    //TODO:CHange to Inertia Links if possible...
                     <button
                         onClick={link.onClick}
                         key={link.label}
-                        className={twMerge("text-sm font-medium transition-colors hover:text-primary",
-                        route().current(link.link)?'text-base':'text-muted-foreground'
+                        className={twMerge("text-lg font-semibold transition-colors hover:text-primary flex items-center space-x-0 md:space-x-2",
+                        !route().current(link.link)&&'text-muted-foreground'
                         )}>
-                        {link.label}
+                        <Icon className='w-7 h-7 sm:w-5 sm:h-5' />
+                        <span className='sm:inline hidden'>{link.label}</span>
                     </button>
                 ))
             }

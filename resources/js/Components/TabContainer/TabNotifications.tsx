@@ -24,9 +24,14 @@ const TabNotifications:FC = () => {
         setLoading(true);
         await FetchNotifications(selectedTeam.id);
         setLoading(false);
-    },[,selectedTeam,setLoading,FetchNotifications]);
+    },[,selectedTeam?.id,setLoading,FetchNotifications]);
 
-    
+    const handleDateChange = useCallback(async(dt:Date) =>{
+        if(!selectedTeam)return ;
+        setLoading(true);
+        await FetchNotifications(selectedTeam.id,dt);
+        setLoading(false);
+    },[selectedTeam?.id])
 
     useEffect(()=>{getAgents();},[selectedTeam])
 
@@ -56,11 +61,10 @@ const TabNotifications:FC = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                     <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(val)=>setDate(val!)}
-                    initialFocus
-                    />
+                        mode="single"
+                        selected={date}
+                        onSelect={(val)=>handleDateChange(val||new Date)}
+                        initialFocus/>
                 </PopoverContent>
             </Popover>
             <Table>

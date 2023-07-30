@@ -10,6 +10,7 @@ export interface User {
     status:IStatus;
     group:ITeam;
     team?:ITeam;
+    team_id:number;
     last_name: string;
     email: string;
     email_verified_at: string;

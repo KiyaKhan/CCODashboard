@@ -93,10 +93,12 @@ class AgentController extends Controller
     public function notifications(Request $request){
         
         $team_id=$request->team_id;
+        $date=$request->date;
         return Notification::with(['user'])
             ->when($team_id,function($q) use($team_id){
                 $q->where('team_id',$team_id);
             })
+            ->where('created_at','>=',Carbon::parse($date)->subDay())
             ->orderBy('created_at','desc')
             ->get();
     }
@@ -166,6 +168,13 @@ class AgentController extends Controller
             ->get();
             
         return AgentLog::with(['status'])->whereIn('agent_session_id',$breakdown->pluck('agent_session_id'))->orderBy('created_at','asc')->get();
+    }
+
+    public function transfer(Request $request){
+        $user=User::where('company_id',$request->company_id)->firstorFail();
+        $user->update([
+            'team_id'=>$request->team_id
+        ]);
     }
 
 

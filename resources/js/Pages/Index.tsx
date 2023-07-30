@@ -78,10 +78,10 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
             <div className="flex flex-col h-screen">
                 <NavBar availableTeamLeaders={available_team_leaders} teams={teams} />
                 <div className="flex-1 space-y-4 p-8 pt-6 h-full">
-                    <div className="flex items-center justify-between space-y-2">
+                    <div className="flex flex-col space-y-3.5 md:space-y-0 md:justify-between md:flex-row md:items-center md:space-x-2">
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                        <div className="flex items-center space-x-2">
-                            <CalendarDateRangePicker date={date} setDate={setDate} />
+                        <div className="flex flex-col space-y-3.5 md:space-y-0 md:flex-row md:items-center md:space-x-2">
+                            <CalendarDateRangePicker className='' date={date} setDate={setDate} />
                             <Button onClick={handleDownloadConfirmation} className='font-semibold text-sm flex items-center justify-center space-x-0.5'>
                                 <RiFileExcel2Fill size={18} />
                                 <span >Download Report</span>

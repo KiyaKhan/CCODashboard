@@ -7,23 +7,50 @@ import { IAgentStatus, PageProps,  } from '@/types'
 import axios from 'axios';
 import {  parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import React, { FC,  useEffect, useMemo, useRef, useState } from 'react'
+import React, { FC,  useCallback,  useEffect, useMemo, useRef, useState } from 'react'
 import { RiPictureInPictureLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import { LuEdit } from 'react-icons/lu';
 import { usePage } from '@inertiajs/react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import useGetAgents from '@/Hooks/useGetAgents';
+import useSelectedTeam from '@/Hooks/useSelectedTeam';
 
 interface AgentCellActionsProps{
     company_id:string;
+    team_id:string;
+    user_id:string;
 }
 type logRow = IAgentStatus & {duration:string}
 
-const AgentCellActions:FC<AgentCellActionsProps> = ({company_id}) => {
+const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}) => {
+    const {teams} = usePage<PageProps>().props;
     const [showLogDialog,setShowLogDialog] = useState(false);
+    const [showTransferDialog,setShowTransferDialog] = useState(false);
     const [loadingLogs,setLoadingLogs] = useState(true);
     const [logs,setLogs]=useState<IAgentStatus[]>();
     const [name,setName]=useState<string>("");
+    const [transferring,setTransferring] = useState(false);
+    const {getAgents:FetchAgents} = useGetAgents();
+    const {selectedTeam} = useSelectedTeam();
+    const [transferToTeamId,setTransferToTeamId] = useState<string>();
+    const handleTransfer = useCallback(()=>{
+        if(!selectedTeam) return;
+        if(!transferToTeamId||transferToTeamId.length<1) return toast.info('Select Team to Tranfer to...');
+        setTransferring(true);
+        axios.post(route('agents.transfer'),{
+            team_id:transferToTeamId,
+            company_id
+        })
+        .then(async()=>{
+            toast.success('Agent Transfered!');
+            await FetchAgents(selectedTeam.id,"","");
+        })
+        .catch(()=>toast.error('Internal Error. Please try again'))
+        .finally(()=>setTransferring(false));
+    },[company_id,transferToTeamId]);
+
     useEffect(()=>{
         if(!showLogDialog)return;
         setLoadingLogs(true);
@@ -36,13 +63,13 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id}) => {
         })
         .catch(()=>toast.error('Internal Error. Please try again'))
         .finally(()=>setLoadingLogs(false));
-    },[showLogDialog])
+    },[showLogDialog]);
 
     return (
         <>
-            <div className='flex items-center space-x-1.5'>
-                <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline'>Recent Activity</Button>
-                <Button size='sm' variant='destructive'>Delete</Button>
+            <div className='flex items-center space-x-1.5 justify-end'>
+                <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline' className='font-semibold '>Recent Activity</Button>
+                <Button disabled={user_id===selectedTeam?.user_id.toString()} onClick={()=>setShowTransferDialog(true)} size='sm' variant='default' className='font-semibold '>Transfer</Button>
             </div>
 
 
@@ -64,6 +91,34 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id}) => {
                             </>
                         )
                     }
+                </DialogContent>
+            </Dialog>
+
+
+            <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+                <DialogContent  className='!min-w-[28rem] !max-w-2xl !max-h-screen !overflow-y-auto'>
+        
+                    <DialogHeader>
+                        <DialogTitle>Transfer</DialogTitle>
+                        <DialogDescription>
+                            Transfer to Team:
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Select onValueChange={val=>setTransferToTeamId(val)} disabled={transferring}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Team to Transfer to..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {
+                                teams.map(({id,name})=><SelectItem disabled={id.toString()===team_id} key={id} value={id.toString()}>{name}</SelectItem>)
+                            }
+                        </SelectContent>
+                    </Select>
+                    <DialogFooter>
+                        <Button disabled={transferring} variant='outline' size='sm' onClick={()=>setShowTransferDialog(false)}>Close</Button>
+                        <Button disabled={transferring} onClick={handleTransfer} variant='secondary' size='sm' >Transfer</Button>
+                    </DialogFooter>
+                        
                 </DialogContent>
             </Dialog>
         </>
