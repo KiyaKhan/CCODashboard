@@ -99,6 +99,7 @@ class AgentController extends Controller
                 $q->where('team_id',$team_id);
             })
             ->where('created_at','>=',Carbon::parse($date)->subDay())
+            ->where('created_at','<=',Carbon::parse($date)->addDay())
             ->orderBy('created_at','desc')
             ->get();
     }

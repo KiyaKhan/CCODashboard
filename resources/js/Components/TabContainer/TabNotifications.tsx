@@ -26,8 +26,10 @@ const TabNotifications:FC = () => {
         setLoading(false);
     },[,selectedTeam?.id,setLoading,FetchNotifications]);
 
-    const handleDateChange = useCallback(async(dt:Date) =>{
+    const handleDateChange = useCallback(async(dt?:Date) =>{
+        if(!dt)return;
         if(!selectedTeam)return ;
+        setDate(dt);
         setLoading(true);
         await FetchNotifications(selectedTeam.id,dt);
         setLoading(false);
@@ -63,7 +65,7 @@ const TabNotifications:FC = () => {
                     <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={(val)=>handleDateChange(val||new Date)}
+                        onSelect={(val)=>handleDateChange(val)}
                         initialFocus/>
                 </PopoverContent>
             </Popover>
