@@ -10,35 +10,27 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TeamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
+    
     public function index()
     {
-        //
+        return Inertia::render('Teams',[
+            'teams'=>Team::with(['user','users'])->get(),
+            'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
         $user=User::findOrFail($request->agent['id']);
@@ -60,12 +52,7 @@ class TeamController extends Controller
         
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function show($id)
     {
         //
@@ -77,24 +64,42 @@ class TeamController extends Controller
         
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    
+    public function update(Request $request)
     {
-        //
+        
+        $team_id=$request->team_id;
+        $new_leader_id=$request->TL['id'];
+        $name=$request->name;
+
+        
+        if(isset($new_leader_id)){
+            DB::transaction(function() use($new_leader_id,$team_id) {
+                $team=Team::findOrFail($team_id);
+                $old_leader=User::findOrFail($team->user_id);
+                $new_leader=User::findOrFail($new_leader_id);
+                $team->update([
+                    'user_id'=>$new_leader_id
+                ]);
+                $old_leader->update([
+                    'user_level'=>3
+                ]);
+                $new_leader->update([
+                    'user_level'=>2
+                ]);
+            });
+            
+        }
+
+        if(isset($name)){
+            $team=Team::findOrFail($team_id);
+            $team->update([
+                'name'=>$name
+            ]);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function destroy($id)
     {
         //
@@ -102,7 +107,7 @@ class TeamController extends Controller
 
     public function reports(Request $request){
         $from=Carbon::parse($request->date['from'])->format('Y-m-d');
-        $to=isset($request->date['to'])?Carbon::parse($request->date['to'])->format('Y-m-d'):null;
+        $to=isset($request->date['to'])?Carbon::parse($request->date['to'])->addDay()->format('Y-m-d'):null;
 
         $agents=User::where('team_id',$request->team_id)->get();
 
@@ -111,11 +116,13 @@ class TeamController extends Controller
         $report_items = array();
 
         foreach($agents as $agent){
+            $session_ids_with_logout_only = AgentLog::distinct()->where('status_id',10)->get(['agent_session_id']);
             $agent_logs = AgentLog::where('user_id',$agent->id)
                 ->where('created_at','>=',$from)
                 ->when($to,function($q) use($to){
                     $q->where('created_at','<=',$to);
                 })
+                ->whereIn('agent_session_id',$session_ids_with_logout_only)
                 ->orderBy('agent_session_id','asc')
                 ->orderBy('created_at','asc')
                 ->get();

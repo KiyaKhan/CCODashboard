@@ -46,6 +46,7 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}
         .then(async()=>{
             toast.success('Agent Transfered!');
             await FetchAgents(selectedTeam.id,"","");
+            setShowTransferDialog(false);
         })
         .catch(()=>toast.error('Internal Error. Please try again'))
         .finally(()=>setTransferring(false));

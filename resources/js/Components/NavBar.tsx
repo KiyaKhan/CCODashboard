@@ -21,7 +21,7 @@ const NavBar:FC<NavBarProps> = ({teams,availableTeamLeaders}) => {
                 <TeamSwitcher teams={teams} availableTeamLeaders={availableTeamLeaders} />
                 <MainNav className="mx-6" />
                 <div className="ml-auto flex items-center space-x-4">
-                    <Button onClick={toggleTheme} size='icon' className='bg-white border-black dark:bg-black dark:border-white'>
+                    <Button onClick={toggleTheme} size='icon' className='hidden sm:flex bg-white border-black dark:bg-black dark:border-white'>
                         {
                             !isDark?<BsMoonStars size={20} className='dark:text-white text-black' />:<FaLightbulb size={20} className='dark:text-white text-black' />
                         }

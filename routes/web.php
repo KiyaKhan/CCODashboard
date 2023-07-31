@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Models\AgentLog;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,7 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 
 
 
@@ -61,11 +63,6 @@ Route::middleware(['auth','is_admin'])->group(function(){
     });
 
 
-    Route::prefix('teams')->name('teams.')->group(function(){
-        Route::post('/store',[TeamController::class,'store'])->name('store');
-        Route::get('/reports',[TeamController::class,'reports'])->name('reports');
-    });
-
 
     Route::prefix('agent_log')->name('agent_log.')->group(function(){
         Route::get('/create',[AgentLogController::class,'create'])->name('create');
@@ -74,6 +71,17 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::post('/store',[AgentLogController::class,'store'])->name('store');
         Route::post('/destroy',[AgentLogController::class,'destroy'])->name('destroy');
     });
+
+    
+
+    Route::prefix('teams')->name('teams.')->group(function(){
+        Route::post('/store',[TeamController::class,'store'])->name('store');
+        Route::post('/update',[TeamController::class,'update'])->name('update');
+        Route::get('/',[TeamController::class,'index'])->name('index');
+        Route::get('/reports',[TeamController::class,'reports'])->name('reports');
+    });
+
+    
 });
 
 Route::middleware(['auth'])->group(function(){

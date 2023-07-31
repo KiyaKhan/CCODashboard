@@ -4,6 +4,7 @@ import {IoMdLogOut} from 'react-icons/io'
 import {CgProfile} from 'react-icons/cg'
 import { router } from "@inertiajs/react";
 import { IconType } from "react-icons";
+import { RiTeamFill } from "react-icons/ri";
 
 
 const navLinks:{
@@ -27,6 +28,14 @@ const navLinks:{
         link:'profile.index',
         Icon:CgProfile
     },
+    {
+        label:'Teams',
+        onClick:()=>router.get(route('teams.index')),
+        active:route().current()?.includes('teams.index'),
+        link:'teams.index',
+        Icon:RiTeamFill
+
+    }
     // {
     //     label:'Users',
     //     href:"#",

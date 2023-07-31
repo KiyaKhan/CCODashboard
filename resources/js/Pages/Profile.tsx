@@ -70,7 +70,7 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
         setPw(val=>({...val,[id]:value}));
     }
 
-    const handleSubmit:FormEventHandler<HTMLFormElement> = useCallback((e)=>{
+    const handleSubmit:FormEventHandler<HTMLFormElement> = useCallback(e=>{
         e.preventDefault();
         if(panel==='PASSWORD'){
             updatePw(route('profile.password.update'),{

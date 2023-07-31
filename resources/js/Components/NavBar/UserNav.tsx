@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger } from '../ui/dialog';
 import { BsPlusCircle } from 'react-icons/bs';
 import NewAgentDialog from '../Dialogs/NewAgentDialog';
 import useNewAgentDialog from '@/Hooks/useNewAgentDialog';
+import useToggleDark from '@/Hooks/useToggleDark';
 
 
 
@@ -17,6 +18,7 @@ const UserNav:FC = () => {
     const {user} = usePage<PageProps>().props.auth;
     const {setShowNewTeamDialog} = useNewTeamDialog();
     const {setShowNewAgentDialog} = useNewAgentDialog();
+    const {toggleTheme} = useToggleDark();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -35,16 +37,19 @@ const UserNav:FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                <DropdownMenuItem onClick={()=>router.get(route('profile.index'))}>
-                    Profile
-                </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                    Settings
-                </DropdownMenuItem> */}
-                <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
-                <DropdownMenuItem onClick={()=>setShowNewAgentDialog(true)}>
-                    Add New Agent
-                </DropdownMenuItem>
+                    <DropdownMenuItem onClick={()=>router.get(route('profile.index'))}>
+                        Profile
+                    </DropdownMenuItem>
+                    {/* <DropdownMenuItem>
+                        Settings
+                    </DropdownMenuItem> */}
+                    <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
+                    <DropdownMenuItem onClick={()=>setShowNewAgentDialog(true)}>
+                        Add New Agent
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={toggleTheme}>
+                        Toggle Dark Mode
+                    </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=>router.post(route('logout'))}>

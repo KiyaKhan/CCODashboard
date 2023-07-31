@@ -157,7 +157,7 @@ class AgentController extends Controller
         */
         $user=User::where('id',$request->id)->firstorFail();
         $from=Carbon::parse($request->dateRange['from'])->format('Y-m-d');
-        $to=isset($request->dateRange['to'])?Carbon::parse($request->dateRange['to'])->format('Y-m-d'):null;
+        $to=isset($request->dateRange['to'])?Carbon::parse($request->dateRange['to'])->addDay()->format('Y-m-d'):null;
         $breakdown= AgentLog::select(DB::raw('agent_session_id,date(created_at) as date'))
             ->where('user_id',$user->id)
             ->where('created_at','>=',$from)
