@@ -20,7 +20,7 @@
 
         <link rel="icon" href="{{ url('logo/logo.png') }}">
     </head>
-    <body class="font-sans antialiased "> 
+    <body class="font-sans antialiased"> 
         @inertia
     </body>
 </html>

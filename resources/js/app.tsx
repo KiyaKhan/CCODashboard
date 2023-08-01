@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import NewAgentDialog from './Components/Dialogs/NewAgentDialog';
 import ActivityEditDialog from './Components/TabContainer/TabActivityLogsComponents/ActivityEditDialog';
 import ActivityAddDialog from './Components/TabContainer/TabActivityLogsComponents/ActivityAddDialog';
+import BrowserCheckContainer from './Containers/BrowserCheckContainer';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
@@ -22,6 +23,7 @@ createInertiaApp({
                 <NewAgentDialog />
                 <ActivityEditDialog />
                 <ActivityAddDialog />
+                <BrowserCheckContainer />
                 <ToastContainer transition={Flip} autoClose={10000} pauseOnHover={false} theme='dark'/>
                 <App {...props} />
             </>

@@ -170,7 +170,7 @@ class TeamController extends Controller
                 if($current_item->status_id==8){
                     $breakdown['meeting'] = $breakdown['meeting'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
                 }
-                if($current_item->agenstatus_idtstatus_id_session_id==9){
+                if($current_item->status_id==9){
                     $breakdown['system_issue'] = $breakdown['system_issue'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
                 }
                 if($current_item->status_id==11){

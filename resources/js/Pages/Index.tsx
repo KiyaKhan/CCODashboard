@@ -212,7 +212,7 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
     return formattedReport;
 }
 
-const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
+export const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
     // Create a new date object with the minutes as milliseconds
     const date = new Date(minutes * 60 * 1000);
     // Use UTC methods to avoid time zone issues
