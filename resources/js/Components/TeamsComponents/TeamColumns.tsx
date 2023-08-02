@@ -15,6 +15,11 @@ export type TeamTableColumn = {
 
 export const teamColumns: ColumnDef<TeamTableColumn>[] = [
     {
+        accessorKey: "name",
+        header: "Team Name",
+        cell:({row})=><p className='font-semibold tracking-wide text-lg'>{row.original.name}</p>
+    },
+    {
         accessorKey: "team_leader",
         header: "Team Leader",
         cell:({row})=>(
@@ -24,10 +29,7 @@ export const teamColumns: ColumnDef<TeamTableColumn>[] = [
             </div>
         )
     },
-    {
-        accessorKey: "name",
-        header: "Team Name",
-    },
+    
     {
         accessorKey: "size",
         header: "Team Size",
