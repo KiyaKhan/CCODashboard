@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
+            $table->time('shift_start')->default('20:00');
+            $table->time('shift_end')->default('05:00');;
             $table->string('company_id')->unique();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();

@@ -33,6 +33,7 @@ type AgentsData={
 const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeaders}) => {
 
     const {user} = usePage<PageProps>().props.auth;
+    const {projects} = usePage<PageProps>().props;
     const {selectTeam,selectedTeam} = useSelectedTeam();
     const [open, setOpen] = useState(false);
     const [showAgentsPopOver, setShowAgentsPopOver] = useState(false);
@@ -56,6 +57,8 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
             }
         });
     },[post,data]);
+
+    
 
     useEffect(()=>{
         if(!showNewTeamDialog) return;
@@ -88,31 +91,33 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
                         <CommandList>
                             <CommandInput placeholder="Search team..." />
                             <CommandEmpty>No team found.</CommandEmpty>
-                            
-                            <CommandGroup heading='CCO Teams'>
-                                {teams.map(team => (
-                                    <CommandItem
-                                    key={team.id}
-                                    onSelect={() => {
-                                        selectTeam(team)
-                                        setOpen(false)
-                                    }}
-                                    className="text-sm"
-                                    >
-                                    <AvatarContainer user={team.user} />
-                                    {team.name}
-                                    <BsCheck
-                                        className={cn(
-                                        "ml-auto h-4 w-4",
-                                        selectedTeam?.id === team.id
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                    />
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        
+                            {
+                                projects.map(({id,name,teams})=>(
+                                    <CommandGroup key={id} heading={name}>
+                                        {teams.map(team => (
+                                            <CommandItem
+                                            key={team.id}
+                                            onSelect={() => {
+                                                selectTeam(team)
+                                                setOpen(false)
+                                            }}
+                                            className="text-sm"
+                                            >
+                                            <AvatarContainer user={team.user} />
+                                            {team.name}
+                                            <BsCheck
+                                                className={cn(
+                                                "ml-auto h-4 w-4",
+                                                selectedTeam?.id === team.id
+                                                    ? "opacity-100"
+                                                    : "opacity-0"
+                                                )}
+                                            />
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                ))
+                            }
                         </CommandList>
                         <CommandSeparator />
                         <CommandList>

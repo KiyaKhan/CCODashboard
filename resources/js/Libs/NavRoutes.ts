@@ -5,6 +5,7 @@ import {CgProfile} from 'react-icons/cg'
 import { router } from "@inertiajs/react";
 import { IconType } from "react-icons";
 import { RiTeamFill } from "react-icons/ri";
+import { AiTwotoneProject } from "react-icons/ai";
 
 
 const navLinks:{
@@ -29,13 +30,21 @@ const navLinks:{
         Icon:CgProfile
     },
     {
+        label:'Projects',
+        onClick:()=>{},
+        active:route().current()?.includes('teams.index'),
+        link:'#',
+        Icon:AiTwotoneProject
+
+    },
+    {
         label:'Teams',
         onClick:()=>router.get(route('teams.index')),
         active:route().current()?.includes('teams.index'),
         link:'teams.index',
         Icon:RiTeamFill
 
-    }
+    },
     // {
     //     label:'Users',
     //     href:"#",

@@ -17,12 +17,22 @@ export interface User {
     updated_at:string;
 }
 
+interface IProject{
+    id:number;
+    name:string;
+    created_at:string;
+    updated_at:string;
+    teams:ITeam[];
+
+}
+
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;
     };
     statuses:IStatus[];
     teams:ITeam[];
+    projects:IProject[];
 };
 
 
@@ -39,6 +49,8 @@ export interface ITeam{
     user_id:number;
     user:User;
     users:User[];
+    project_id:number;
+    project:IProject;
 }
 
 export interface IStatus{

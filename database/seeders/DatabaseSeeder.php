@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\AgentStatus;
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
@@ -68,6 +69,10 @@ class DatabaseSeeder extends Seeder
                 'name'=>'Special Assignment'
             ],
             [
+                'id'=>13,
+                'name'=>'Not Ready'
+            ],
+            [
                 'id'=>10,
                 'name'=>'Offline'
             ]
@@ -75,6 +80,11 @@ class DatabaseSeeder extends Seeder
         foreach($statuses as $status){
             Status::create(['id'=>$status['id'],'name'=>$status['name']]);
         }
+        
+        
+        
+        Project::create(['id'=>1,'name'=>'Twin Lakes']);
+        Project::create(['id'=>2,'name'=>'Vienna']);
         
         $faker = Factory::create('en_US');
 
@@ -123,6 +133,7 @@ class DatabaseSeeder extends Seeder
 
         foreach($leaders as $leader){
             $team=Team::create([
+                'project_id'=>Project::all()->random()->id,
                 'user_id'=>$leader->id,
                 'name'=>'Team '.$leader->first_name
             ]);

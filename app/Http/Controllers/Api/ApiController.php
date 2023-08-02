@@ -73,7 +73,7 @@ class ApiController extends Controller
             ]);
             AgentLog::create([
                 'user_id'=>$user->id,
-                'status_id'=>1,
+                'status_id'=>13,
                 'agent_session_id'=>$session->id
             ]);
             User::find($user->id)->update([

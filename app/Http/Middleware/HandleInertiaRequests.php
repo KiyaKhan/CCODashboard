@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'projects'=>Project::with(['teams'])->get(),
             'teams'=>Team::all(),
             'statuses'=>Status::all(),
             'auth' => [
