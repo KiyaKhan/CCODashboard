@@ -69,7 +69,7 @@ class TeamController extends Controller
     {
         
         $team_id=$request->team_id;
-        $new_leader_id=$request->TL['id'];
+        $new_leader_id=$request->TL['id']??null;
         $name=$request->name;
 
         
@@ -189,7 +189,6 @@ class TeamController extends Controller
         
 
         return[
-            
             'report_items'=>$report_items,
             'from'=>$from,
             'to'=>$to??Carbon::now()->format('Y-m-d')
