@@ -178,7 +178,8 @@ class ApiController extends Controller
         $status_id=$request->status_id;
         $overtime_reason=$request->overtime_reason;
         $early_departure_reason=$request->early_departure_reason;
-        DB::transaction(function () use ($user,$session_id,$status_id,$overtime_reason,$early_departure_reason) {
+        $special_project_remark=$request->special_project_remark;
+        DB::transaction(function () use ($user,$session_id,$status_id,$overtime_reason,$early_departure_reason,$special_project_remark) {
             $agent_session=AgentSession::where([
                 'id'=>$session_id
             ])->first();
