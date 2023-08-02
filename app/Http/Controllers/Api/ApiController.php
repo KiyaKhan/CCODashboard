@@ -189,6 +189,7 @@ class ApiController extends Controller
                 'status_id'=>$status_id,
                 'overtime_reason'=>$overtime_reason,
                 'early_departure_reason'=>$early_departure_reason,
+                'special_project_remark'=>$special_project_remark,
             ]);
             
             $agent_session->update([
