@@ -177,15 +177,10 @@ class ApiController extends Controller
     }
 
     public function teams(Request $request){
-        $project_id=$request->project_id;
         return Team::select(['id',
         'user_id',
-        'project_id',
         'name'])
-        ->when($project_id,function($q) use($project_id){
-            $q->where('project_id',$project_id);
-        })
-        ->with(['team_leader:id,first_name,last_name,company_id','project:id,name'])->without(['user'])->get();
+        ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get();
         
     }
 
