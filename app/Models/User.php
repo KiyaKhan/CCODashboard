@@ -49,6 +49,10 @@ class User extends Authenticatable
         return $this->belongsTo(Status::class);
     }
 
+    public function project(){
+        return $this->belongsTo(Project::class);
+    }
+
 }
 
 

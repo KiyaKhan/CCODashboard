@@ -19,7 +19,6 @@ const useGetNotifications = create<GetNotifications>(set=>({
         isNotificationsTabOpen:open
     }),
     getNotifications: async (teamId:number,date?:Date)=>{
-        if(!teamId)return undefined;
         try {
             const {data} = await axios.get(route('notifications',{
                 team_id:teamId,

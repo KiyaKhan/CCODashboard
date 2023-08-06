@@ -24,7 +24,7 @@ const useGetAgents = create<GetAgents>(set=>({
     }),
     getAgents: async (teamId:number,filters:string,statusId:string)=>{
         
-        if(!teamId)return undefined;
+        
         set({
             previousFilters:statusId||"",
             previousStatusId:filters||""

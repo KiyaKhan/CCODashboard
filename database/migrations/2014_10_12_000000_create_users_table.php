@@ -15,11 +15,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            
+            $table->unsignedBigInteger('project_id')->index()->nullable();
             $table->string('first_name');
             $table->string('last_name');
+            $table->tinyInteger('is_resigned')->default(0);
             $table->time('shift_start')->default('20:00');
             $table->time('shift_end')->default('05:00');;
-            $table->string('company_id')->unique();
+            $table->string('company_id')->unique()->index();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -27,6 +30,8 @@ return new class extends Migration
             $table->string('site')->default('Manila');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');
         });
     }
 

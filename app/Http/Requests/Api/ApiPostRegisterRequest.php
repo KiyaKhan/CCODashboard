@@ -27,8 +27,11 @@ class ApiPostRegisterRequest extends FormRequest
             'first_name' => ['string', 'max:255','required'],
             'last_name' => ['string', 'max:255','required'],
             'company_id' => ['string', 'max:255','unique:users','required'],
-            'password' => ['string', 'confirmed','required','min:6'],
+            'password' => ['string','required','min:6'],
+            'shift_start' => ['date_format:H:i','required'],
+            'shift_end' => ['date_format:H:i','required'],
             'team_id' => ['required','exists:App\Models\Team,id'],
+            'team_id' => ['required','exists:App\Models\Project,id'],
             'site'=> ['required',Rule::in(['Manila', 'Leyte'])]
         ];
     }

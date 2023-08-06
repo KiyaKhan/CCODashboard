@@ -10,6 +10,8 @@ export interface User {
     status:IStatus;
     group:ITeam;
     team?:ITeam;
+    project_id:number;
+    project:IProject;
     team_id:number;
     last_name: string;
     email: string;
@@ -22,7 +24,7 @@ interface IProject{
     name:string;
     created_at:string;
     updated_at:string;
-    teams:ITeam[];
+    users:User[];
 
 }
 
@@ -47,10 +49,8 @@ export interface ITeam{
     id:number;
     name:string;
     user_id:number;
-    user:User;
+    user:User|null;
     users:User[];
-    project_id:number;
-    project:IProject;
 }
 
 export interface IStatus{

@@ -18,6 +18,7 @@ import { RiExpandUpDownLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import ReactLoader from '../ReactLoader';
+import { FaLayerGroup } from 'react-icons/fa';
 
 interface TeamSwitcherProps{
     teams:ITeam[];
@@ -58,6 +59,7 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
         });
     },[post,data]);
 
+
     
 
     useEffect(()=>{
@@ -91,33 +93,57 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
                         <CommandList>
                             <CommandInput placeholder="Search team..." />
                             <CommandEmpty>No team found.</CommandEmpty>
-                            {
-                                projects.map(({id,name,teams})=>(
-                                    <CommandGroup key={id} heading={name}>
-                                        {teams.map(team => (
-                                            <CommandItem
-                                            key={team.id}
-                                            onSelect={() => {
-                                                selectTeam(team)
-                                                setOpen(false)
-                                            }}
-                                            className="text-sm"
-                                            >
-                                            <AvatarContainer user={team.user} />
-                                            {team.name}
-                                            <BsCheck
-                                                className={cn(
-                                                "ml-auto h-4 w-4",
-                                                selectedTeam?.id === team.id
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                                )}
-                                            />
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                ))
-                            }
+                            <CommandGroup  heading='Overall'>
+                                <CommandItem
+                                    onSelect={() => {
+                                        selectTeam({
+                                            id:0,
+                                            name:'Overall',
+                                            user_id:0,
+                                            user:null,
+                                            users:[],
+                                        });
+                                        setOpen(false)
+                                    }}
+                                    className="text-sm"
+                                    >
+                                    <FaLayerGroup size={20} className='text-muted-foreground mr-2.5' />
+                                    <span>All Teams</span>
+                                    <BsCheck
+                                        className={cn(
+                                        "ml-auto h-4 w-4",
+                                        selectedTeam?.id === undefined
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                    />
+                                    </CommandItem>
+                            </CommandGroup>
+                    
+                            <CommandGroup heading='Teams'>
+                                {teams.map(team => (
+                                    <CommandItem
+                                    key={team.id}
+                                    onSelect={() => {
+                                        selectTeam(team)
+                                        setOpen(false)
+                                    }}
+                                    className="text-sm"
+                                    >
+                                    <AvatarContainer user={team.user!} />
+                                    {team.name}
+                                    <BsCheck
+                                        className={cn(
+                                        "ml-auto h-4 w-4",
+                                        selectedTeam?.id === team.id
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                    />
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                                
                         </CommandList>
                         <CommandSeparator />
                         <CommandList>

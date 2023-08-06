@@ -12,6 +12,7 @@ use App\Http\Requests\Api\ChangeStatusPostRequest;
 use App\Models\AgentLog;
 use App\Models\AgentSession;
 use App\Models\AgentStatus;
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
@@ -28,7 +29,10 @@ class ApiController extends Controller
             "first_name"=> $request->first_name,
             "last_name"=> $request->last_name,
             "team_id"=> $request->team_id,
+            "project_id"=> $request->project_id,
             "site"=> $request->site,
+            "shift_start"=> $request->shift_start,
+            "shift_end"=> $request->shift_end,
             "status_id"=> 10,
             "password"=> Hash::make($request->password),
         ]);
@@ -40,10 +44,13 @@ class ApiController extends Controller
                 "first_name"=>$user->first_name,
                 "last_name"=>$user->last_name,
                 "site"=>$user->site,
+                "shift_start"=> $user->shift_start,
+                "shift_end"=> $user->shift_end,
                 "team"=>[
                     "team_name"=>$user->group->name,
                     "team_leader"=>$user->group->user->first_name.' '.$user->group->user->last
-                ]
+                ],
+                "project"=>$user->project->name
             ]], 201);
     }
 
@@ -69,15 +76,16 @@ class ApiController extends Controller
         DB::transaction(function () use ($user) {
             $session=AgentSession::create([
                 'user_id'=>$user->id,
-                'status_id'=>1,
+                'status_id'=>13,
             ]);
             AgentLog::create([
                 'user_id'=>$user->id,
                 'status_id'=>13,
-                'agent_session_id'=>$session->id
+                'agent_session_id'=>$session->id,
+                'start'=>now()
             ]);
             User::find($user->id)->update([
-                'status_id'=>1
+                'status_id'=>13
             ]);
             $this->session_id=$session->id;
         });
@@ -92,6 +100,9 @@ class ApiController extends Controller
                 'login_time'=>$current_session->created_at,
                 'session_id'=>$this->session_id,
                 "site"=>$user->site,
+                "project"=>$user->project->name,
+                "shift_start"=> $user->shift_start,
+                "shift_end"=> $user->shift_end,
                 'team'=>[
                     'team_id'=>$user->group->id,
                     'name'=>$user->group->name,
@@ -128,12 +139,20 @@ class ApiController extends Controller
                 'id'=>$session_id
             ])->first();
 
+            $log=AgentLog::where('agent_session_id',$session_id)->orderBy('created_at','desc')->first();
+            if($log){
+                $log->update([
+                    'end'=>now()
+                ]);
+            }
+
             AgentLog::create([
                 'agent_session_id'=>$session_id,
                 'user_id'=>$user->id,
                 'status_id'=>10,
                 'overtime_reason'=>$overtime_reason,
                 'early_departure_reason'=>$early_departure_reason,
+                'end'=>now()
             ]);
             
             $agent_session->update([
@@ -150,11 +169,23 @@ class ApiController extends Controller
         return 'Succesfully Logged Out!';
     }
 
+    public function projects(){
+        return Project::select(['id',
+            'name'])
+            ->get();
+        
+    }
 
-    public function teams(){
+    public function teams(Request $request){
+        $project_id=$request->project_id;
         return Team::select(['id',
         'user_id',
-        'name'])->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get();
+        'project_id',
+        'name'])
+        ->when($project_id,function($q) use($project_id){
+            $q->where('project_id',$project_id);
+        })
+        ->with(['team_leader:id,first_name,last_name,company_id','project:id,name'])->without(['user'])->get();
         
     }
 
@@ -184,6 +215,14 @@ class ApiController extends Controller
                 'id'=>$session_id
             ])->first();
 
+            $log=AgentLog::where('agent_session_id',$session_id)->orderBy('created_at','desc')->first();
+            if($log){
+                $log->update([
+                    'end'=>now()
+                ]);
+            }
+            
+
             AgentLog::create([
                 'agent_session_id'=>$session_id,
                 'user_id'=>$user->id,
@@ -191,6 +230,7 @@ class ApiController extends Controller
                 'overtime_reason'=>$overtime_reason,
                 'early_departure_reason'=>$early_departure_reason,
                 'special_project_remark'=>$special_project_remark,
+                'start'=>now()
             ]);
             
             $agent_session->update([

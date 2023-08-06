@@ -48,28 +48,47 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
         setShowConfirmDialog(true);
     },[date]);
 
+    const getDashboardData =async(team:ITeam)=>{
+        const team_id=team.id;
+        try {
+            const {data} = await axios.get(route('get_data',{
+                team_id
+            })) as GetDataResponse;
+            setRecentNotifications(data.recent_notifications);
+            setAgentBreakdown(data.dashboard_cards);
+            setBarChart(data.bar_chart);
+        } catch (e) {
+            toast.error('Something went wront. Please refresh the page and try again')
+        }
+    }
+
     const onConfirm = async(report:formattedReport[])=>{
         await ExportToExcel(report,`RMS_Report_${selectedTeam?.name}_${report[0]['Week Ending']}_${report[0].Date}`);
     };
 
+
     useEffect(()=>{
         if(teams) selectTeam(teams[0]);
+        
     },[]);
 
     useEffect(()=>{
         if(!selectedTeam)return;
-        const team_id=selectedTeam.id
-        setLoading(true);
-        axios.get(route('get_data',{
-            team_id
-        }))
-        .then(({data}:GetDataResponse)=>{ 
-            setRecentNotifications(data.recent_notifications);
-            setAgentBreakdown(data.dashboard_cards);
-            setBarChart(data.bar_chart);
-        })
-        .catch(e=>toast.error('Something went wront. Please refresh the page and try again'))
-        .finally(()=>setLoading(false));
+        const fetchData = async() =>{
+            setLoading(true);
+            await getDashboardData(selectedTeam);
+            setLoading(false);
+        }
+
+        fetchData();
+        
+        const interval = setInterval(async() => {
+            if(!selectedTeam)return;
+            await getDashboardData(selectedTeam);
+        }, 60000);
+        return () => clearInterval(interval);
+
+        
     },[selectedTeam]);
 
     return (
@@ -79,7 +98,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                 <NavBar availableTeamLeaders={available_team_leaders} teams={teams} />
                 <div className="flex-1 space-y-4 p-8 pt-6 h-full">
                     <div className="flex flex-col space-y-3.5 md:space-y-0 md:justify-between md:flex-row md:items-center md:space-x-2">
-                        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                        <h2 className="text-3xl font-bold tracking-tight">Dashboard - {selectedTeam?.name}</h2>
                         <div className="flex flex-col space-y-3.5 md:space-y-0 md:flex-row md:items-center md:space-x-2">
                             <CalendarDateRangePicker className='' date={date} setDate={setDate} />
                             <Button onClick={handleDownloadConfirmation} className='font-semibold text-sm flex items-center justify-center space-x-0.5'>

@@ -108,8 +108,10 @@ class TeamController extends Controller
     public function reports(Request $request){
         $from=Carbon::parse($request->date['from'])->format('Y-m-d');
         $to=isset($request->date['to'])?Carbon::parse($request->date['to'])->addDay()->format('Y-m-d'):null;
-
-        $agents=User::where('team_id',$request->team_id)->get();
+        $team_id=$request->team_id;
+        $agents=User::when($team_id,function($q) use($team_id){
+            $q->where('team_id',$team_id);
+        })->get();
 
         
 
@@ -137,7 +139,8 @@ class TeamController extends Controller
                 'meeting'=>0,//8
                 'system_issue'=>0,//9
                 'floor_support'=>0,//11
-                'special_assignment'=>0//12
+                'special_assignment'=>0,//12
+                'not_ready'=>0//13
             ];
             
             for($i=0;$i<count($agent_logs);$i++){
@@ -178,6 +181,9 @@ class TeamController extends Controller
                 }
                 if($current_item->status_id==12){
                     $breakdown['special_assignment'] = $breakdown['special_assignment'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                }
+                if($current_item->status_id==13){
+                    $breakdown['not_ready'] = $breakdown['not_ready'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
                 }
                 
             }

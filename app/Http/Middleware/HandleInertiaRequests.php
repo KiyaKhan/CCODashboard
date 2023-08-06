@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            'projects'=>Project::with(['teams'])->get(),
+            'projects'=>Project::all(),
             'teams'=>Team::all(),
             'statuses'=>Status::all(),
             'auth' => [

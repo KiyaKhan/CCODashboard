@@ -10,7 +10,8 @@ class Project extends Model
     protected $guarded=[];
     use HasFactory;
 
-    public function teams(){
-        return $this->hasMany(Team::class);
+
+    public function users(){
+        return $this->hasMany(User::class);
     }
 }

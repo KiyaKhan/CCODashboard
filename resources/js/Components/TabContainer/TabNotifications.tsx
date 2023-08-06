@@ -76,7 +76,7 @@ const TabNotifications:FC = () => {
                     <TableHead>Notification</TableHead>
                     <TableHead>Agent</TableHead>
                     <TableHead>Manila</TableHead>
-                    <TableHead>EST</TableHead>
+                    <TableHead>NY</TableHead>
                     </TableRow>
                 </TableHeader>
                     <TableBody>
