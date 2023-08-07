@@ -31,7 +31,7 @@ class ApiPostRegisterRequest extends FormRequest
             'shift_start' => ['date_format:H:i','required'],
             'shift_end' => ['date_format:H:i','required'],
             'team_id' => ['required','exists:App\Models\Team,id'],
-            'team_id' => ['required','exists:App\Models\Project,id'],
+            'project_id' => ['required','exists:App\Models\Project,id'],
             'site'=> ['required',Rule::in(['Manila', 'Leyte'])]
         ];
     }
