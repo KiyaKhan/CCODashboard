@@ -71,6 +71,7 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}
             <div className='flex items-center space-x-1.5 justify-end'>
                 <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline' className='font-semibold '>Recent Activity</Button>
                 <Button disabled={user_id===selectedTeam?.user_id.toString()} onClick={()=>setShowTransferDialog(true)} size='sm' variant='default' className='font-semibold '>Transfer</Button>
+                <Button disabled={user_id===selectedTeam?.user_id.toString() } variant='destructive' className='font-semibold' size='sm'>Has Resigned?</Button>
             </div>
 
 

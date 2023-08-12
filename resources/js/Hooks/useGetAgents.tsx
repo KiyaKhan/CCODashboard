@@ -31,7 +31,7 @@ const useGetAgents = create<GetAgents>(set=>({
         });
         try {
             const {data} = await axios.get(route('agents.index',{
-                team_id:teamId,
+                team_id:teamId??0,
                 filter:filters,
                 status_id:statusId
             }));

@@ -1,5 +1,5 @@
-import { ITeam, PageProps } from '@/types'
-import React, { FC, FormEventHandler, useCallback, useEffect, useState } from 'react'
+import { IProject, ITeam, PageProps } from '@/types'
+import React, { FC, FormEventHandler, ReactNode, useCallback, useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
 import useSelectedTeam from '@/Hooks/useSelectedTeam'
 import { Button } from '../ui/button';
@@ -14,6 +14,7 @@ import useNewAgentDialog from '@/Hooks/useNewAgentDialog';
 import useGetAgents from '@/Hooks/useGetAgents';
 import { GrReactjs } from 'react-icons/gr';
 import ReactLoader from '../ReactLoader';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 type Agent={
     company_id:string;
@@ -22,11 +23,15 @@ type Agent={
     site:string;
     password:string;
     team_id:string;
+    project_id:string;
+    shift_start:string;
+    shift_end:string;
 }
 
 
 const NewAgentDialog:FC = () => {
     const [teams,setTeams] = useState<ITeam[]>();
+    const [projects,setProjects] = useState<IProject[]>();
     const [loadingTeams,setLoadingTeams] = useState<boolean>(true);
     const {selectedTeam} = useSelectedTeam();
     const {showNewAgentDialog,setShowNewAgentDialog} = useNewAgentDialog();
@@ -37,7 +42,10 @@ const NewAgentDialog:FC = () => {
         last_name:"",
         site:"Manila",
         password:'password',
-        team_id:""
+        team_id:"",
+        project_id:"",
+        shift_start:"",
+        shift_end:"",
     }
     const { data, setData, post, processing, errors } = useForm<Agent>(initialData)
 
@@ -59,8 +67,11 @@ const NewAgentDialog:FC = () => {
     useEffect(()=>{
         if(!showNewAgentDialog) return;
         setLoadingTeams(true);
-        axios.get(route('api.teams'))
-        .then(({data})=>setTeams(data))
+        axios.get(route('api.teams_and_projects'))
+        .then(({data})=>{
+            setTeams(data.teams);
+            setProjects(data.projects);
+        })
         .catch(e=>toast.error('Internal Error. Please refresh the page'))
         .finally(()=>setLoadingTeams(false));
     },[showNewAgentDialog]);
@@ -70,6 +81,9 @@ const NewAgentDialog:FC = () => {
         if(errors.last_name)toast.error(errors.last_name);
         if(errors.site)toast.error(errors.site);
         if(errors.team_id)toast.error(errors.team_id);
+        if(errors.project_id)toast.error(errors.project_id);
+        if(errors.shift_start)toast.error(errors.shift_start);
+        if(errors.shift_end)toast.error(errors.shift_end);
     },[errors]);
 
     
@@ -120,6 +134,21 @@ const NewAgentDialog:FC = () => {
                                     </div>
                                 </div>
                                 <div className='flex flex-col space-y-1.5 '>
+                                    <Label htmlFor='team' className='text-sm' >Project:</Label>
+                                    <Select disabled={processing} value={data.project_id} onValueChange={val=>setData('project_id',val.toString())} required >
+                                        <SelectTrigger >
+                                            <SelectValue placeholder="Select Project..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {
+                                                    (projects||[]).map(project=><SelectItem key={project.id} value={project.id.toString()}>{project.name}</SelectItem>)
+                                                }
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className='flex flex-col space-y-1.5 '>
                                     <Label htmlFor='first_name' className='text-sm' >First Name:</Label>
                                     <Input autoComplete='off' disabled={processing} id="first_name" value={data.first_name} onChange={({target})=>setData('first_name',target.value)} required/>
                                 </div>
@@ -132,6 +161,21 @@ const NewAgentDialog:FC = () => {
                                 <div className='flex flex-col space-y-1.5 '>
                                     <Label htmlFor='company_id' className='text-sm' >Company ID:</Label>
                                     <Input autoComplete='off' disabled={processing} id="company_id" value={data.company_id} onChange={({target})=>setData('company_id',target.value)} required/>
+                                </div>
+
+                                <div className='flex space-x-2.5 items-center justify-between'>
+                                    <div className='flex flex-col space-y-1.5 flex-1'>
+                                        <Label htmlFor='shift_start' className='text-sm' >Shift Start:</Label>
+                                        <ShiftStartEndTooltip label='24Hr. Format PH Time (ex. 23:00)'>
+                                            <Input autoComplete='off' disabled={processing} id="shift_start" value={data.shift_start} onChange={({target})=>setData('shift_start',target.value)} required/>
+                                        </ShiftStartEndTooltip>
+                                    </div>
+                                    <div className='flex flex-col space-y-1.5 flex-1'>
+                                        <Label htmlFor='shift_end' className='text-sm' >Shift End:</Label>
+                                        <ShiftStartEndTooltip label='24Hr. Format PH Time (ex. 23:00)'>
+                                            <Input autoComplete='off' disabled={processing} id="shift_end" value={data.shift_end} onChange={({target})=>setData('shift_end',target.value)} required/>
+                                        </ShiftStartEndTooltip>
+                                    </div>
                                 </div>
 
                                 <div className='flex flex-col space-y-1.5 '>
@@ -153,3 +197,21 @@ const NewAgentDialog:FC = () => {
 }
 
 export default NewAgentDialog
+
+
+const ShiftStartEndTooltip:FC<{
+    label:string;
+    children:ReactNode;
+}> = ({label,children}) => {
+    return(
+    <TooltipProvider delayDuration={250}>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                {children}
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{label}</p>
+            </TooltipContent>
+        </Tooltip>
+    </TooltipProvider>);
+}

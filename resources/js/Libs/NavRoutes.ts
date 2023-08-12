@@ -31,9 +31,9 @@ const navLinks:{
     },
     {
         label:'Projects',
-        onClick:()=>{},
-        active:route().current()?.includes('teams.index'),
-        link:'#',
+        onClick:()=>router.get(route('projects.index')),
+        active:route().current()?.includes('projects.index'),
+        link:'projects.index',
         Icon:AiTwotoneProject
 
     },

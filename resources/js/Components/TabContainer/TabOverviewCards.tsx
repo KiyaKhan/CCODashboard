@@ -10,7 +10,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const TabOverviewCards:FC = () => {
-    const {agentBreakdown,setAgentBreakdown} = useDashboardInfo();
+    const {agentBreakdown} = useDashboardInfo();
     const {selectedTeam} = useSelectedTeam();
     
     return (
@@ -19,7 +19,7 @@ const TabOverviewCards:FC = () => {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                        Team Size
+                        {`${selectedTeam?.id===0?'Overall CCO Agents':'Team Size'}`}
                     </CardTitle>
                     {agentBreakdown?<SlSizeFullscreen />:<ImSpinner2 className='animate-spin' />}
                 </CardHeader>
@@ -52,8 +52,8 @@ const TabOverviewCards:FC = () => {
                         Agents on Calls
                     </p>
                 </CardContent>
-                </Card>
-                <Card>
+            </Card>
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Emails</CardTitle>
                     {agentBreakdown?<MdOutlineAlternateEmail />:<ImSpinner2 className='animate-spin' />}
@@ -65,6 +65,18 @@ const TabOverviewCards:FC = () => {
                     </p>
                 </CardContent>
             </Card>
+            {/* <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Agents on Lunch</CardTitle>
+                    {agentBreakdown?<MdOutlineAlternateEmail />:<ImSpinner2 className='animate-spin' />}
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{agentBreakdown?.total_on_email}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Click here to view Agents on Overbreak
+                    </p>
+                </CardContent>
+            </Card> */}
         </>
     )
 }

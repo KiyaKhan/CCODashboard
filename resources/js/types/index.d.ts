@@ -15,8 +15,11 @@ export interface User {
     team_id:number;
     last_name: string;
     email: string;
+    shift_start:string;
+    shift_end:string;
     email_verified_at: string;
     updated_at:string;
+    is_resigned:1|0;
 }
 
 interface IProject{
@@ -71,7 +74,7 @@ export interface INotification{
 }
 
 export interface IAgentStatus{
-    id:nubmer; 
+    id:number; 
     user_id:number;
     user:User;
     status_id:number;

@@ -13,7 +13,7 @@ interface TeamsProps{
 
 const Teams:FC<TeamsProps> = ({available_team_leaders,teams}) => {
     
-    const teamsData:TeamTableColumn[] = useMemo(()=>teams.map(({name,id,user,users})=>({id,name,team_leader:user,size:users.length,members:users})),[teams])
+    const teamsData:TeamTableColumn[] = useMemo(()=>teams.map(({name,id,user,users})=>({id,name,team_leader:user!,size:users.length,members:users})),[teams])
     return (
         <>
             <Head title='Teams' />

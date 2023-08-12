@@ -35,7 +35,7 @@ const TabNotifications:FC = () => {
         setLoading(false);
     },[selectedTeam?.id])
 
-    useEffect(()=>{getAgents();},[selectedTeam])
+    useEffect(()=>{getAgents();},[selectedTeam]);
 
     useEffect(()=>{
         setNotificationsTabOpen(true);

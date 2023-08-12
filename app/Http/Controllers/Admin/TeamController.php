@@ -200,4 +200,114 @@ class TeamController extends Controller
             'to'=>$to??Carbon::now()->format('Y-m-d')
         ];
     }
+
+    public function overbreaks(Request $request){
+        $team_id=$request->team_id;
+        $agents=($team_id!=0&&$team_id)?User::select(['id'])->where('team_id',$team_id):null;
+
+        $agent_logs = AgentLog::with(['user','status'])
+            ->when(($team_id&&$team_id!=0), function($q) use($agents){
+                $q->whereIn('user_id',$agents);
+            })
+            ->orderBy('agent_session_id','asc')
+            ->orderBy('created_at','asc')
+            ->get();
+
+
+        $overbreaks = [];
+
+        for($i=0;$i<count($agent_logs);$i++){
+            $current_item=$agent_logs[$i];
+            $next_index=$i+1;
+            $next_item=isset($agent_logs[$next_index])?$agent_logs[$next_index]:null;
+            //dd([$current_item,$next_item]);
+            if(!isset($agent_logs[$next_index])){continue;}
+            
+            
+            if($current_item->status_id==3){
+                $break_duration = (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                $current_item['break_end']=$next_item->created_at;
+                $current_item['break_duration']=$break_duration;
+                if($break_duration>15){
+                    array_push($overbreaks,$current_item);
+                }
+            }
+            if($current_item->status_id==4){
+                $break_duration = (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                $current_item['break_end']=$next_item->created_at;
+                $current_item['break_duration']=$break_duration;
+                if($break_duration>5){
+                    array_push($overbreaks,$current_item);
+                }
+            }
+            if($current_item->status_id==5){
+                $break_duration = (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                $current_item['break_end']=$next_item->created_at;
+                $current_item['break_duration']=$break_duration;
+                if($break_duration>60){
+                    array_push($overbreaks,$current_item);
+                }
+            }
+            
+            
+        }
+
+        
+        return $overbreaks;
+
+    }
+
+    public function lates(Request $request){
+        $team_id=$request->team_id;
+        $agents=($team_id!=0&&$team_id)?User::select(['id'])->where('team_id',$team_id):null;
+
+        $log_ins = AgentLog::with(['user','status'])
+        ->when(($team_id&&$team_id!=0), function($q) use($agents){
+            $q->whereIn('user_id',$agents);
+        })
+        ->where('status_id',13)
+        ->where('is_log_in',1)
+        ->orderBy('agent_session_id','asc')
+        ->orderBy('created_at','asc')
+        ->get();
+
+        $lates =[];
+
+        foreach($log_ins as $log_in){
+            $log_in_date=Carbon::parse($log_in->created_at)->format('Y-m-d');
+            $log_in_time=Carbon::parse($log_in->created_at)->format('H:i');
+
+            $late_mins=Carbon::parse($log_in_time)->diffInMinutes(Carbon::parse($log_in->user->shift_start));
+            $late_secs=$late_mins*60;
+            $late_time = gmdate('H:i:s', $late_secs);
+            if((Carbon::parse($log_in_time)<Carbon::parse($log_in->user->shift_start))){
+                continue;
+            }
+            // if($late_mins>300){
+            //     continue;
+            // }
+
+            
+
+            array_push($lates,[
+                'user_id'=>$log_in->user->id,
+                'company_id'=>$log_in->user->company_id,
+                'agent'=>$log_in->user->first_name.' '.$log_in->user->last_name,
+                'log_in_date'=>$log_in_date,
+                'log_in_time'=>$log_in_time,
+                'shift_start'=>$log_in->user->shift_start,
+                'shift_end'=>$log_in->user->shift_end,
+                'late_mins'=>$late_mins,
+                'late_time'=>$late_time
+            ]);
+        }
+
+        
+
+        return $lates;
+    }
+
+    
+    
 }
+

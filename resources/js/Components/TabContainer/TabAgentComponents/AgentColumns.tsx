@@ -2,56 +2,51 @@ import { ColumnDef } from '@tanstack/react-table';
 import React, { ReactNode } from 'react'
 import AgentCellActions from './AgentCellActions';
 import formatDistanceToNow  from 'date-fns/formatDistanceToNow';
+import { User } from '@/types';
+import { differenceInSeconds } from 'date-fns';
+import AgentSinceCell from './AgentSinceCell';
 
 
-export type AgentTableColumn = {
-    company_id:string;
-    name:string;
-    site:string;
-    status:string;
-    team:string;
-    since:string;
-    team_id:string;
-    user_id:string;
-    team_leader_id:string;
-}
 
 
-export const agentColumns: ColumnDef<AgentTableColumn>[] = [
+
+export const agentColumns: ColumnDef<User>[] = [
     {
-        accessorKey: "company_id",
         header: "Company ID",
+        cell:({row})=>row.original.company_id
     },
     {
-        accessorKey: "name",
         header: "Name",
+        cell:({row})=>`${row.original.first_name} ${row.original.last_name}`
     },
     {
-        accessorKey: "site",
         header: "Site",
+        cell:({row})=>`${row.original.site}`
     },
     {
-        accessorKey: "team",
+        header: "Shift",
+        cell:({row})=>`${row.original.shift_start.slice(0,-3)} - ${row.original.shift_end.slice(0,-3)}`
+    },
+    {
         header: "Team",
         cell:({row})=>(
-            <div className='flex flex-col space-y-0.5 items-center justify-center'>
-                <span>{row.original.team}</span>
-                <span className='text-muted-foreground text-[0.7rem]'>{row.original.user_id===row.original.team_leader_id?'Team Leader':'Agent'}</span>
+            <div className='flex flex-col space-y-0.5 '>
+                <span>{row.original.group.name}</span>
+                <span className='text-muted-foreground text-[0.7rem]'>{row.original.id===row.original.team?.user_id?'Team Leader':'Agent'}</span>
             </div>
         )
     },
     {
-        accessorKey: "status",
         header: "Status",
+        cell:({row})=>`${row.original.status.name}`
     },
     {
-        accessorKey: "since",
         header: "Since",
-        cell:({row})=>formatDistanceToNow(new Date(row.original.since))
+        cell:({row})=> <AgentSinceCell statusId={row.original.status.id} timeStamp={new Date(row.original.updated_at)} />
     },
     {
         header: "",
         id:"actions",
-        cell:({row})=><AgentCellActions user_id={row.original.user_id} company_id={row.original.company_id} team_id={row.original.team_id} />
+        cell:({row})=><AgentCellActions user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id.toString()} />
     }
 ]

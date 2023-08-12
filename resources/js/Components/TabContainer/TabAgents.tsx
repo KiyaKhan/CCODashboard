@@ -3,7 +3,7 @@ import {FC,FormEventHandler,useEffect,useMemo,useState} from 'react'
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import {  BsPlusCircle } from 'react-icons/bs';
-import { AgentTableColumn, agentColumns } from './TabAgentComponents/AgentColumns';
+import { agentColumns } from './TabAgentComponents/AgentColumns';
 import { PageProps, User } from '@/types';
 import { DataTable } from '../DataTable/DataTable';
 import { Input } from '../ui/input';
@@ -33,8 +33,6 @@ const TabAgents:FC = () => {
 
     
 
-    const agentData:AgentTableColumn[]|undefined = useMemo(()=>agents?.map(({id,company_id,site,team_id,first_name,last_name,status,group,updated_at,})=>({ team_leader_id: selectedTeam?.user_id.toString()||"" , user_id:id.toString(), company_id,name:`${first_name} ${last_name}`,status:status.name,site,team:group.name,since:updated_at,team_id:team_id.toString()})),[selectedTeam?.user_id,agents])
-
     useEffect(()=>{
         getAgents();
     },[selectedTeam]);
@@ -44,7 +42,7 @@ const TabAgents:FC = () => {
         return()=>setAgentsTabOpen(false);
     },[]);
 
-    if(!agentData){
+    if(!agents){
         return(
             <Loader />
         )
@@ -78,7 +76,7 @@ const TabAgents:FC = () => {
                 </div>
             </div>
             <Separator />
-            <div className='min-w-[48rem]  overflow-x-auto'>{!loading?<DataTable columns={agentColumns} data={agentData} />:<Loader />}</div>
+            <div className='min-w-[48rem]  overflow-x-auto'>{!loading?<DataTable columns={agentColumns} data={agents} />:<Loader />}</div>
         </>
     )
 }

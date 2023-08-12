@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\AgentLogController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -79,8 +80,15 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::post('/update',[TeamController::class,'update'])->name('update');
         Route::get('/',[TeamController::class,'index'])->name('index');
         Route::get('/reports',[TeamController::class,'reports'])->name('reports');
+        Route::get('/overbreaks',[TeamController::class,'overbreaks'])->name('overbreaks');
+        Route::get('/lates',[TeamController::class,'lates'])->name('lates');
     });
 
+    Route::prefix('projects')->name('projects.')->group(function(){
+        
+        Route::get('/',[ProjectController::class,'index'])->name('index');
+        Route::post('/store',[ProjectController::class,'store'])->name('store');
+    });
     
 });
 
@@ -118,6 +126,8 @@ Route::middleware('guest')->group(function () {
     
 });
 
+
+Route::get('/test',[TeamController::class,'overbreaks'])->name('test');
 
 
 

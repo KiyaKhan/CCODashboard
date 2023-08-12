@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::get('/teams_and_projects',[ApiController::class,'teams_and_projects'])->name('api.teams_and_projects');
 
 Route::get('/projects',[ApiController::class,'projects'])->name('api.projects');;
 Route::get('/teams',[ApiController::class,'teams'])->name('api.teams');;

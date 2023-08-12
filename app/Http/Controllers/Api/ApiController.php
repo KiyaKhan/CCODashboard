@@ -82,6 +82,7 @@ class ApiController extends Controller
                 'user_id'=>$user->id,
                 'status_id'=>13,
                 'agent_session_id'=>$session->id,
+                'is_log_in'=>1,
                 'start'=>now()
             ]);
             User::find($user->id)->update([
@@ -176,12 +177,24 @@ class ApiController extends Controller
         
     }
 
-    public function teams(Request $request){
+    public function teams(){
         return Team::select(['id',
         'user_id',
         'name'])
         ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get();
         
+    }
+
+    public function teams_and_projects(){
+        return [
+            'projects'=>Project::select(['id',
+                'name'])
+                ->get(),
+            'teams'=>  Team::select(['id',
+                'user_id',
+                'name'])
+                ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get()
+        ];
     }
 
 

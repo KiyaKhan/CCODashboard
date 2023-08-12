@@ -55,6 +55,7 @@ const ActivityAccordionContent:FC<ActivityAccordionContentProps> = ({log : Agent
         let system_issue=0;//9
         let floor_support=0;//11
         let special_assignment=0;//12
+        let not_ready=0;//13
         logs.forEach((log,idx,data)=>{
             const nextIndex=idx+1;
             const nextData=data[nextIndex];
@@ -71,9 +72,16 @@ const ActivityAccordionContent:FC<ActivityAccordionContentProps> = ({log : Agent
                 if(log.status_id===9) system_issue=system_issue+differenceInMinutes(parseISO(nextData.created_at),parseISO(log.created_at)/*,{roundingMethod:'ceil'}*/);
                 if(log.status_id===11) floor_support=floor_support+differenceInMinutes(parseISO(nextData.created_at),parseISO(log.created_at)/*,{roundingMethod:'ceil'}*/);
                 if(log.status_id===12) special_assignment=special_assignment+differenceInMinutes(parseISO(nextData.created_at),parseISO(log.created_at)/*,{roundingMethod:'ceil'}*/);
+                
+                if(log.status_id===13) not_ready=not_ready+differenceInMinutes(parseISO(nextData.created_at),parseISO(log.created_at)/*,{roundingMethod:'ceil'}*/);
             }
         });
-
+        bd.push({
+            status:'Total Hours',
+            duration:minsToDuration(
+                differenceInMinutes(parseISO(logs[logs.length-1].created_at),parseISO(logs[0].created_at)/*,{roundingMethod:'ceil'}*/)
+            ).toString()});
+            
         bd.push({status:'Calls',duration:minsToDuration(calls).toString()});
         bd.push({status:'Emails',duration:minsToDuration(emails).toString()});
         bd.push({status:'Break',duration:minsToDuration(Break).toString()});
@@ -85,6 +93,7 @@ const ActivityAccordionContent:FC<ActivityAccordionContentProps> = ({log : Agent
         bd.push({status:'System Issue',duration:minsToDuration(system_issue).toString()});
         bd.push({status:'Floor Support',duration:minsToDuration(floor_support).toString()});
         bd.push({status:'Special Assignment',duration:minsToDuration(special_assignment).toString()});
+        bd.push({status:'Not Ready',duration:minsToDuration(not_ready).toString()});
         return bd;
 
     },[logs]);

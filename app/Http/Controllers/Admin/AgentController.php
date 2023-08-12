@@ -221,8 +221,9 @@ class AgentController extends Controller
             'last_name' => ['string', 'max:255','required'],
             'company_id' => ['string', 'max:255','unique:users','required'],
             'password' => ['string','required','min:6'],
-            'shift_start' => ['string','required'],
-            'shift_end' => ['string','required'],
+            'shift_start' => ['date_format:H:i','required'],
+            'shift_end' => ['date_format:H:i','required'],
+            'project_id' => ['required','exists:App\Models\Project,id'],
             'team_id' => ['required','exists:App\Models\Team,id'],
             'site'=> ['required',Rule::in(['Manila', 'Leyte'])]
         ]);
@@ -236,6 +237,7 @@ class AgentController extends Controller
             "site"=> $request->site,
             "shift_start"=> $request->shift_start,
             "shift_end"=> $request->shift_end,
+            "project_id"=> $request->project_id,
             "status_id"=> 10,
             "password"=> Hash::make($request->password),
         ]);
