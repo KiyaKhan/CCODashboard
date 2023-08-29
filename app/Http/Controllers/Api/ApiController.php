@@ -9,9 +9,13 @@ use App\Events\AgentRegisteredEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\APi\ApiPostRegisterRequest;
 use App\Http\Requests\Api\ChangeStatusPostRequest;
+use App\Http\Requests\Api\EndLoggingPostRequest;
+use App\Http\Requests\Api\LoggingPostRequest;
 use App\Models\AgentLog;
 use App\Models\AgentSession;
 use App\Models\AgentStatus;
+use App\Models\CallEmailLog;
+use App\Models\Driver;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
@@ -264,4 +268,35 @@ class ApiController extends Controller
         ];
         
     }
+
+    public function drivers(){
+        return Driver::select(['driver'])->get();
+    }
+
+    public function start_log(LoggingPostRequest $request){
+        $log=CallEmailLog::create([
+            'agent_session_id' => $request->session_id,
+            'type' => $request->type,
+            'driver' =>  $request->driver,
+            'user_id'=>$request->user()->id
+        ]);
+        return [
+            'log_id'=>$log->id,
+            'type'=>$log->type,
+            'driver'=>$log->driver,
+            'session_id'=>$log->agent_session_id,
+            'start_time'=>$log->created_at
+        ];
+    }
+
+    public function end_log(EndLoggingPostRequest $request){
+        $now=now();
+        $log=CallEmailLog::where('agent_session_id',$request->session_id)->where('id',$request->log_id)->first();
+        $log->update([
+            'updated_at'=>$now
+        ]);
+        return ['message'=>'Done!','End Time'=>$now];
+    }
+
+    
 }
