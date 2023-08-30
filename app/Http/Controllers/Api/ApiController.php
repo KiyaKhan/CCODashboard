@@ -278,7 +278,8 @@ class ApiController extends Controller
             'agent_session_id' => $request->session_id,
             'type' => $request->type,
             'driver' =>  $request->driver,
-            'user_id'=>$request->user()->id
+            'user_id'=>$request->user()->id,
+            'phone_or_email'=>$request->phone_or_email
         ]);
         return [
             'log_id'=>$log->id,

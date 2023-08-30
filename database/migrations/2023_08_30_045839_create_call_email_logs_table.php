@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('agent_session_id')->index();
             $table->string('driver');
             $table->string('type');
+            $table->string('phone_or_email');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
