@@ -3,7 +3,7 @@ import { Button } from '@/Components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
-import { IAgentStatus, PageProps,  } from '@/types'
+import { IAgentStatus, PageProps, User,  } from '@/types'
 import axios from 'axios';
 import {  parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -16,15 +16,17 @@ import { usePage } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import useGetAgents from '@/Hooks/useGetAgents';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
+import useEditAgentDialog from '@/Hooks/useNewEditDialog';
 
 interface AgentCellActionsProps{
     company_id:string;
     team_id:string;
     user_id:string;
+    agent:User;
 }
 type logRow = IAgentStatus & {duration:string}
 
-const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}) => {
+const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id,agent}) => {
     const {teams} = usePage<PageProps>().props;
     const [showLogDialog,setShowLogDialog] = useState(false);
     const [showTransferDialog,setShowTransferDialog] = useState(false);
@@ -35,6 +37,7 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}
     const {getAgents:FetchAgents} = useGetAgents();
     const {selectedTeam} = useSelectedTeam();
     const [transferToTeamId,setTransferToTeamId] = useState<string>();
+    const {setShowEditAgentDialog} = useEditAgentDialog();
     const handleTransfer = useCallback(()=>{
         if(!selectedTeam) return;
         if(!transferToTeamId||transferToTeamId.length<1) return toast.info('Select Team to Tranfer to...');
@@ -72,6 +75,7 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id}
                 <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline' className='font-semibold '>Recent Activity</Button>
                 <Button disabled={user_id===selectedTeam?.user_id.toString()} onClick={()=>setShowTransferDialog(true)} size='sm' variant='default' className='font-semibold '>Transfer</Button>
                 <Button disabled={user_id===selectedTeam?.user_id.toString() } variant='destructive' className='font-semibold' size='sm'>Has Resigned?</Button>
+                <Button onClick={()=>setShowEditAgentDialog(true,agent)} size='sm' variant='secondary' className='font-semibold '>Edit Info</Button>
             </div>
 
 

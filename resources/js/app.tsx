@@ -8,10 +8,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import NewAgentDialog from './Components/Dialogs/NewAgentDialog';
 import ActivityEditDialog from './Components/TabContainer/TabActivityLogsComponents/ActivityEditDialog';
 import ActivityAddDialog from './Components/TabContainer/TabActivityLogsComponents/ActivityAddDialog';
 import BrowserCheckContainer from './Containers/BrowserCheckContainer';
+import NewAdminDialog from './Components/Dialogs/NewAdminDialog';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
@@ -20,7 +20,7 @@ createInertiaApp({
 
         root.render(
             <>
-                <NewAgentDialog />
+                <NewAdminDialog />
                 <ActivityEditDialog />
                 <ActivityAddDialog />
                 <BrowserCheckContainer />

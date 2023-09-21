@@ -34,7 +34,7 @@ type AgentsData={
 const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeaders}) => {
 
     const {user} = usePage<PageProps>().props.auth;
-    const {projects} = usePage<PageProps>().props;
+    //const {projects} = usePage<PageProps>().props;
     const {selectTeam,selectedTeam} = useSelectedTeam();
     const [open, setOpen] = useState(false);
     const [showAgentsPopOver, setShowAgentsPopOver] = useState(false);
@@ -75,7 +75,7 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
     return (
         <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
             <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger asChild disabled={user.user_level.toString()!=='1'}>
                     <Button
                         variant="outline"
                         role="combobox"

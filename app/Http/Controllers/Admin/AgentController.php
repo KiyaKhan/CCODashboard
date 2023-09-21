@@ -243,6 +243,35 @@ class AgentController extends Controller
         ]);
     }
 
+
+    public function update(Request $request){
+        $request->validate([
+            'id' => ['required','exists:App\Models\User,id'],
+            'first_name' => ['string', 'max:255','required'],
+            'last_name' => ['string', 'max:255','required'],
+            //'name' => 'required|string|string|max:255|unique:channels,name,'.$request->channel_id,
+            'shift_start' => ['date_format:H:i','required'],
+            'shift_end' => ['date_format:H:i','required'],
+            'project_id' => ['required','exists:App\Models\Project,id'],
+            'team_id' => ['required','exists:App\Models\Team,id'],
+            'site'=> ['required',Rule::in(['Manila', 'Leyte'])]
+        ]);
+
+        $user=User::findOrFail($request->id);
+
+        $user->update([
+            //"company_id"=> $request->company_id,
+            "first_name"=> $request->first_name,
+            "last_name"=> $request->last_name,
+            "team_id"=> $request->team_id,
+            "site"=> $request->site,
+            "shift_start"=> $request->shift_start,
+            "shift_end"=> $request->shift_end,
+            "project_id"=> $request->project_id,
+            "status_id"=> 10,
+        ]);
+    }
+
     public function get_non_leaders(){
         return User::whereNotIn('user_level',[1,2])->get();
     }

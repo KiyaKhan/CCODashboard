@@ -32,7 +32,7 @@ export const agentColumns: ColumnDef<User>[] = [
         cell:({row})=>(
             <div className='flex flex-col space-y-0.5 '>
                 <span>{row.original.group.name}</span>
-                <span className='text-muted-foreground text-[0.7rem]'>{row.original.id===row.original.team?.user_id?'Team Leader':'Agent'}</span>
+                <span className='text-muted-foreground text-[0.7rem]'>{row.original.id===row.original.group.user_id?'Team Leader':'Agent'}</span>
             </div>
         )
     },
@@ -47,6 +47,6 @@ export const agentColumns: ColumnDef<User>[] = [
     {
         header: "",
         id:"actions",
-        cell:({row})=><AgentCellActions user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id.toString()} />
+        cell:({row})=><AgentCellActions agent={row.original} user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id.toString()} />
     }
 ]

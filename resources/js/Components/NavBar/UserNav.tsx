@@ -11,6 +11,7 @@ import { BsPlusCircle } from 'react-icons/bs';
 import NewAgentDialog from '../Dialogs/NewAgentDialog';
 import useNewAgentDialog from '@/Hooks/useNewAgentDialog';
 import useToggleDark from '@/Hooks/useToggleDark';
+import useNewAdminDialog from '@/Hooks/useNewAdminDialog';
 
 
 
@@ -19,6 +20,8 @@ const UserNav:FC = () => {
     const {setShowNewTeamDialog} = useNewTeamDialog();
     const {setShowNewAgentDialog} = useNewAgentDialog();
     const {toggleTheme} = useToggleDark();
+    
+    const {setShowNewAdminDialog} = useNewAdminDialog();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -43,7 +46,7 @@ const UserNav:FC = () => {
                     {/* <DropdownMenuItem>
                         Settings
                     </DropdownMenuItem> */}
-                    <DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>
+                    {user.user_level.toString()==='1'&&<DropdownMenuItem onClick={()=>setShowNewTeamDialog(true)}>New Team</DropdownMenuItem>}
                     <DropdownMenuItem onClick={()=>setShowNewAgentDialog(true)}>
                         Add New Agent
                     </DropdownMenuItem>
@@ -52,6 +55,13 @@ const UserNav:FC = () => {
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                    {
+                        user.user_level.toString()==='1'&&(
+                            <DropdownMenuItem onClick={()=>setShowNewAdminDialog(true)}>
+                                Add New Admin Account
+                            </DropdownMenuItem>
+                        )
+                    }<DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=>router.post(route('logout'))}>
                     Log out
                 </DropdownMenuItem>

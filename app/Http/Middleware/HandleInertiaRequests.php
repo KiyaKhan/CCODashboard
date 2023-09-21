@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 
@@ -35,7 +36,7 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'projects'=>Project::all(),
-            'teams'=>Team::all(),
+            'teams'=>Auth::check()?(Auth::user()->user_level==1?Team::all():Team::where('user_id',Auth::id())->get()):null,
             'statuses'=>Status::all(),
             'auth' => [
                 'user' => $request->user(),

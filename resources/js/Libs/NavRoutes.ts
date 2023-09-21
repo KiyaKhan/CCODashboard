@@ -14,6 +14,7 @@ const navLinks:{
     label:string;
     link:string;
     Icon:IconType;
+    forAdmin?:boolean
 }[] = [
     {
         label:'Dashboard',
@@ -34,7 +35,8 @@ const navLinks:{
         onClick:()=>router.get(route('projects.index')),
         active:route().current()?.includes('projects.index'),
         link:'projects.index',
-        Icon:AiTwotoneProject
+        Icon:AiTwotoneProject,
+        forAdmin:true
 
     },
     {
@@ -42,7 +44,8 @@ const navLinks:{
         onClick:()=>router.get(route('teams.index')),
         active:route().current()?.includes('teams.index'),
         link:'teams.index',
-        Icon:RiTeamFill
+        Icon:RiTeamFill,
+        forAdmin:true
 
     },
     // {

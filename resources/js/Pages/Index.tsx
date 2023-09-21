@@ -19,6 +19,8 @@ import { addDays, format, parseISO } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { FaCircleNotch } from 'react-icons/fa';
 import ExportToExcel from '@/Libs/ExportToExcel';
+import NewAgentDialog from '@/Components/Dialogs/NewAgentDialog';
+import EditAgentDialog from '@/Components/Dialogs/EditAgentDialog';
 
 interface IndexProps{
     teams:ITeam[];
@@ -87,7 +89,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
             await getDashboardData(selectedTeam);
         }, 60000);
         return () => clearInterval(interval);
-
+        
         
     },[selectedTeam]);
 
@@ -117,6 +119,8 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                 (date&&selectedTeam)&&<ConfirmDownload onConfirm={onConfirm} date={date} team={selectedTeam} isOpen={showConfirmDialog} onClose={()=>setShowConfirmDialog(false)} />
             }
             
+            <NewAgentDialog />
+            <EditAgentDialog />
         </>
     )
 }

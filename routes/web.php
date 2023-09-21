@@ -11,8 +11,11 @@ use App\Http\Controllers\ProfileController;
 use App\Models\AgentLog;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 /*
@@ -30,11 +33,16 @@ use Inertia\Inertia;
 
 
 Route::middleware(['auth','is_admin'])->get('/', function () {
+
     return Inertia::render('Index',[
-        'teams'=>Team::all(),
+        'teams'=>Auth::user()->user_level==1?Team::all():Team::where('user_id',Auth::id())->get(),
         //'teams'=>Team::where('id',0)->get(),
         'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
     ]);
+
+
+
+
 })->name('index');
 
 
@@ -60,6 +68,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::get('/status_logs',[AgentController::class,'status_logs'])->name('status_logs');
         Route::get('/status_logs_full',[AgentController::class,'status_logs_full'])->name('status_logs_full');
         Route::post('/new',[AgentController::class,'new'])->name('new');
+        Route::post('/update',[AgentController::class,'update'])->name('update');
         Route::post('/transfer',[AgentController::class,'transfer'])->name('transfer');
     });
 
@@ -90,6 +99,30 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::post('/store',[ProjectController::class,'store'])->name('store');
     });
     
+
+    Route::post('/admin/store',function(Request $request){
+        $request->validate([
+            'first_name' => ['string', 'max:255','required'],
+            'last_name' => ['string', 'max:255','required'],
+            'company_id' => ['string', 'max:255','unique:users','required'],
+            'email' => ['max:255','unique:users',],
+        ]);
+
+
+        User::create([
+            "company_id"=> $request->company_id,
+            "first_name"=> $request->first_name,
+            "last_name"=> $request->last_name,
+            "site"=> 'Manila',
+            "shift_start"=> "00:00",
+            "shift_end"=> "23:00",
+            "project_id"=> $request->project_id,
+            "status_id"=> 10,
+            "password"=> Hash::make('password'),
+            "user_level"=>1
+        ]);
+    })->name('admin.store');
+
 });
 
 Route::middleware(['auth'])->group(function(){

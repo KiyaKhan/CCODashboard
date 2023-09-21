@@ -1,20 +1,23 @@
 import navLinks from '@/Libs/NavRoutes'
 import { cn } from '@/Libs/Utils'
-import { Link } from '@inertiajs/react'
-import React, { FC, HTMLAttributes, useEffect } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { PageProps } from '@/types'
+import { Link, usePage } from '@inertiajs/react'
+import React, { useMemo,FC, HTMLAttributes, useEffect } from 'react'
+import { twMerge } from 'tailwind-merge';
 
 
 
 const MainNav:FC<HTMLAttributes<HTMLElement>> = ({className,...props}) => {
     
+    const {user} = usePage<PageProps>().props.auth;
+    const LINKS = useMemo(()=>user.user_level.toString()==='1'?navLinks:navLinks.filter(link=>!link.forAdmin),[user,navLinks]);
     return (
         <nav
             className={cn("flex items-center space-x-4 lg:space-x-6", className)}
             {...props}
             >
             {
-                navLinks.map(({Icon,...link})=>(
+                LINKS.map(({Icon,...link})=>(
                     //TODO:CHange to Inertia Links if possible...
                     <button
                         onClick={link.onClick}
