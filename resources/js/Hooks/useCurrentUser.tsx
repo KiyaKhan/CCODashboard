@@ -1,5 +1,5 @@
 import { User } from '@/types';
-import {create} from 'zustand'
+import {create} from 'zustand';
 
 interface ICurrentUser{
     currentUser?:User;

@@ -21,6 +21,7 @@ import { FaCircleNotch } from 'react-icons/fa';
 import ExportToExcel from '@/Libs/ExportToExcel';
 import NewAgentDialog from '@/Components/Dialogs/NewAgentDialog';
 import EditAgentDialog from '@/Components/Dialogs/EditAgentDialog';
+import ResignModal from '@/Components/Modals/ResignModal';
 
 interface IndexProps{
     teams:ITeam[];
@@ -121,6 +122,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
             
             <NewAgentDialog />
             <EditAgentDialog />
+            <ResignModal />
         </>
     )
 }
@@ -146,8 +148,12 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
                 team_id:team.id,
                 date
             })) as {data:reportResponse};
+            if(!data.report_items||data.report_items.length<1){
+                return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
+            }
             const report:formattedReport[] = await formatReport(data,selectedTeam!.name);
             onConfirm(report);
+            onClose();
         } catch (error) {
             toast.error('Something went wrong. Please try again...');
         } finally{
@@ -198,19 +204,27 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             meeting:Meeting,
             system_issue,
             floor_support,
-            special_assignment
+            special_assignment,
+            login_time,
+            end_of_shift_time,
+            not_ready,
+            session_id,
+            special_assignment_remarks,
+            early_departure_reason,
+            overtime_reason,
+            session_date            
         } = breakdown;
-        const totalHrs=calls+emails+Break+bio_break+Lunch+Training+Coaching+Meeting+system_issue+floor_support+special_assignment;
+        const totalMins=calls+emails+Break+bio_break+Lunch+Training+Coaching+Meeting+system_issue+floor_support+special_assignment;
         return{
             Month: `${format(parseISO(from),'MMM').toString()}-${format(parseISO(from),'yy').toString()}`,
             "Week Ending":from,
-            "Date":to,
+            "Date":session_date,
             Site:agent.site,
-            Project:teamName,
+            Project:agent.project.name,
             "DDC ID#":agent.company_id,
             "Name":`${agent.last_name}, ${agent.first_name}`,
-            "Total Hours":  minsToDuration(totalHrs),
-            "Login Time":"",
+            "Total Hours":  minsToDuration(totalMins),
+            "Login Time":login_time,
             "Online - Calls": minsToDuration(calls),
             "Online - Emails": minsToDuration(emails),
             Break: minsToDuration(Break),
@@ -222,13 +236,13 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             "System Issue": minsToDuration(system_issue),
             "Floor Support": minsToDuration(special_assignment),
             "Special Assignment": minsToDuration(special_assignment),
-            "Early Departure Time":"",
-            "Overtime Hours":"",
-            "End of Shift Time":"",
-            "Unallocated Hours":"",
-            "Special Assignment Remarks":"",
-            "Early Departure Reason":"",
-            "Overtime Reason":""
+            "Early Departure Time":totalMins<535?end_of_shift_time:"",
+            "Overtime Hours":totalMins>540?minsToDuration(totalMins-540):"",
+            "End of Shift Time":end_of_shift_time,
+            "Unallocated Hours":minsToDuration(not_ready),
+            "Special Assignment Remarks":special_assignment_remarks,
+            "Early Departure Reason":early_departure_reason,
+            "Overtime Reason":overtime_reason
         } 
     });
     

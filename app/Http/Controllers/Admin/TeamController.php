@@ -109,7 +109,7 @@ class TeamController extends Controller
         $from=Carbon::parse($request->date['from'])->format('Y-m-d');
         $to=isset($request->date['to'])?Carbon::parse($request->date['to'])->addDay()->format('Y-m-d'):null;
         $team_id=$request->team_id;
-        $agents=User::when($team_id,function($q) use($team_id){
+        $agents=User::with(['project'])->when($team_id,function($q) use($team_id){
             $q->where('team_id',$team_id);
         })->get();
 
@@ -128,72 +128,104 @@ class TeamController extends Controller
                 ->orderBy('agent_session_id','asc')
                 ->orderBy('created_at','asc')
                 ->get();
-            $breakdown=[
-                'calls'=>0, //1
-                'emails'=>0,//2
-                'break'=>0,//3
-                'bio_break'=>0,//4
-                'lunch'=>0,//5
-                'training'=>0,//6
-                'coaching'=>0,//7
-                'meeting'=>0,//8
-                'system_issue'=>0,//9
-                'floor_support'=>0,//11
-                'special_assignment'=>0,//12
-                'not_ready'=>0//13
-            ];
+
+
+
+            $session_ids=[];
             
-            for($i=0;$i<count($agent_logs);$i++){
-                $current_item=$agent_logs[$i];
-                $next_index=$i+1;
-                $next_item=isset($agent_logs[$next_index])?$agent_logs[$next_index]:null;
-                //dd([$current_item,$next_item]);
-                if(!isset($agent_logs[$next_index])){continue;}
-                if($current_item->status_id==1){
-                    $breakdown['calls'] = $breakdown['calls'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+            foreach($agent_logs as $item){
+                if(!in_array($item->agent_session_id,$session_ids)){
+                    array_push($session_ids,$item->agent_session_id);
                 }
-                if($current_item->status_id==2){
-                    $breakdown['emails'] = $breakdown['emails'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+            }
+            
+            
+            foreach($session_ids as $session_id){
+                $breakdown=[
+                    'calls'=>0, //1
+                    'emails'=>0,//2
+                    'break'=>0,//3
+                    'bio_break'=>0,//4
+                    'lunch'=>0,//5
+                    'training'=>0,//6
+                    'coaching'=>0,//7
+                    'meeting'=>0,//8
+                    'system_issue'=>0,//9
+                    'floor_support'=>0,//11
+                    'special_assignment'=>0,//12
+                    'not_ready'=>0,//13,
+                    'session_id'=>0//14,
+                ];
+                    
+                
+                for($i=0;$i<count($agent_logs);$i++){
+                    $current_item=$agent_logs[$i];
+                    $next_index=$i+1;
+                    $next_item=isset($agent_logs[$next_index])?$agent_logs[$next_index]:null;
+                    
+                    if(!isset($agent_logs[$next_index])){continue;}
+                    if($current_item->agent_session_id!=$session_id){continue;}
+                    
+                    $breakdown['session_id']= $session_id;
+                    $breakdown['session_date']=Carbon::parse($current_item->created_at)->format('Y-m-d');
+                    if($current_item->status_id==1){
+                        $breakdown['calls'] = $breakdown['calls'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==2){
+                        $breakdown['emails'] = $breakdown['emails'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==3){
+                        $breakdown['break'] = $breakdown['break'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==4){
+                        $breakdown['bio_break'] = $breakdown['bio_break'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==5){
+                        $breakdown['lunch'] = $breakdown['lunch'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==6){
+                        $breakdown['training'] = $breakdown['training'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==7){
+                        $breakdown['coaching'] = $breakdown['coaching'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==8){
+                        $breakdown['meeting'] = $breakdown['meeting'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==9){
+                        $breakdown['system_issue'] = $breakdown['system_issue'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==11){
+                        $breakdown['floor_support'] = $breakdown['floor_support']  + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==12){
+                        $breakdown['special_assignment_remarks']=$current_item->special_project_remark;
+                        $breakdown['special_assignment'] = $breakdown['special_assignment'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==13){
+                        $breakdown['login_time']=Carbon::parse($current_item->created_at)->format('Y-m-d H:i');
+                        //Unallocated Hours
+                        
+                        $breakdown['not_ready'] = $breakdown['not_ready'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
+                    }
+                    if($current_item->status_id==10){
+                        $breakdown['early_departure_reason']=$current_item->early_departure_reason;
+                        $breakdown['overtime_reason']=$current_item->overtime_reason;
+                        $breakdown['end_of_shift_time']=Carbon::parse($current_item->created_at)->format('Y-m-d H:i');
+                    }
                 }
-                if($current_item->status_id==3){
-                    $breakdown['break'] = $breakdown['break'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==4){
-                    $breakdown['bio_break'] = $breakdown['bio_break'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==5){
-                    $breakdown['lunch'] = $breakdown['lunch'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==6){
-                    $breakdown['training'] = $breakdown['training'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==7){
-                    $breakdown['coaching'] = $breakdown['coaching'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==8){
-                    $breakdown['meeting'] = $breakdown['meeting'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==9){
-                    $breakdown['system_issue'] = $breakdown['system_issue'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==11){
-                    $breakdown['floor_support'] = $breakdown['floor_support']  + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==12){
-                    $breakdown['special_assignment'] = $breakdown['special_assignment'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
-                if($current_item->status_id==13){
-                    $breakdown['not_ready'] = $breakdown['not_ready'] + (int)Carbon::parse($next_item->created_at)->diffInMinutes(Carbon::parse($current_item->created_at));
-                }
+                array_push($report_items,[
+                    'agent'=>$agent,
+                    'breakdown'=>$breakdown
+                ]);
                 
             }
-            array_push($report_items,[
-                'agent'=>$agent,
-                'breakdown'=>$breakdown
-            ]);
+            
+            
         }   
         
-
+        
+        
         return[
             'report_items'=>$report_items,
             'from'=>$from,
@@ -220,7 +252,7 @@ class TeamController extends Controller
             $current_item=$agent_logs[$i];
             $next_index=$i+1;
             $next_item=isset($agent_logs[$next_index])?$agent_logs[$next_index]:null;
-            //dd([$current_item,$next_item]);
+            
             if(!isset($agent_logs[$next_index])){continue;}
             
             
@@ -308,6 +340,24 @@ class TeamController extends Controller
     }
 
     
+    public function test(){
+        $log_ins = AgentLog::with(['user','status'])
+            ->where('status_id',13)
+            ->orderBy('agent_session_id','asc')
+            ->orderBy('created_at','asc')
+            ->get();
+
+        $dates=[];
+        foreach($log_ins as $log_in){
+            $carbon_date=Carbon::parse($log_in->created_at);
+            if(!in_array($carbon_date->format('Y-m-d'),$dates)){
+                array_push($dates,$carbon_date->format('Y-m-d'));
+            }
+        }
+        
+        return $dates;
+    }    
     
 }
+
 

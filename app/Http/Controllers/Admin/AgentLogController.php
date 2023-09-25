@@ -114,4 +114,5 @@ class AgentLogController extends Controller
         $agent_log=AgentLog::findOrFail($request->agent_log_id);
         $agent_log->delete();
     }
+
 }

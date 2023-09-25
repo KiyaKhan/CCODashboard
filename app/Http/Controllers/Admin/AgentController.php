@@ -325,5 +325,12 @@ class AgentController extends Controller
         ]);
     }
 
-
+    
+    public function resigned(Request $request)
+    {
+        $agent_log=User::findOrFail($request->id);
+        $agent_log->update([
+            'is_resigned'=>1
+        ]);
+    }
 }

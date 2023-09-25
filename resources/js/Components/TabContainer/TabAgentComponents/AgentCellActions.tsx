@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import useGetAgents from '@/Hooks/useGetAgents';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import useEditAgentDialog from '@/Hooks/useNewEditDialog';
+import { useResignModal } from '@/Hooks/useResignModal';
+import { Badge } from '@/Components/ui/badge';
 
 interface AgentCellActionsProps{
     company_id:string;
@@ -27,6 +29,7 @@ interface AgentCellActionsProps{
 type logRow = IAgentStatus & {duration:string}
 
 const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id,agent}) => {
+    const {onOpen:OpenResignModal} = useResignModal();
     const {teams} = usePage<PageProps>().props;
     const [showLogDialog,setShowLogDialog] = useState(false);
     const [showTransferDialog,setShowTransferDialog] = useState(false);
@@ -72,10 +75,15 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id,
     return (
         <>
             <div className='flex items-center space-x-1.5 justify-end'>
-                <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline' className='font-semibold '>Recent Activity</Button>
-                <Button disabled={user_id===selectedTeam?.user_id.toString()} onClick={()=>setShowTransferDialog(true)} size='sm' variant='default' className='font-semibold '>Transfer</Button>
-                <Button disabled={user_id===selectedTeam?.user_id.toString() } variant='destructive' className='font-semibold' size='sm'>Has Resigned?</Button>
-                <Button onClick={()=>setShowEditAgentDialog(true,agent)} size='sm' variant='secondary' className='font-semibold '>Edit Info</Button>
+                {
+                    agent.is_resigned?<Button size='sm' type='button' className='cursor-default' variant="outline" >Agent Resigned</Button>:(<>
+                        <Button onClick={()=>setShowLogDialog(true)} size='sm' variant='outline' className='font-semibold '>Recent Activity</Button>
+                        <Button disabled={user_id===selectedTeam?.user_id.toString()} onClick={()=>setShowTransferDialog(true)} size='sm' variant='default' className='font-semibold '>Transfer</Button>
+                        <Button onClick={()=>OpenResignModal(user_id)} disabled={user_id===selectedTeam?.user_id.toString() } variant='destructive' className='font-semibold' size='sm'>Has Resigned?</Button>
+                        <Button onClick={()=>setShowEditAgentDialog(true,agent)} size='sm' variant='secondary' className='font-semibold '>Edit Info</Button>
+                    </>)
+                }
+                
             </div>
 
 

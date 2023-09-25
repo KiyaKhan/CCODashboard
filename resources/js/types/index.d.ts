@@ -109,8 +109,10 @@ type reportResponse = {
     report_items:{
         agent:User;
         breakdown:{
+            session_date:string;
             calls:number;
             emails:number;
+            project:string;
             break:number;
             bio_break:number;
             lunch:number;
@@ -120,6 +122,13 @@ type reportResponse = {
             system_issue:number;
             floor_support:number;
             special_assignment:number;
+            not_ready:number;
+            session_id:number;
+            special_assignment_remarks:string;
+            login_time:string;
+            early_departure_reason:string;
+            overtime_reason:string;
+            end_of_shift_time:string;
         }
     }[];
     from:string;

@@ -70,6 +70,8 @@ Route::middleware(['auth','is_admin'])->group(function(){
         Route::post('/new',[AgentController::class,'new'])->name('new');
         Route::post('/update',[AgentController::class,'update'])->name('update');
         Route::post('/transfer',[AgentController::class,'transfer'])->name('transfer');
+        
+        Route::post('/resigned',[AgentController::class,'resigned'])->name('resigned');
     });
 
 
@@ -160,7 +162,7 @@ Route::middleware('guest')->group(function () {
 });
 
 
-Route::get('/test',[TeamController::class,'overbreaks'])->name('test');
+Route::get('/test',[TeamController::class,'test'])->name('test');
 
 
 
