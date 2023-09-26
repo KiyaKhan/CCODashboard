@@ -5,7 +5,7 @@ import useActivityLogs from '@/Hooks/useActivityLogs';
 import useShowActivityEditDialog from '@/Hooks/useShowActivityEditDialog';
 import axios from 'axios';
 import React, { FC, ReactNode, useCallback, useState } from 'react'
-import { LuEdit } from 'react-icons/lu';
+import { LuFileEdit } from 'react-icons/lu';
 import { MdDeleteForever } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
@@ -52,7 +52,7 @@ const ActivityCellActions:FC<ActivityCellActionsProps> = ({user_id,agent_log_id,
             <div className='flex flex-row items-center justify-end space-x-2.5'>
                 <ActivityCellActionTooltip label='Edit'>
                     <Button onClick={handleEdit} variant='outline' size='icon'>
-                        <LuEdit size={18} />
+                        <LuFileEdit size={18} />
                     </Button>
                 </ActivityCellActionTooltip>
 
