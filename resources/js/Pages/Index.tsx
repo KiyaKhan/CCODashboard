@@ -217,7 +217,7 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
         const totalMins=calls+emails+Break+bio_break+Lunch+Training+Coaching+Meeting+system_issue+floor_support+special_assignment;
         return{
             Month: `${format(parseISO(from),'MMM').toString()}-${format(parseISO(from),'yy').toString()}`,
-            "Week Ending":from,
+            "Week Ending":getFriday(session_date),
             "Date":session_date,
             Site:agent.site,
             Project:agent.project.name,
@@ -262,4 +262,17 @@ export const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
     const ss = secs.toString().padStart(2, "0");
     // Return the formatted string
     return `${hh}:${mm}:${ss}`;
+}
+
+
+const getFriday = (dt:string) =>{
+    let d = new Date(dt);
+    d.setHours(0,0,0,0);
+    const day = d.getDay();
+    let diff=5-day;
+    if(diff<0){
+        diff+=7;
+    }
+    d.setDate (d.getDate () + diff);
+    return format(d,'yyyy-MM-dd');
 }
