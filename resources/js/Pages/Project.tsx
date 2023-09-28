@@ -7,7 +7,9 @@ import { Separator } from '@/Components/ui/separator'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table'
 import { IProject, ITeam, User } from '@/types'
 import { Head, useForm } from '@inertiajs/react'
-import React, { FC, FormEventHandler, useCallback, useState } from 'react'
+import React, { FC, FormEventHandler, useCallback, useEffect, useRef, useState } from 'react'
+import { BiCheckCircle } from 'react-icons/bi'
+import { MdCancel } from 'react-icons/md'
 import { toast } from 'react-toastify'
 
 const Project:FC<{
@@ -37,14 +39,12 @@ const Project:FC<{
                                         <TableRow className='text-base'>
                                             <TableHead className="!font-bold">Project Name</TableHead>
                                             <TableHead className="!font-bold">Agent Count</TableHead>
+                                            <TableHead className="!font-bold">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {projects.map(({name,id,users}) => (
-                                        <TableRow key={id}>
-                                            <TableCell className="font-medium">{name}</TableCell>
-                                            <TableCell>{users.length}</TableCell>
-                                        </TableRow>
+                                        {projects.map((project) => (
+                                            <ProjectItem project={project} key={project.id} />
                                         ))}
                                     </TableBody>
                                 </Table>
@@ -96,5 +96,48 @@ const NewProjectDialog:FC<{open:boolean;onOpenChange:()=>void}> = ({open,onOpenC
                     </DialogFooter>
                 </DialogContent>
         </Dialog>
+    );
+}
+
+
+const ProjectItem:FC<{project:IProject}> = ({project}) =>{
+    const {name,id,users} = project;
+    const [renaming,setRenaming] = useState(false);
+    const onRename:FormEventHandler<HTMLFormElement> = (e) =>{
+        e.preventDefault();
+        post(route('projects.update'),{
+            onError:()=>toast.error('Server Error. Please Try Again'),
+            onSuccess:()=>{
+                setRenaming(false);
+                toast.success('Project Renamed');
+            }
+        });
+    }
+    const input = useRef<HTMLInputElement>(null);
+    useEffect(()=>{
+        if(input&&renaming){
+            input.current?.focus();
+        }
+    },[renaming])
+
+    const {post,processing,errors,setData,data} = useForm<{id:number,name:string}>({id,name})
+
+    return (
+        <TableRow key={id}>
+            <TableCell className="font-medium">
+                {
+                    !renaming?<p>{name}</p>:(
+                        <form onSubmit={onRename} className='flex items-center space-x-1.5'>
+                            <Input required ref={input} onChange={({target})=>setData('name',target.value)} value={data.name} disabled={processing} />
+                            <Button type='button' onClick={()=>setRenaming(false)} disabled={processing} size='icon' variant='destructive' > <MdCancel className='w-5 h-5'/> </Button>
+                            <Button type='submit' disabled={processing} size='icon' variant='outline' className='text-green-500 dark:text-green-400 border-green-500 dark:text-border-400'> <BiCheckCircle className='w-5 h-5'/> </Button>
+                        </form>
+                    )
+                }
+                
+            </TableCell>
+            <TableCell>{users.length}</TableCell>
+            <TableCell> <Button disabled={processing||renaming} onClick={()=>setRenaming(true)} size='sm' variant='outline'>Rename</Button> </TableCell>
+        </TableRow>
     );
 }

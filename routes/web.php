@@ -99,6 +99,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
         
         Route::get('/',[ProjectController::class,'index'])->name('index');
         Route::post('/store',[ProjectController::class,'store'])->name('store');
+        Route::post('/update',[ProjectController::class,'update'])->name('update');
     });
     
 
