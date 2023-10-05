@@ -19,7 +19,7 @@ class LoggingPostRequest extends FormRequest
     {
         return [
             'session_id' => ['required','exists:App\Models\AgentSession,id'],
-            'type' => ['required',Rule::in(['call', 'email'])],
+            'type' => ['required'],
             'driver' => ['required','string'],
             'phone_or_email' => ['required','string']
         ];

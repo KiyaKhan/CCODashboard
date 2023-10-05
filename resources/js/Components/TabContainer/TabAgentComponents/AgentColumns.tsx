@@ -2,9 +2,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import React, { ReactNode } from 'react'
 import AgentCellActions from './AgentCellActions';
 import formatDistanceToNow  from 'date-fns/formatDistanceToNow';
-import { User } from '@/types';
+import { IAgentSession, User } from '@/types';
 import { differenceInSeconds } from 'date-fns';
 import AgentSinceCell from './AgentSinceCell';
+import AgentStatusCell from './AgentStatusCell';
 
 
 
@@ -38,7 +39,9 @@ export const agentColumns: ColumnDef<User>[] = [
     },
     {
         header: "Status",
-        cell:({row})=>`${row.original.status.name}`
+        cell:({row})=>(
+            <AgentStatusCell user={row.original} />
+        )
     },
     {
         header: "Since",
@@ -50,3 +53,4 @@ export const agentColumns: ColumnDef<User>[] = [
         cell:({row})=><AgentCellActions agent={row.original} user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id.toString()} />
     }
 ]
+
