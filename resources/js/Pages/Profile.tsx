@@ -13,6 +13,9 @@ import {  PiPasswordFill } from 'react-icons/pi'
 import { IconType } from 'react-icons';
 import { BiSolidUserCircle } from 'react-icons/bi';
 import { RiLogoutBoxRLine } from 'react-icons/ri';
+import { Badge } from '@/Components/ui/badge';
+import { Switch } from '@/Components/ui/switch';
+import useToggleNotification from '@/Hooks/useToggleNotification';
 
 interface ProfileProps{
     teams:ITeam[];
@@ -100,6 +103,7 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
     let panelContent:ReactNode=useMemo(()=>{
         if(panel==='PROFILE'){
             return(
+                <>
                 <form onSubmit={handleSubmit}>
                     <div className='flex flex-col'>
                         <h3 className='font-bold text-3xl'>Profile Settings</h3>
@@ -127,8 +131,19 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
                             </div>
                         </div>
                         <Button  disabled={processing} type='submit' className='ml-auto font-bold  my-3.5' size='sm'>Submit</Button>
+                        
                     </div>
                 </form>
+                {/* <div className='flex flex-col space-y-2.5'>
+                    <Separator className='my-3.5'/>
+                    <div className='w-full flex'>Showing Notifications: <Badge className='ml-auto' variant={showNotif?'outline':'destructive'}><span>  {showNotif?'YES':'NO'}</span></Badge> </div>
+                    <div className='flex items-center'>
+                        <Label htmlFor='showNotif' className='cursor-pointer opacity-70 hover:opacity-100 transition'>Show Notifications:</Label>
+                        <Switch className='ml-auto' id='showNotif' checked={showNotif} onCheckedChange={()=>{toggleNotif();}}  />
+                    </div>
+                </div> */}
+                </>
+                
             );
         }
         if(panel==='PASSWORD'){

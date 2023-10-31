@@ -108,7 +108,7 @@ Route::middleware(['auth','is_admin'])->group(function(){
             'first_name' => ['string', 'max:255','required'],
             'last_name' => ['string', 'max:255','required'],
             'company_id' => ['string', 'max:255','unique:users','required'],
-            'email' => ['max:255','unique:users',],
+            'email' => ['max:255','unique:users','nullable'],
         ]);
 
 

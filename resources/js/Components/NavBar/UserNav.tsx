@@ -12,11 +12,16 @@ import NewAgentDialog from '../Dialogs/NewAgentDialog';
 import useNewAgentDialog from '@/Hooks/useNewAgentDialog';
 import useToggleDark from '@/Hooks/useToggleDark';
 import useNewAdminDialog from '@/Hooks/useNewAdminDialog';
+import useToggleNotification from '@/Hooks/useToggleNotification';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 
 
 
 const UserNav:FC = () => {
     const {user} = usePage<PageProps>().props.auth;
+    
+    const {toggleNotif,showNotif} = useToggleNotification();
     const {setShowNewTeamDialog} = useNewTeamDialog();
     const {setShowNewAgentDialog} = useNewAgentDialog();
     const {toggleTheme} = useToggleDark();
@@ -61,7 +66,13 @@ const UserNav:FC = () => {
                                 Add New Admin Account
                             </DropdownMenuItem>
                         )
-                    }<DropdownMenuSeparator />
+                    }
+                    <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={toggleNotif}>
+                    <div>
+                        {`Turn ${showNotif?'Off':'On'} Notifications`}
+                    </div>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={()=>router.post(route('logout'))}>
                     Log out
                 </DropdownMenuItem>

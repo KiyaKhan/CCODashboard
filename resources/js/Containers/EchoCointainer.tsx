@@ -4,6 +4,7 @@ import useEcho from '@/Hooks/useEcho';
 import useGetAgents from '@/Hooks/useGetAgents';
 import useGetNotifications from '@/Hooks/useGetNotifications';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
+import useToggleNotification from '@/Hooks/useToggleNotification';
 import { INotification, PageProps, User } from '@/types';
 import axios from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react'
@@ -15,7 +16,7 @@ type EchoEvent ={
 }
 
 const EchoCointainer:FC = () => {
-    
+    const {showNotif} = useToggleNotification();
     const {setEcho} = useEcho();
     const {appendRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
     const {selectedTeam} = useSelectedTeam();
@@ -47,7 +48,7 @@ const EchoCointainer:FC = () => {
         setEcho(null);
         const echo=window.Echo.join('global_channel')
         .listen('AgentLogInEvent', (e:EchoEvent)=>{
-            toast.info(e.notification.message);
+            if (showNotif) toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
@@ -56,7 +57,7 @@ const EchoCointainer:FC = () => {
 
         })
         .listen('AgentChangeStatusEvent', (e:EchoEvent)=>{
-            toast.info(e.notification.message);
+            if (showNotif) toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
@@ -66,7 +67,7 @@ const EchoCointainer:FC = () => {
 
         })
         .listen('AgentLogOutEvent', (e:EchoEvent)=>{
-            toast.info(e.notification.message);
+            if (showNotif) toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
             refreshCards();
             refreshBar();
@@ -75,7 +76,7 @@ const EchoCointainer:FC = () => {
 
         })
         .listen('AgentRegisteredEvent',(e:EchoEvent)=>{
-            toast.info(e.notification.message);
+            if (showNotif) toast.info(e.notification.message);
             appendRecentNotifications(e.notification);
             refreshBar();
             if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);

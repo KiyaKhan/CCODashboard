@@ -42,7 +42,22 @@ const TabAgents:FC = () => {
         return()=>setAgentsTabOpen(false);
     },[]);
 
-    if(!agents){
+
+    const nonResignedAgents = useMemo(()=>{
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        return agents?.filter(a=>{
+            if(a.is_resigned!==1) return true;
+            const updateDate = new Date(a.updated_at);
+            if((updateDate>=thirtyDaysAgo)&&a.is_resigned===1) return true;
+            return false;
+        });
+
+    },[agents]);
+
+    if(!nonResignedAgents){
         return(
             <Loader />
         )
@@ -76,7 +91,7 @@ const TabAgents:FC = () => {
                 </div>
             </div>
             <Separator />
-            <div className='min-w-[48rem]  overflow-x-auto'>{!loading?<DataTable columns={agentColumns} data={agents} />:<Loader />}</div>
+            <div className='min-w-[48rem]  overflow-x-auto'>{!loading?<DataTable columns={agentColumns} data={nonResignedAgents} />:<Loader />}</div>
         </>
     )
 }

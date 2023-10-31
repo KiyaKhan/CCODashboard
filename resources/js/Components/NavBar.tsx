@@ -15,6 +15,7 @@ interface NavBarProps {
 
 const NavBar:FC<NavBarProps> = ({teams,availableTeamLeaders}) => {
     const {toggleTheme,isDark} = useToggleDark();
+    
     return (
         <div className='border-b'>
             <div className="flex h-16 items-center px-4">
