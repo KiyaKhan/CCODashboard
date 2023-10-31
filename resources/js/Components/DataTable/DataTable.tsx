@@ -44,6 +44,7 @@ export function DataTable<TData, TValue>({
         onColumnFiltersChange:setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         autoResetPageIndex:false,
+        pageCount:15,
         state:{
             columnFilters,
         }
