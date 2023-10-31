@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { create } from 'zustand';
@@ -21,16 +22,19 @@ const useToggleNotification = () => {
         if(showNotif){
             setShow(false);
             localStorage.removeItem('show'); 
-            return toast.info('Notifications Turned Off',{autoClose:1200});
+            toast.info('Notifications Turned Off',{autoClose:1200});
+            return router.reload({preserveState:false});
         }
         setShow(true);
         toast.info('Notifications Turned On',{autoClose:1200})
         localStorage.setItem('show','yes');
+        router.reload({preserveState:false});
     }
 
     useEffect(()=>{
         if (localStorage.getItem('show')==='yes'){
             setShow(true);
+            //router.reload({preserveState:false});
         }
     },[]);
 

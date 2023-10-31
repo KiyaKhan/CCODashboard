@@ -85,7 +85,7 @@ const EchoCointainer:FC = () => {
         }); 
         setEcho(echo);
         return ()=>window.Echo.leave('global_channel');
-    },[selectedTeam,previousFilters,previousStatusId,isAgentsTabOpen,isNotificationsTabOpen]);
+    },[selectedTeam,previousFilters,previousStatusId,isAgentsTabOpen,isNotificationsTabOpen,showNotif]);
     return (
         <></>
     )
