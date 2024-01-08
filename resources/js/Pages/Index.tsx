@@ -281,13 +281,19 @@ export const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
 
 
 const getFriday = (dt:string) =>{
-    let d = new Date(dt);
-    d.setHours(0,0,0,0);
-    const day = d.getDay();
-    let diff=5-day;
-    if(diff<0){
-        diff+=7;
+    try{
+        let d = new Date(dt);
+        d.setHours(0,0,0,0);
+        const day = d.getDay();
+        let diff=5-day;
+        if(diff<0){
+            diff+=7;
+        }
+        d.setDate (d.getDate () + diff);
+        return format(d,'yyyy-MM-dd');
+    }catch(e){
+        console.error(e);
+        return 'Undefined';
     }
-    d.setDate (d.getDate () + diff);
-    return format(d,'yyyy-MM-dd');
+    
 }
