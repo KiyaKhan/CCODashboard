@@ -66,7 +66,12 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     }
 
     const onConfirm = async(report:formattedReport[])=>{
-        await ExportToExcel(report,`RMS_Report_${selectedTeam?.name}_${report[0]['Week Ending']}_${report[0].Date}`);
+        try {
+            await ExportToExcel(report,`RMS_Report_${selectedTeam?.name}_${report[0]['Week Ending']}_${report[0].Date}`);
+        } catch (error) {
+            console.error(error);
+        }
+
     };
 
 
@@ -156,7 +161,7 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
             console.log(report);
             onClose();
         } catch (error) {
-            console.log(error);
+            console.error(error);
             toast.error('Something went wrong. Please try again...');
         } finally{
             setLoading(false);
@@ -247,7 +252,6 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             "Overtime Reason":overtime_reason
         } 
     });
-    
     return formattedReport;
 }
 
