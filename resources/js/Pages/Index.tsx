@@ -155,6 +155,7 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
             onConfirm(report);
             onClose();
         } catch (error) {
+            console.log(error);
             toast.error('Something went wrong. Please try again...');
         } finally{
             setLoading(false);
