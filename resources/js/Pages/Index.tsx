@@ -223,7 +223,7 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
         } = breakdown;
         const totalMins=calls+emails+Break+bio_break+Lunch+Training+Coaching+Meeting+system_issue+floor_support+special_assignment;
         return{
-            Month: `${format(parseISO(from),'MMM').toString()}-${format(parseISO(from),'yy').toString()}`,
+            Month: `${format(new Date(from),'MMM').toString()}-${format(new Date(from),'yy').toString()}`,
             "Week Ending":getFriday(session_date),
             "Date":session_date,
             Site:agent.site,
