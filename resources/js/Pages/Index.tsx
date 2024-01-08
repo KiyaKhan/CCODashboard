@@ -158,7 +158,7 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
             }
             console.log(data);
             const report:formattedReport[] = await formatReport(data,selectedTeam?.name||'Overall');
-            onConfirm(report);
+            //onConfirm(report);
             
             onClose();
         } catch (error) {
