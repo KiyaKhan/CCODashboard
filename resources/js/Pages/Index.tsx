@@ -156,9 +156,10 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
             if(!data.report_items||data.report_items.length<1){
                 return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
             }
+            console.log(data);
             const report:formattedReport[] = await formatReport(data,selectedTeam?.name||'Overall');
             onConfirm(report);
-            console.error(report);
+            
             onClose();
         } catch (error) {
             console.error(error);
@@ -199,7 +200,7 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
 }
 
 const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedReport[]>= async({report_items,from,to},teamName) =>{
-    console.log(from);
+    
     const formattedReport:formattedReport[] = report_items.map(({agent,breakdown})=>{
         const {
             calls,
