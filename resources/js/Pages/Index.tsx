@@ -147,17 +147,18 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
     const {selectedTeam} = useSelectedTeam();
     const [loading,setLoading] = useState(false);
     const handleConfirm = useCallback(async()=>{
-
+        setLoading(true);
         axios.get(route('teams.reports',{
             team_id:team.id,
             date
         })).then(async ({data}:{data:reportResponse})=>{
-            if(!data.report_items||data.report_items.length<1){
-                return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
-            }
             console.log(data);
-            const report:formattedReport[] = await formatReport(data,selectedTeam?.name||'Overall');
-            onConfirm(report);
+            // if(!data.report_items||data.report_items.length<1){
+            //     return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
+            // }
+            // console.log(data);
+            // const report:formattedReport[] = await formatReport(data,selectedTeam?.name||'Overall');
+            // onConfirm(report);
         }).catch(e=>{
             console.error(e);
             toast.error('Something went wrong. Please try again...');
