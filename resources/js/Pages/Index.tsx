@@ -15,7 +15,7 @@ import useDashboardInfo, { AgentBreakdown, BarChart } from '@/Hooks/useDashboard
 import EchoCointainer from '@/Containers/EchoCointainer';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/alert-dialog';
-import { addDays, format, parseISO } from 'date-fns';
+import { addDays, format, parseISO, set } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { FaCircleNotch } from 'react-icons/fa';
 import ExportToExcel from '@/Libs/ExportToExcel';
@@ -147,27 +147,23 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
     const {selectedTeam} = useSelectedTeam();
     const [loading,setLoading] = useState(false);
     const handleConfirm = useCallback(async()=>{
-        try {
-            setLoading(true);
-            const {data} = await axios.get(route('teams.reports',{
-                team_id:team.id,
-                date
-            })) as {data:reportResponse};
+
+        axios.get(route('teams.reports',{
+            team_id:team.id,
+            date
+        })).then(async ({data}:{data:reportResponse})=>{
             if(!data.report_items||data.report_items.length<1){
                 return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
             }
             console.log(data);
             const report:formattedReport[] = await formatReport(data,selectedTeam?.name||'Overall');
-            //onConfirm(report);
-            
-            onClose();
-        } catch (error) {
-            console.error(error);
+            onConfirm(report);
+        }).catch(e=>{
+            console.error(e);
             toast.error('Something went wrong. Please try again...');
-        } finally{
-            setLoading(false);
-        }
-        
+        }).finally(()=>setLoading(false));
+
+                
         
     },[date,team]);
 
