@@ -236,7 +236,7 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             "Week Ending":getFriday(session_date),
             "Date":session_date,
             Site:agent.site,
-            Project:agent.project.name || 'N/A',
+            Project:agent?.project?.name || 'N/A',
             "DDC ID#":agent.company_id,
             "Name":`${agent.last_name}, ${agent.first_name}`,
             "Total Hours":  minsToDuration(totalMins),
