@@ -11,7 +11,6 @@ import React, { FC,  useCallback,  useEffect, useMemo, useRef, useState } from '
 import { RiPictureInPictureLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
-import { LuEdit } from 'react-icons/lu';
 import { usePage } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import useGetAgents from '@/Hooks/useGetAgents';
@@ -71,6 +70,8 @@ const AgentCellActions:FC<AgentCellActionsProps> = ({company_id,team_id,user_id,
         .catch(()=>toast.error('Internal Error. Please try again'))
         .finally(()=>setLoadingLogs(false));
     },[showLogDialog]);
+
+    if(!team_id) return null;
 
     return (
         <>
