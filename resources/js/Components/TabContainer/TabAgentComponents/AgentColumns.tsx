@@ -32,7 +32,7 @@ export const agentColumns: ColumnDef<User>[] = [
         header: "Team",
         cell:({row})=>(
             <div className='flex flex-col space-y-0.5 '>
-                <span>{row.original.group.name}</span>
+                <span>{row.original?.group?.name || 'No Team'}</span>
                 <span className='text-muted-foreground text-[0.7rem]'>{row.original.id===row.original.group.user_id?'Team Leader':'Agent'}</span>
             </div>
         )
