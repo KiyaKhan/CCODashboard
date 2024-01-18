@@ -21,7 +21,7 @@ import { Badge } from '@/Components/ui/badge';
 
 interface AgentCellActionsProps{
     company_id:string;
-    team_id:string;
+    team_id?:string;
     user_id:string;
     agent:User;
 }

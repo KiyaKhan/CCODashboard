@@ -50,7 +50,7 @@ export const agentColumns: ColumnDef<User>[] = [
     {
         header: "",
         id:"actions",
-        cell:({row})=><AgentCellActions agent={row.original} user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id.toString()} />
+        cell:({row})=><AgentCellActions agent={row.original} user_id={row.original.id.toString()} company_id={row.original.company_id} team_id={row.original.team_id?.toString()} />
     }
 ]
 
