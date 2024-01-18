@@ -28,7 +28,7 @@ class AgentLogInEvent  implements ShouldBroadcast
         $this->user=$user;
         $this->notification= Notification::create([
             'user_id'=>$user->id,
-            'team_id'=>$user->group->id,
+            'team_id'=>$user->group->id ?? $user->team_id,
             'status_id'=>13,
             'message'=>$user->first_name.' '.$user->last_name.' is now Online'
         ]);

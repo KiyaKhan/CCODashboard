@@ -105,14 +105,14 @@ class ApiController extends Controller
                 'login_time'=>$current_session->created_at,
                 'session_id'=>$this->session_id,
                 "site"=>$user->site,
-                "project"=>$user->project->name,
+                "project"=>$user->project->name ?? 'No Project Assigned',
                 "shift_start"=> $user->shift_start,
                 "shift_end"=> $user->shift_end,
                 'team'=>[
-                    'team_id'=>$user->group->id,
-                    'name'=>$user->group->name,
-                    'team_leader_first_name'=>$user->group->user->first_name,
-                    'team_leader_last_name'=>$user->group->user->last_name
+                    'team_id'=>$user->group->id ?? 0,
+                    'name'=>$user->group->name ?? 'No Team Assigned',
+                    'team_leader_first_name'=>$user->group->user->first_name ?? 'No Team Assigned',
+                    'team_leader_last_name'=>$user->group->user->last_name ?? 'No Team Assigned'
                 ]
             ],
         ];
