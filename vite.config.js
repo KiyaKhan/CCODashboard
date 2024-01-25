@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.tsx','resources/js/Pages/Index.tsx','resources/js/Tracker.tsx'],
+            input: ['resources/js/app.tsx','resources/js/Pages/Index.tsx','resources/js/Pages/Tracker.tsx'],
             refresh: true,
         }),
         react(),
