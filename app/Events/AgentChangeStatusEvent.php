@@ -27,7 +27,7 @@ class AgentChangeStatusEvent implements ShouldBroadcast
     {
         $this->user=$user;
         $status = Status::find($status_id);
-        $this->notification= Notification::create([
+        @$this->notification= Notification::create([
             'user_id'=>$user->id,
             'team_id'=>$user->group->id ?? $user->team_id,
             'status_id'=>$status_id,
