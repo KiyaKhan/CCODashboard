@@ -27,7 +27,7 @@ class AgentLogOutEvent  implements ShouldBroadcast
         $this->user=$user;
         $this->notification= Notification::create([
             'user_id'=>$user->id,
-            'team_id'=>$user->group->id ?? $user->team->id ?? 0,
+            'team_id'=>$user->group->id ?? $user->team->id ,
             'status_id'=>10,
             'message'=>$user->first_name.' '.$user->last_name.' has Logged Out'
         ]);
