@@ -20,6 +20,7 @@ export interface User {
     email_verified_at: string;
     updated_at:string;
     is_resigned:1|0;
+    status_id:number;
 }
 
 interface IProject{

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TrackerController;
 use App\Models\AgentLog;
 use App\Models\Team;
 use App\Models\User;
@@ -143,17 +144,27 @@ Route::middleware(['auth'])->group(function(){
         Route::post('password', [PasswordController::class, 'update'])->name('password.update');
         Route::post('update', [ProfileController::class, 'update'])->name('update');
     });
+
+    Route::prefix('tracker')->name('tracker.')->group(function(){
+        
+        
+        Route::get('/session', [TrackerController::class, 'show'])->name('show');
+        Route::post('/update', [TrackerController::class, 'update'])->name('update');
+        Route::post('/logout', [TrackerController::class, 'logout'])->name('logout');
+
+    });
 });
 
 
 
 
 
-
+Route::get('/tracker', [TrackerController::class, 'index'])->name('tracker.index');
 
 Route::middleware('guest')->group(function () {
     
-
+    Route::post('/tracker', [TrackerController::class, 'store'])->name('tracker.store');
+    
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 
@@ -163,7 +174,7 @@ Route::middleware('guest')->group(function () {
 });
 
 
-Route::get('/test',[TeamController::class,'test'])->name('test');
+Route::get('/test',[TrackerController::class,'show_cookie'])->name('test');
 
 
 
