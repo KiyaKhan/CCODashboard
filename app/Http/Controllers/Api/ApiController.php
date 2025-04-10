@@ -20,55 +20,82 @@ use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
     private $session_id;
-    public function register(ApiPostRegisterRequest $request){
-        $user=User::create([
-            "company_id"=> $request->company_id,
-            "first_name"=> $request->first_name,
-            "last_name"=> $request->last_name,
-            "team_id"=> $request->team_id,
-            "project_id"=> $request->project_id,
-            "site"=> $request->site,
-            "shift_start"=> $request->shift_start,
-            "shift_end"=> $request->shift_end,
-            "status_id"=> 10,
-            "password"=> Hash::make($request->password),
+    public function register(ApiPostRegisterRequest $request)
+    {
+        $user = User::create([
+            "company_id" => $request->company_id,
+            "first_name" => $request->first_name,
+            "last_name" => $request->last_name,
+            "team_id" => $request->team_id,
+            "project_id" => $request->project_id,
+            "site" => $request->site,
+            "shift_start" => $request->shift_start,
+            "shift_end" => $request->shift_end,
+            "status_id" => 10,
+            "password" => Hash::make($request->password),
         ]);
         broadcast(new AgentRegisteredEvent($user));
         return response([
-            'message'=>'Registration succesful',
-            'user'=>[
-                "company_id"=>$user->company_id,
-                "first_name"=>$user->first_name,
-                "last_name"=>$user->last_name,
-                "site"=>$user->site,
-                "shift_start"=> $user->shift_start,
-                "shift_end"=> $user->shift_end,
-                "team"=>[
-                    "team_name"=>$user->group->name,
-                    "team_leader"=>$user->group->user->first_name.' '.$user->group->user->last
+            'message' => 'Registration succesful',
+            'user' => [
+                "company_id" => $user->company_id,
+                "first_name" => $user->first_name,
+                "last_name" => $user->last_name,
+                "site" => $user->site,
+                "shift_start" => $user->shift_start,
+                "shift_end" => $user->shift_end,
+                "team" => [
+                    "team_name" => $user->group->name,
+                    "team_leader" => $user->group->user->first_name . ' ' . $user->group->user->last
                 ],
-                "project"=>$user->project->name
-            ]], 201);
+                "project" => $user->project->name
+            ]
+        ], 201);
+    }
+    public function forgotPassword(Request $request)
+    {
+        $user = User::where('company_id', $request->company_id)
+            ->where('last_name', $request->last_name)
+            ->where('site', $request->site)->first();
+        if (!$user) return response('Agent Not Found', 404);
+        try {
+            $ID = Str::upper($user->company_id);
+            $LN = Str::lower(
+                Str::replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $user->last_name)
+            );
+            $user->password = Hash::make($ID . "_" . $LN);
+            $user->save();
+            return response('Password Reset Successful!');
+        } catch (Exception $ex) {
+            return response()->json([
+                'status' => 500,
+                'error' => $ex->getMessage()
+            ], 500);
+        }
+    }
+    public function statuses()
+    {
+        return Status::whereNot('id', 10)->get();
     }
 
-    public function statuses(){
-        return Status::whereNot('id',10)->get();
-    }
-
-    public function statuses_all(){
+    public function statuses_all()
+    {
         return Status::all();
     }
 
-    public function login(Request $request){
-        $user=User::with(['group','group.user'])->where('company_id',$request->company_id)->first();
-        if(!$user){
+    public function login(Request $request)
+    {
+        $user = User::with(['group', 'group.user'])->where('company_id', $request->company_id)->first();
+        if (!$user) {
             return response('Agent Not Found', 404);
         }
 
@@ -78,94 +105,91 @@ class ApiController extends Controller
 
         $accessToken = $user->createToken($user->company_id);
         DB::transaction(function () use ($user) {
-            $session=AgentSession::create([
-                'user_id'=>$user->id,
-                'status_id'=>13,
+            $session = AgentSession::create([
+                'user_id' => $user->id,
+                'status_id' => 13,
             ]);
             AgentLog::create([
-                'user_id'=>$user->id,
-                'status_id'=>13,
-                'agent_session_id'=>$session->id,
-                'is_log_in'=>1,
-                'start'=>now()
+                'user_id' => $user->id,
+                'status_id' => 13,
+                'agent_session_id' => $session->id,
+                'is_log_in' => 1,
+                'start' => now()
             ]);
             User::find($user->id)->update([
-                'status_id'=>13
+                'status_id' => 13
             ]);
-            $this->session_id=$session->id;
+            $this->session_id = $session->id;
         });
         broadcast(new AgentLogInEvent($user));
-        $current_session=AgentSession::find($this->session_id);
+        $current_session = AgentSession::find($this->session_id);
         return [
-            'accessToken'=>$accessToken->plainTextToken,
-            'user'=>[
-                'user_id'=>$user->id,
-                'firstName'=>$user->first_name,
-                'lastName'=>$user->last_name,
-                'login_time'=>$current_session->created_at,
-                'session_id'=>$this->session_id,
-                "site"=>$user->site,
-                "project"=>$user->project->name ?? 'No Project Assigned',
-                "shift_start"=> $user->shift_start,
-                "shift_end"=> $user->shift_end,
-                'team'=>[
-                    'team_id'=>$user->group->id ?? 0,
-                    'name'=>$user->group->name ?? 'No Team Assigned',
-                    'team_leader_first_name'=>$user->group->user->first_name ?? 'No Team Assigned',
-                    'team_leader_last_name'=>$user->group->user->last_name ?? 'No Team Assigned'
+            'accessToken' => $accessToken->plainTextToken,
+            'user' => [
+                'user_id' => $user->id,
+                'firstName' => $user->first_name,
+                'lastName' => $user->last_name,
+                'login_time' => $current_session->created_at,
+                'session_id' => $this->session_id,
+                "site" => $user->site,
+                "project" => $user->project->name ?? 'No Project Assigned',
+                "shift_start" => $user->shift_start,
+                "shift_end" => $user->shift_end,
+                'team' => [
+                    'team_id' => $user->group->id ?? 0,
+                    'name' => $user->group->name ?? 'No Team Assigned',
+                    'team_leader_first_name' => $user->group->user->first_name ?? 'No Team Assigned',
+                    'team_leader_last_name' => $user->group->user->last_name ?? 'No Team Assigned'
                 ]
             ],
         ];
-
-
-
-        
     }
 
 
-    public function logout(Request $request){
-        
-        $session_to_end=AgentSession::where([
-            'user_id'=>$request->user()->id,
-            'id'=>$request->session_id
+    public function logout(Request $request)
+    {
+
+        $session_to_end = AgentSession::where([
+            'user_id' => $request->user()->id,
+            'id' => $request->session_id
         ])->first();
 
-        if(!$session_to_end){
+        if (!$session_to_end) {
             return response('Invalid Session ID', 404);
         }
 
-        $user=$request->user();
-        $session_id=$request->session_id;
-        
-        $overtime_reason=$request->overtime_reason;
-        $early_departure_reason=$request->early_departure_reason;
-        DB::transaction(function () use ($user,$session_id,$overtime_reason,$early_departure_reason) {
-            $agent_session=AgentSession::where([
-                'id'=>$session_id
+        $user = $request->user();
+        $session_id = $request->session_id;
+
+        $overtime_reason = $request->overtime_reason;
+        $early_departure_reason = $request->early_departure_reason;
+        DB::transaction(function () use ($user, $session_id, $overtime_reason, $early_departure_reason) {
+            $agent_session = AgentSession::where([
+                'id' => $session_id
             ])->first();
 
-            $log=AgentLog::where('agent_session_id',$session_id)->orderBy('created_at','desc')->first();
-            if($log){
+            $log = AgentLog::where('agent_session_id', $session_id)->orderBy('created_at', 'desc')->first();
+            if ($log) {
                 $log->update([
-                    'end'=>now()
+                    'end' => now()
                 ]);
             }
 
             AgentLog::create([
-                'agent_session_id'=>$session_id,
-                'user_id'=>$user->id,
-                'status_id'=>10,
-                'overtime_reason'=>$overtime_reason,
-                'early_departure_reason'=>$early_departure_reason,
-                'end'=>now()
+                'agent_session_id' => $session_id,
+                'user_id' => $user->id,
+                'status_id' => 10,
+                'overtime_reason' => $overtime_reason,
+                'early_departure_reason' => $early_departure_reason,
+                'end' => now()
             ]);
-            
+
             $agent_session->update([
-                'status_id'=>10,
+                'status_id' => 10,
             ]);
 
             User::find($user->id)->update([
-                'status_id'=>10
+                'status_id' => 10
             ]);
         });
         broadcast(new AgentLogOutEvent($request->user()));
@@ -174,130 +198,140 @@ class ApiController extends Controller
         return 'Succesfully Logged Out!';
     }
 
-    public function projects(){
-        return Project::select(['id',
-            'name'])
+    public function projects()
+    {
+        return Project::select([
+            'id',
+            'name'
+        ])
             ->get();
-        
     }
 
-    public function teams(){
-        return Team::select(['id',
-        'user_id',
-        'name'])
-        ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get();
-        
+    public function teams()
+    {
+        return Team::select([
+            'id',
+            'user_id',
+            'name'
+        ])
+            ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get();
     }
 
-    public function teams_and_projects(){
+    public function teams_and_projects()
+    {
         return [
-            'projects'=>Project::select(['id',
-                'name'])
+            'projects' => Project::select([
+                'id',
+                'name'
+            ])
                 ->get(),
-            'teams'=>  Team::select(['id',
+            'teams' =>  Team::select([
+                'id',
                 'user_id',
-                'name'])
+                'name'
+            ])
                 ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get()
         ];
     }
 
 
-    public function change_status(ChangeStatusPostRequest $request){
-        $session_to_edit=AgentSession::where([
-            'user_id'=>$request->user()->id,
-            'id'=>$request->session_id
+    public function change_status(ChangeStatusPostRequest $request)
+    {
+        $session_to_edit = AgentSession::where([
+            'user_id' => $request->user()->id,
+            'id' => $request->session_id
         ])->first();
 
-        if(!$session_to_edit){
+        if (!$session_to_edit) {
             return response('Invalid Session ID', 404);
         }
 
-        if(strval($request->status_id)=='10'){
+        if (strval($request->status_id) == '10') {
             return response('Invalid Status ID', 404);
         }
 
-        $user=$request->user();
-        $session_id=$request->session_id;
-        $status_id=$request->status_id;
-        $overtime_reason=$request->overtime_reason;
-        $early_departure_reason=$request->early_departure_reason;
-        $special_project_remark=$request->special_project_remark;
-        DB::transaction(function () use ($user,$session_id,$status_id,$overtime_reason,$early_departure_reason,$special_project_remark) {
-            $agent_session=AgentSession::where([
-                'id'=>$session_id
+        $user = $request->user();
+        $session_id = $request->session_id;
+        $status_id = $request->status_id;
+        $overtime_reason = $request->overtime_reason;
+        $early_departure_reason = $request->early_departure_reason;
+        $special_project_remark = $request->special_project_remark;
+        DB::transaction(function () use ($user, $session_id, $status_id, $overtime_reason, $early_departure_reason, $special_project_remark) {
+            $agent_session = AgentSession::where([
+                'id' => $session_id
             ])->first();
 
-            $log=AgentLog::where('agent_session_id',$session_id)->orderBy('created_at','desc')->first();
-            if($log){
+            $log = AgentLog::where('agent_session_id', $session_id)->orderBy('created_at', 'desc')->first();
+            if ($log) {
                 $log->update([
-                    'end'=>now()
+                    'end' => now()
                 ]);
             }
-            
+
 
             AgentLog::create([
-                'agent_session_id'=>$session_id,
-                'user_id'=>$user->id,
-                'status_id'=>$status_id,
-                'overtime_reason'=>$overtime_reason,
-                'early_departure_reason'=>$early_departure_reason,
-                'special_project_remark'=>$special_project_remark,
-                'start'=>now()
+                'agent_session_id' => $session_id,
+                'user_id' => $user->id,
+                'status_id' => $status_id,
+                'overtime_reason' => $overtime_reason,
+                'early_departure_reason' => $early_departure_reason,
+                'special_project_remark' => $special_project_remark,
+                'start' => now()
             ]);
-            
+
             $agent_session->update([
-                'status_id'=>$status_id,
+                'status_id' => $status_id,
             ]);
 
             User::find($user->id)->update([
-                'status_id'=>$status_id
+                'status_id' => $status_id
             ]);
         });
-        
-        $log=AgentLog::with(['status'])
-            ->select(['id','status_id','agent_session_id as session_id','created_at as start_time'])
-            ->where('user_id',$user->id)
-            ->where('agent_session_id',$session_id)
-            ->orderBy('created_at','desc')->get();
 
-        broadcast(new AgentChangeStatusEvent($user,$status_id));
+        $log = AgentLog::with(['status'])
+            ->select(['id', 'status_id', 'agent_session_id as session_id', 'created_at as start_time'])
+            ->where('user_id', $user->id)
+            ->where('agent_session_id', $session_id)
+            ->orderBy('created_at', 'desc')->get();
+
+        broadcast(new AgentChangeStatusEvent($user, $status_id));
         return [
-            'activity_log'=>$log,
-            'user'=>$user->only(['id','first_name','last_name','company_id']),
-            'current_activity'=>$log[0]
+            'activity_log' => $log,
+            'user' => $user->only(['id', 'first_name', 'last_name', 'company_id']),
+            'current_activity' => $log[0]
         ];
-        
     }
 
-    public function drivers(){
+    public function drivers()
+    {
         return Driver::select(['driver'])->get();
     }
 
-    public function start_log(LoggingPostRequest $request){
-        $log=CallEmailLog::create([
+    public function start_log(LoggingPostRequest $request)
+    {
+        $log = CallEmailLog::create([
             'agent_session_id' => $request->session_id,
             'type' => $request->type,
             'driver' =>  $request->driver,
-            'user_id'=>$request->user()->id,
-            'phone_or_email'=>$request->phone_or_email
+            'user_id' => $request->user()->id,
+            'phone_or_email' => $request->phone_or_email
         ]);
         return [
-            'log_id'=>$log->id,
-            'type'=>$log->type,
-            'driver'=>$log->driver,
-            'session_id'=>$log->agent_session_id,
-            'start_time'=>$log->created_at
+            'log_id' => $log->id,
+            'type' => $log->type,
+            'driver' => $log->driver,
+            'session_id' => $log->agent_session_id,
+            'start_time' => $log->created_at
         ];
     }
 
-    public function end_log(EndLoggingPostRequest $request){
-        $now=now();
-        $log=CallEmailLog::where('agent_session_id',$request->session_id)->where('id',$request->log_id)->first();
+    public function end_log(EndLoggingPostRequest $request)
+    {
+        $now = now();
+        $log = CallEmailLog::where('agent_session_id', $request->session_id)->where('id', $request->log_id)->first();
         $log->update([
-            'updated_at'=>$now
+            'updated_at' => $now
         ]);
-        return ['message'=>'Done!','End Time'=>$now];
+        return ['message' => 'Done!', 'End Time' => $now];
     }
-
-    
 }
