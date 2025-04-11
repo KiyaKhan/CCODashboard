@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API Routes 
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
@@ -21,23 +21,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/teams_and_projects',[ApiController::class,'teams_and_projects'])->name('api.teams_and_projects');
+Route::get('/teams_and_projects', [ApiController::class, 'teams_and_projects'])->name('api.teams_and_projects');
 
-Route::get('/projects',[ApiController::class,'projects'])->name('api.projects');;
-Route::get('/teams',[ApiController::class,'teams'])->name('api.teams');;
-Route::get('/statuses',[ApiController::class,'statuses']);
-Route::get('/statuses_all',[ApiController::class,'statuses_all'])->name('api.statuses_all');
-Route::post('/register',[ApiController::class,'register'])->name('register');
-Route::post('/login',[ApiController::class,'login']);
-Route::get('/drivers',[ApiController::class,'drivers'])->name('drivers');
+Route::get('/projects', [ApiController::class, 'projects'])->name('api.projects');;
+Route::get('/teams', [ApiController::class, 'teams'])->name('api.teams');;
+Route::get('/statuses', [ApiController::class, 'statuses']);
+Route::get('/statuses_all', [ApiController::class, 'statuses_all'])->name('api.statuses_all');
+Route::post('/register', [ApiController::class, 'register'])->name('register');
+Route::post('/reset', [ApiController::class, 'forgotPassword'])->name('reset');
+Route::post('/login', [ApiController::class, 'login']);
+Route::get('/drivers', [ApiController::class, 'drivers'])->name('drivers');
 
-Route::middleware('auth:sanctum')->group(function(){
-    Route::post('/logout',[ApiController::class,'logout']);
-    Route::post('/change_status',[ApiController::class,'change_status']);
-    
-    Route::post('/start_log',[ApiController::class,'start_log']);
-    
-    Route::post('/end_log',[ApiController::class,'end_log']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [ApiController::class, 'logout']);
+    Route::post('/change_status', [ApiController::class, 'change_status']);
+
+    Route::post('/start_log', [ApiController::class, 'start_log']);
+
+    Route::post('/end_log', [ApiController::class, 'end_log']);
 });
-
-

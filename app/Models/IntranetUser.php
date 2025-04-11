@@ -20,7 +20,7 @@ class IntranetUser extends Authenticatable
      */
     protected $connection = 'ams_mysql';
     protected $table = 'users';
-    protected $with = ['shift'];
+    protected $with = ['shift', 'team'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -45,9 +45,12 @@ class IntranetUser extends Authenticatable
     {
         return Str::of($value)->upper();
     }
-
     public function shift()
     {
         return $this->belongsTo(IntranetShift::class);
+    }
+    public function team()
+    {
+        return $this->belongsTo(IntranetTeam::class);
     }
 }

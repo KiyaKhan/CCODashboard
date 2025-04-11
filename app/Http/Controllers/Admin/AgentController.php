@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\SyncIntranetData;
 use App\Models\AgentLog;
+use App\Models\IntranetTeam;
 use App\Models\IntranetUser;
 use App\Models\Notification;
 use App\Models\Team;
