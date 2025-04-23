@@ -76,8 +76,8 @@ const EditAgentDialog:FC = () => {
             first_name:agent.first_name,
             last_name:agent.last_name,
             site:agent.site,
-            team_id:agent.team_id.toString(),
-            project_id:agent.project_id.toString(),
+            team_id:agent?.team_id?.toString(),
+            project_id:agent?.project_id?.toString(),
             shift_start:agent.shift_start.slice(0,-3),
             shift_end:agent.shift_end.slice(0,-3)
         });

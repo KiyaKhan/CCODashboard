@@ -34,10 +34,19 @@ class SyncIntranetData implements ShouldQueue
      *
      * @return void
      */
+    #TODO: When new team created with the same TL. it only updates the existed records 
 
-    public function handle()
+    function sync_team_leaders()
     {
-        $ids = User::pluck('company_id');
+        $ids = collect();
+        IntranetTeam::chunk(100, function ($team) use (&$ids) {
+            $ids->push(...$team->pluck('user.company_id'))->toArray();
+        });
+        # Resgister Team Leaders
+        $this->sync_users($ids);
+    }
+    function sync_teams($ids)
+    {
         # SYNC TEAMS
         IntranetTeam::whereHas('user', function ($query) use ($ids) {
             $query->whereIn('company_id', $ids);
@@ -47,12 +56,15 @@ class SyncIntranetData implements ShouldQueue
                 $team = Team::firstOrNew([
                     'user_id' => $user->id
                 ]);
-                $team->name =  $it->name;
+                $team->name = $it->name;
                 if ($team->isDirty()) {
                     $team->save();
                 }
             }
         });
+    }
+    function sync_users($ids)
+    {
         # SYNC USERS
         $rms_map_team = Team::with('user')->get()
             ->mapWithKeys(function ($team) {
@@ -88,6 +100,7 @@ class SyncIntranetData implements ShouldQueue
                         $personnel->is_resigned = $ip->is_archived;
                         $personnel->email = $ip->email;
                         $personnel->site = $ip->site;
+                        $personnel->is_sync = 1;
                         if (isset($ip->team) && isset($ip->team->user)) {
                             $intranet_tl_company_id = strtoupper($ip->team->user->company_id);
                             error_log('company_id: ' . $intranet_tl_company_id);
@@ -108,5 +121,12 @@ class SyncIntranetData implements ShouldQueue
                     }
                 }
             });
+    }
+    public function handle()
+    {
+        $ids = User::pluck('company_id');
+        $this->sync_team_leaders();
+        $this->sync_teams($ids);
+        $this->sync_users($ids);
     }
 }

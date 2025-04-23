@@ -10,7 +10,7 @@ class IntranetTeam extends Model
     use HasFactory;
     protected $connection = 'ams_mysql';
     protected $table = 'teams';
-    protected $with = ['user'];
+    protected $with = [];
     public function user()
     {
         return $this->belongsTo(IntranetUser::class);
