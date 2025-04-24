@@ -54,7 +54,8 @@ class SyncIntranetData implements ShouldQueue
             foreach ($intranet_teams as $it) {
                 $user =  User::where('company_id', $it->user->company_id)->first();
                 $team = Team::firstOrNew([
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
+                    // 'name' => $it->name
                 ]);
                 $team->name = $it->name;
                 if ($team->isDirty()) {
