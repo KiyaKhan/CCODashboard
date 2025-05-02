@@ -47,7 +47,7 @@ const TabAgents:FC = () => {
         const today = new Date();
         const thirtyDaysAgo = new Date(today);
         thirtyDaysAgo.setDate(today.getDate() - 30);
-
+        return agents;
         return agents?.filter(a=>{
             if(a.is_resigned!==1) return true;
             const updateDate = new Date(a.updated_at);
