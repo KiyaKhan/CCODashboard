@@ -44,7 +44,7 @@ class User extends Authenticatable
     }
     public function position()
     {
-        return $this->belongsTo(Positions::class, 'position_id', 'id');
+        return $this->belongsTo(Positions::class);
     }
     public function group()
     {
