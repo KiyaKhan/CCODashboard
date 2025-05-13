@@ -21,6 +21,13 @@ export interface User {
     updated_at:string;
     is_resigned:1|0;
     status_id:number;
+    position_id: number | null;
+    position?:Position;
+}
+
+export interface Position {
+    id: number;
+    position:string;
 }
 
 interface IProject{
@@ -39,6 +46,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     statuses:IStatus[];
     teams:ITeam[];
     projects:IProject[];
+    positions:Position[];
 };
 
 

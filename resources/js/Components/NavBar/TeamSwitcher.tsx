@@ -65,8 +65,11 @@ const TeamSwitcher:FC<TeamSwitcherProps> = ({teams,className,availableTeamLeader
     useEffect(()=>{
         if(!showNewTeamDialog) return;
         setLoadingAgents(true);
-        axios.get(route('agents.get_non_leaders'))
-        .then(({data})=>setAgents(data))
+        axios.get(route('agents.get_leaders'))
+        .then(({data})=>{
+            console.log('data: ',data);
+            setAgents(data);
+        })
         .catch(e=>'Something went wrong. Please refresh the page...')
         .finally(()=>setLoadingAgents(false));
     },[showNewTeamDialog]);

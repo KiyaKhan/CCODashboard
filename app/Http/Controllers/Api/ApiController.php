@@ -16,6 +16,7 @@ use App\Models\AgentSession;
 use App\Models\AgentStatus;
 use App\Models\CallEmailLog;
 use App\Models\Driver;
+use App\Models\Positions;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
@@ -233,7 +234,10 @@ class ApiController extends Controller
                 ->with(['team_leader:id,first_name,last_name,company_id'])->without(['user'])->get()
         ];
     }
-
+    public function positions()
+    {
+        return response()->json(Positions::all());
+    }
 
     public function change_status(ChangeStatusPostRequest $request)
     {

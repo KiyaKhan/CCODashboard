@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Positions;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
@@ -35,9 +36,10 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            'projects'=>Project::all(),
-            'teams'=>Auth::check()?(Auth::user()->user_level==1?Team::all():Team::where('user_id',Auth::id())->get()):null,
-            'statuses'=>Status::all(),
+            'projects' => Project::all(),
+            'positions' => Positions::all(),
+            'teams' => Auth::check() ? (Auth::user()->user_level == 1 ? Team::all() : Team::where('user_id', Auth::id())->get()) : null,
+            'statuses' => Status::all(),
             'auth' => [
                 'user' => $request->user(),
             ],
@@ -48,6 +50,4 @@ class HandleInertiaRequests extends Middleware
             },
         ]);
     }
-
-    
 }

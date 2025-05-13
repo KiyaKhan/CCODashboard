@@ -1,4 +1,4 @@
-import { IProject, ITeam, PageProps } from '@/types'
+import { IProject, ITeam, PageProps, Position } from '@/types'
 import React, { FC, FormEventHandler, ReactNode, useCallback, useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
 import useSelectedTeam from '@/Hooks/useSelectedTeam'
@@ -26,6 +26,7 @@ type Agent={
     project_id:string;
     shift_start:string;
     shift_end:string;
+    position_id: number | null;
 }
 
 
@@ -34,6 +35,7 @@ const EditAgentDialog:FC = () => {
     
     const [teams,setTeams] = useState<ITeam[]>();
     const {user} = usePage<PageProps>().props.auth;
+    const {positions} = usePage<PageProps>().props;
     const [projects,setProjects] = useState<IProject[]>();
     const [loadingTeams,setLoadingTeams] = useState<boolean>(true);
     const {selectedTeam} = useSelectedTeam();
@@ -49,6 +51,7 @@ const EditAgentDialog:FC = () => {
         project_id:"",
         shift_start:"",
         shift_end:"",
+        position_id:null
     }
     const { data, setData, post, processing, errors } = useForm<Agent>(initialData);
 
@@ -79,7 +82,8 @@ const EditAgentDialog:FC = () => {
             team_id:agent?.team_id?.toString(),
             project_id:agent?.project_id?.toString(),
             shift_start:agent.shift_start.slice(0,-3),
-            shift_end:agent.shift_end.slice(0,-3)
+            shift_end:agent.shift_end.slice(0,-3),
+            position_id: agent.position_id
         });
         
         setLoadingTeams(true);
@@ -179,7 +183,21 @@ const EditAgentDialog:FC = () => {
                                     <Label htmlFor='company_id' className='text-sm' >Company ID:</Label>
                                     <Input  autoComplete='off' disabled id="company_id" value={data.company_id} onChange={({target})=>setData('company_id',target.value)} required/>
                                 </div>
-
+                                <div className='flex flex-col space-y-1.5'>
+                                    <Label htmlFor='team' className='text-sm' >Position:</Label>
+                                    <Select disabled value={data.position_id?.toString()} onValueChange={val=>setData('position_id',parseInt(val))} required >
+                                        <SelectTrigger >
+                                            <SelectValue placeholder="Select Position..." />
+                                        </SelectTrigger>
+                                        <SelectContent className='overflow-y-auto h-96'>
+                                            <SelectGroup>
+                                                {
+                                                    (positions||[]).map(position=><SelectItem key={position.id} value={position.id.toString()}>{position.position}</SelectItem>)
+                                                }
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 <div className='flex space-x-2.5 items-center justify-between'>
                                     <div className='flex flex-col space-y-1.5 flex-1'>
                                         <Label htmlFor='shift_start' className='text-sm' >Shift Start:</Label>

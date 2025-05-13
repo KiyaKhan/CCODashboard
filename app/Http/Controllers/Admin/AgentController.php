@@ -8,6 +8,7 @@ use App\Models\AgentLog;
 use App\Models\IntranetTeam;
 use App\Models\IntranetUser;
 use App\Models\Notification;
+use App\Models\Positions;
 use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
@@ -255,6 +256,7 @@ class AgentController extends Controller
 
     public function update(Request $request)
     {
+
         $request->validate([
             'id' => ['required', 'exists:App\Models\User,id'],
             'first_name' => ['string', 'max:255', 'required'],
@@ -263,10 +265,10 @@ class AgentController extends Controller
             'shift_start' => ['date_format:H:i', 'required'],
             'shift_end' => ['date_format:H:i', 'required'],
             'project_id' => ['required', 'exists:App\Models\Project,id'],
+            'position_id' => ['required', 'numeric'],
             'team_id' => ['required', 'exists:App\Models\Team,id'],
             'site' => ['required', Rule::in(['Manila', 'Leyte'])]
         ]);
-
         $user = User::findOrFail($request->id);
 
         $user->update([
@@ -278,6 +280,7 @@ class AgentController extends Controller
             "shift_start" => $request->shift_start,
             "shift_end" => $request->shift_end,
             "project_id" => $request->project_id,
+            "position_id" => $request->position_id,
             "status_id" => 10,
         ]);
     }
@@ -285,6 +288,15 @@ class AgentController extends Controller
     public function get_non_leaders()
     {
         return User::whereNotIn('user_level', [1, 2])->get();
+    }
+
+    public function get_leaders()
+    {
+        $positions = Positions::where('position', 'like', '%team%')
+            ->orWhere('position', 'like', '%lead%')
+            ->orWhere('position', 'like', '%train%')
+            ->pluck('id');
+        return User::whereIn('position_id', $positions)->get();
     }
 
     public function status_logs(Request $request)

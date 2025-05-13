@@ -28,6 +28,7 @@ type ProfileType = {
     email:string;
     first_name:string;
     last_name:string;
+    position_id: number | null;
     
 }
 type PasswordType = {
@@ -51,7 +52,7 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
         email:user.email,
         first_name:user.first_name,
         last_name:user.last_name,
-        
+        position_id: user.position_id
     });
 
     const { data:pwData, setData:setPw, post:updatePw, processing:processingPw, errors:pwErrors } = useForm<PasswordType>({
@@ -92,7 +93,8 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
             company_id:user.company_id,
             email:user.email,
             first_name:user.first_name,
-            last_name:user.last_name
+            last_name:user.last_name,
+            position_id: user.position_id
         }):setPw({
             current_password:"",
             password:"",
@@ -127,6 +129,11 @@ const Profile:FC<ProfileProps> = ({available_team_leaders,teams,user}) => {
                             <div className='flex flex-col space-y-2.5'>
                                 <Label htmlFor='last_name' className='font-semibold tracking-wide'>Last Name</Label>
                                 <Input disabled={processing}  required onChange={handleChange} value={data.last_name} id='last_name' />
+                                {errors.last_name&&<p className='text-xs text-destructive'>{errors.last_name}</p>}
+                            </div>
+                            <div className='flex flex-col space-y-2.5'>
+                                <Label htmlFor='position' className='font-semibold tracking-wide'>Position</Label>
+                                <Input disabled  required onChange={handleChange} value={user.position?.position ?? "- No Position -"} id='Position' />
                                 {errors.last_name&&<p className='text-xs text-destructive'>{errors.last_name}</p>}
                             </div>
                         </div>
