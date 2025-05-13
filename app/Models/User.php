@@ -16,7 +16,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $guarded=[];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -36,23 +36,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    protected $with = ['position'];
 
-    public function team(){
+    public function team()
+    {
         return $this->hasOne(Team::class);
     }
-
-    public function group(){
-        return $this->belongsTo(Team::class,'team_id','id');
+    public function position()
+    {
+        return $this->belongsTo(Positions::class, 'position_id', 'id');
+    }
+    public function group()
+    {
+        return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
-    public function status(){
+    public function status()
+    {
         return $this->belongsTo(Status::class);
     }
 
-    public function project(){
+    public function project()
+    {
         return $this->belongsTo(Project::class);
     }
-
 }
-
-

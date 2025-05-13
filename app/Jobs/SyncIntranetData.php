@@ -4,14 +4,17 @@ namespace App\Jobs;
 
 use App\Models\IntranetTeam;
 use App\Models\IntranetUser;
+use App\Models\Positions;
 use App\Models\Team;
 use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 use function PHPSTORM_META\map;
 
@@ -67,6 +70,10 @@ class SyncIntranetData implements ShouldQueue
     function sync_users($ids)
     {
         # SYNC USERS
+        $rms_map_positions = Positions::get()->mapWithKeys(function ($position) {
+            $name = strtoupper($position->position);
+            return ["{$name}" => $position->id];
+        });
         $rms_map_team = Team::with('user')->get()
             ->mapWithKeys(function ($team) {
                 $company_id = strtoupper($team->user->company_id);
@@ -87,7 +94,7 @@ class SyncIntranetData implements ShouldQueue
                 return [];
             });
         IntranetUser::whereIn('company_id', $ids)
-            ->chunk(100, function ($intranet_personnels) use ($cross_team_ref) {
+            ->chunk(100, function ($intranet_personnels) use ($cross_team_ref, $rms_map_positions) {
                 foreach ($intranet_personnels as $ip) {
                     if ($ip->shift) {
                         $personnel = User::with(['team'])->firstOrNew([
@@ -101,6 +108,7 @@ class SyncIntranetData implements ShouldQueue
                         $personnel->is_resigned = $ip->is_archived;
                         $personnel->email = $ip->email;
                         $personnel->site = $ip->site;
+                        $personnel->position_id = $rms_map_positions[strtoupper($ip->position)] ?? null;
                         $personnel->is_sync = 1;
                         if (isset($ip->team) && isset($ip->team->user)) {
                             $intranet_tl_company_id = strtoupper($ip->team->user->company_id);
@@ -123,9 +131,26 @@ class SyncIntranetData implements ShouldQueue
                 }
             });
     }
+    function sync_position()
+    {
+        $positions = IntranetUser::select('position')->distinct()->pluck('position');
+        foreach ($positions as $position) {
+            try {
+                Positions::updateOrCreate(
+                    ['position' => $position],
+                    [
+                        'position' => $position
+                    ],
+                );
+            } catch (Exception $e) {
+                error_log('position: ' . $position . ' error: ' . $e->getMessage());
+            }
+        }
+    }
     public function handle()
     {
         $ids = User::pluck('company_id');
+        $this->sync_position(); # Can only be sync if agent exists between rms and intranet. 
         $this->sync_team_leaders();
         $this->sync_teams($ids);
         $this->sync_users($ids);
