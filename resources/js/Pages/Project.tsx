@@ -383,6 +383,7 @@ const SettingsDialog = ({open, onOpenChange, project:initial_project} : Settings
             statuses: result()
         }).then(() => {
             // toast.success('Status Order Saved.');
+            router.reload();
         })
       }
     };
@@ -408,6 +409,7 @@ const SettingsDialog = ({open, onOpenChange, project:initial_project} : Settings
               drivers: result()
           }).then(() => {
             //   toast.success('Driver Order Saved.');
+            router.reload();
           })
         }
       };
