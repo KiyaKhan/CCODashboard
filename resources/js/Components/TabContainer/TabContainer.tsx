@@ -32,7 +32,7 @@ const TabContainer:FC = () => {
                 <TabsTrigger value="logs">Activity Logs</TabsTrigger>
                 <TabsTrigger value="o_break">Over Break/Lunch</TabsTrigger>
                 <TabsTrigger value="lates">Lates</TabsTrigger>
-                <TabsTrigger value="com_logs">example</TabsTrigger>
+                {/* <TabsTrigger value="com_logs">example</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
