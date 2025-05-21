@@ -26,12 +26,12 @@ Route::get('/teams_and_projects', [ApiController::class, 'teams_and_projects'])-
 Route::get('/positions', [ApiController::class, 'positions'])->name('api.positions');
 Route::get('/projects', [ApiController::class, 'projects'])->name('api.projects');;
 Route::get('/teams', [ApiController::class, 'teams'])->name('api.teams');;
-Route::get('/statuses', [ApiController::class, 'statuses']);
-Route::get('/statuses_all', [ApiController::class, 'statuses_all'])->name('api.statuses_all');
+Route::get('/statuses/{project_id?}', [ApiController::class, 'statuses']);
+Route::get('/statuses_all/{project_id?}', [ApiController::class, 'statuses_all'])->name('api.statuses_all');
 Route::post('/register', [ApiController::class, 'register'])->name('register');
 Route::post('/reset', [ApiController::class, 'forgotPassword'])->name('reset');
 Route::post('/login', [ApiController::class, 'login']);
-Route::get('/drivers', [ApiController::class, 'drivers'])->name('drivers');
+Route::get('/drivers/{project_id?}', [ApiController::class, 'drivers'])->name('drivers');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ApiController::class, 'logout']);

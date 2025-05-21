@@ -7,11 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    protected $guarded=[];
+    protected $guarded = [];
+    protected $with = [];
     use HasFactory;
 
 
-    public function users(){
+    public function users()
+    {
         return $this->hasMany(User::class);
+    }
+    public function statuses()
+    {
+        return $this->hasMany(Status::class)->orderBy('position', 'asc');
+    }
+
+    public function drivers()
+    {
+        return $this->hasMany(Driver::class)->orderBy('position', 'asc');
     }
 }

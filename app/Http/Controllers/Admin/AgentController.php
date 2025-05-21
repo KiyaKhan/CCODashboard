@@ -355,8 +355,10 @@ class AgentController extends Controller
     public function resigned(Request $request)
     {
         $agent_log = User::findOrFail($request->id);
-        $agent_log->update([
-            'is_resigned' => 1
-        ]);
+        #New Update Hard Delete if tag Resigned
+        $agent_log->delete();
+        // $agent_log->update([
+        //     'is_resigned' => 1
+        // ]);
     }
 }

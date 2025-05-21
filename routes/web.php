@@ -74,7 +74,6 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     });
 
 
-
     Route::prefix('agent_log')->name('agent_log.')->group(function () {
         Route::get('/create', [AgentLogController::class, 'create'])->name('create');
         Route::get('/edit', [AgentLogController::class, 'edit'])->name('edit');
@@ -99,6 +98,18 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
         Route::post('/store', [ProjectController::class, 'store'])->name('store');
         Route::post('/update', [ProjectController::class, 'update'])->name('update');
+        Route::post('/save-status', [ProjectController::class, 'save_status'])->name('status.save');
+        Route::post('/delete-status', [ProjectController::class, 'delete_status'])->name('status.delete');
+        Route::post('/save-status-position', [ProjectController::class, 'save_order_status'])->name('status.position.save');
+        Route::post('/save-driver', [ProjectController::class, 'save_driver'])->name('driver.save');
+        Route::post('/delete-driver', [ProjectController::class, 'delete_driver'])->name('driver.delete');
+        Route::post('/save-driver-position', [ProjectController::class, 'save_order_driver'])->name('driver.position.save');
+    });
+    Route::prefix('statuses')->name('statuses.')->group(function () {
+        Route::get('/', [StatusController::class, ''])->name('index');
+        Route::post('/store', [StatusController::class, 'store'])->name('index');
+        Route::post('/update', [StatusController::class, 'update'])->name('index');
+        Route::post('/delete', [StatusController::class, 'delete'])->name('index');
     });
 
 
@@ -143,8 +154,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('tracker')->name('tracker.')->group(function () {
-
-
         Route::get('/session', [TrackerController::class, 'show'])->name('show');
         Route::post('/update', [TrackerController::class, 'update'])->name('update');
         Route::post('/logout', [TrackerController::class, 'logout'])->name('logout');

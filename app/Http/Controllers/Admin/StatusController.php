@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
@@ -12,9 +13,10 @@ class StatusController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($project_id)
     {
-        //
+        $statuses = Status::where('project_id', $project_id)->get();
+        return response()->json($statuses);
     }
 
     /**
@@ -55,10 +57,7 @@ class StatusController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        
-    }
+    public function edit($id) {}
 
     /**
      * Update the specified resource in storage.

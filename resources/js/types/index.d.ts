@@ -36,9 +36,21 @@ interface IProject{
     created_at:string;
     updated_at:string;
     users:User[];
-
+    statuses: Status[];
+    drivers: Driver[];
 }
-
+interface Status {
+    id:number;
+    name:string;
+    project_id: number;
+    position: number;
+}
+interface  Driver {
+    id:number;
+    driver:string;
+    project_id: number;
+    position:number;
+}
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;

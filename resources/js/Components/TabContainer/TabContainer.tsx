@@ -7,6 +7,7 @@ import useSelectedTeam from '@/Hooks/useSelectedTeam'
 import TabActivityLogs from './TabActivityLogs'
 import TabOverbreak from './TabOverbreak'
 import TabLates from './TabLates'
+import TabCommunicationLogs from './TabCommunicationLogs'
 
 const TabContainer:FC = () => {
     
@@ -31,11 +32,9 @@ const TabContainer:FC = () => {
                 <TabsTrigger value="logs">Activity Logs</TabsTrigger>
                 <TabsTrigger value="o_break">Over Break/Lunch</TabsTrigger>
                 <TabsTrigger value="lates">Lates</TabsTrigger>
+                <TabsTrigger value="com_logs">example</TabsTrigger>
             </TabsList>
 
-
-
-            
             <TabsContent value="overview" className="space-y-4">
                 <TabOverview />
             </TabsContent>
@@ -53,6 +52,9 @@ const TabContainer:FC = () => {
             </TabsContent>
             <TabsContent value="lates" className="space-y-4">
                 <TabLates />
+            </TabsContent>
+            <TabsContent value="com_logs" className="space-y-4">
+                <TabCommunicationLogs />
             </TabsContent>
         </>
     )

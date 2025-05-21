@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Driver;
 use App\Models\Project;
+use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,10 +20,11 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Project',[
-            'projects'=>Project::with(['users'])->get(),
-            'teams'=>Team::with(['user','users'])->get(),
-            'available_team_leaders'=>User::where('user_level',2)->doesnthave('team')->get()
+        $projects = Project::with(['users', 'statuses', 'drivers'])->get();
+        return Inertia::render('Project', [
+            'projects' => $projects,
+            'teams' => Team::with(['user', 'users'])->get(),
+            'available_team_leaders' => User::where('user_level', 2)->doesnthave('team')->get()
         ]);
     }
 
@@ -43,9 +46,62 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        Project::create(['name'=>$request->name]);
+        Project::create(['name' => $request->name]);
     }
-
+    public function save_status(Request $request)
+    {
+        Status::updateOrCreate(
+            ['id' => $request->id],
+            ['name' => $request->name, 'project_id' => $request->project_id]
+        );
+        return redirect()->back();
+    }
+    public function save_order_status(Request $request)
+    {
+        $statuses = collect($request->statuses);
+        $statuses->each(function ($item) {
+            $status = Status::find($item['id']);
+            if ($status) {
+                $status->position = $item['position'];
+                $status->save();
+            }
+        });
+        return redirect()->back();
+    }
+    public function save_driver(Request $request)
+    {
+        Driver::updateOrCreate(
+            ['id' => $request->id],
+            ['driver' => $request->driver, 'project_id' => $request->project_id]
+        );
+        return redirect()->back();
+    }
+    public function delete_status(Request $request)
+    {
+        $ids = $request->ids;
+        $status = Status::whereIn('id', $ids);
+        $status->delete();
+        return redirect()->back();
+    }
+    public function delete_driver(Request $request)
+    {
+        $ids = $request->ids;
+        $status = Driver::whereIn('id', $ids);
+        $status->delete();
+        return redirect()->back();
+    }
+    public function save_order_driver(Request $request)
+    {
+        $drivers = collect($request->drivers);
+        $drivers->each(function ($item) {
+            $driver = Driver::find($item['id']);
+            if ($driver) {
+                $driver->position = $item['position'];
+                $driver->save();
+            }
+        });
+        return redirect()->back();
+    }
     /**
      * Display the specified resource.
      *
@@ -79,7 +135,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($request->id);
         $project->update([
-            'name'=>$request->name
+            'name' => $request->name
         ]);
     }
 

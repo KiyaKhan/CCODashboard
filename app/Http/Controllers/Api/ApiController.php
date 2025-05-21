@@ -83,14 +83,26 @@ class ApiController extends Controller
             ], 500);
         }
     }
-    public function statuses()
+    public function statuses($project_id = null)
     {
-        return Status::whereNot('id', 10)->get();
+        $dataset = Status::whereNot('id', 10)->orderBy('position', 'asc');
+        $count = (clone $dataset)->where('project_id', $project_id)->count();
+        if ($count < 1) {
+            return (clone $dataset)->whereNull('project_id')->get();
+        }
+        return (clone $dataset)->where('project_id', $project_id)->get();
     }
 
-    public function statuses_all()
+    public function statuses_all($project_id = null)
     {
-        return Status::all();
+        return Status::when($project_id, function ($status) use ($project_id) {
+            $status->where('project_id', $project_id);
+        })
+            ->when(!$project_id, function ($query) {
+                $query->whereNull('project_id');
+            })
+            ->orderBy('position', 'asc')
+            ->get();
     }
 
     public function login(Request $request)
@@ -134,6 +146,7 @@ class ApiController extends Controller
                 'session_id' => $this->session_id,
                 "site" => $user->site,
                 "project" => $user->project->name ?? 'No Project Assigned',
+                "project_id" => $user->project->id ?? 0,
                 "shift_start" => $user->shift_start,
                 "shift_end" => $user->shift_end,
                 'team' => [
@@ -306,9 +319,21 @@ class ApiController extends Controller
         ];
     }
 
-    public function drivers()
+    public function drivers($project_id = null)
     {
-        return Driver::select(['driver'])->get();
+        $count = Driver::where('project_id', $project_id)->count();
+        #Return Default if no Custom
+        if ($count < 1) {
+            return Driver::select(['driver', 'project_id'])
+                ->whereNull('project_id')
+                ->orderBy('position', 'asc')
+                ->get();
+        }
+        $response = Driver::select(['driver', 'project_id'])
+            ->where('project_id', $project_id)
+            ->orderBy('position', 'asc')
+            ->get();
+        return $response;
     }
 
     public function start_log(LoggingPostRequest $request)

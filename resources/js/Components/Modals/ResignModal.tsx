@@ -6,6 +6,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import useGetAgents from '@/Hooks/useGetAgents';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
+import { RiFolderWarningFill, RiFolderWarningLine } from 'react-icons/ri';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 const ResignModal:FC = () => {
     const {isOpen,onClose,userId} = useResignModal();
@@ -36,12 +38,22 @@ const ResignModal:FC = () => {
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone.
-                    </DialogDescription>
+                    <div>
+                        <DialogHeader>
+                            <DialogTitle className='flex items-center'> 
+                                <RiFolderWarningFill className='mr-2' color='#fae207' size={30}/>
+                                Are you absolutely sure ?
+                            </DialogTitle>
+                            <DialogDescription>
+                                 Deleting a record from the system is a permanent action and cannot be undone.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
                 </DialogHeader>
-                <div className='w-full flex justify-end items-center'>
+                <div className='w-full flex justify-end items-center space-x-5'>
+                    <DialogClose>
+                        Cancel
+                    </DialogClose>
                     <Button onClick={onConfirm} disabled={loading} variant='outline'  className='text-base items-center'>Confirm</Button>
                 </div>
             </DialogContent>
