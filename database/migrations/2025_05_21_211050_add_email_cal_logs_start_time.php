@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('call_email_logs', function (Blueprint $table) {
-            $table->timestamp('start_time')->default(DB::raw("'0000-00-00 00:00:00'"));;
+            $table->timestamp('start_time')->nullable();
         });
     }
 
