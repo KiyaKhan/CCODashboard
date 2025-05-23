@@ -117,7 +117,6 @@ const TabEmailLog:FC = () => {
         const result = (agentLogs||[]).sort((a,b) => {
             const sec_a = getSeconds(a?.start_time?? "", a.created_at);
             const sec_b = getSeconds(b?.start_time?? "", b.created_at);
-            console.log(sec_a, sec_b);
             return filter.sort_duration? sec_a - sec_b : sec_b - sec_a;
         });
         setAgentLogs(result);
@@ -138,13 +137,14 @@ const TabEmailLog:FC = () => {
         const name = e.currentTarget.value;
         setFilter((prev) => ({...prev, name}));
       }
+      
       useEffect(() => {
        const delayDebounce = setTimeout(() => {
           filteredData();
         },300);
         return () => clearTimeout(delayDebounce);
-      }, [filter]);
-  
+      }, [filter.name,initialAgentLogs]);
+      
     return (<>
         <div className="relative grid w-1/3 items-center mb-2">
               <div className='flex items-center w-full'>
