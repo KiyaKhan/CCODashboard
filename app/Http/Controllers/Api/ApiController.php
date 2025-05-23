@@ -345,7 +345,8 @@ class ApiController extends Controller
             'driver' =>  $request->driver,
             'user_id' => $request->user()->id,
             'phone_or_email' => $request->phone_or_email,
-            'start_time' => $request->start_time
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time
         ]);
         $log->load('user');
         broadcast(new CallEmailLogEvent($log, $request->user()));
@@ -355,7 +356,7 @@ class ApiController extends Controller
             'driver' => $log->driver,
             'session_id' => $log->agent_session_id,
             'start_time' => $log->start_time,
-            'end_time' => $log->created_at,
+            'end_time' =>  $log->end_time,
         ];
     }
 

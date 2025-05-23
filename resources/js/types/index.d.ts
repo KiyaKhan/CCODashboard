@@ -123,8 +123,9 @@ export interface IAgentLogs{
     driver:string;
     type:string;
     phone_or_email:string;
-    start_time:string; // as Start Time
-    created_at:string; // as End Time
+    start_time:string;
+    end_time:string;
+    created_at:string; 
     updated_at: string;
 }
 
@@ -195,4 +196,18 @@ type formattedReport = {
     ["Special Assignment Remarks"]	:string;
     ["Early Departure Reason"]	:string;
     ["Overtime Reason"]	:string;
+}
+
+type AgentLogsFormat = {
+    Date:string;
+    // Team:string;
+    ["Company ID"]:string;
+    ["First Name"]:string;
+    ["Last Name"]:string;
+    Type:string;
+    Driver:string;
+    Details:string;
+    ["Start Time"]:string;
+    ["End Time"]:string;
+    Duration:string;
 }

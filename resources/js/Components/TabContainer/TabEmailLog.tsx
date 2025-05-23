@@ -12,12 +12,15 @@ import {
     TableRow,
   } from "@/Components/ui/table"
 import { Input } from "../ui/input";
-import { RiArrowDownCircleFill, RiArrowDownLine, RiArrowUpLine, RiSearch2Fill, RiSearch2Line } from "react-icons/ri";
+import { RiArrowDownCircleFill, RiArrowDownLine, RiArrowUpLine, RiFileExcel2Fill, RiSearch2Fill, RiSearch2Line } from "react-icons/ri";
 import { Button } from "../ui/button";
-import { IAgentLogs } from "@/types";
+import { AgentLogsFormat, IAgentLogs } from "@/types";
+import ExportToExcelAgentLogs from "@/Libs/ExportToExcelAgentLogs";
+import useSelectedTeam from "@/Hooks/useSelectedTeam";
 
 const TabEmailLog:FC = () => {
     const {agentLogs:initialAgentLogs} = useDashboardInfo();
+    const {selectTeam,selectedTeam} = useSelectedTeam();
     const formatToUserLocalTime = (utcString: string): string => {
         const date = new Date(utcString);
         if (isNaN(date.getTime())) return "Invalid date ❌";
@@ -32,7 +35,7 @@ const TabEmailLog:FC = () => {
             timeZone: userTimeZone,
         }).format(date);
       };
-    const formatTo12Hour = (isoString: string): React.ReactElement => {
+    const formatTo12Hour = (isoString: string, asString:boolean = false): React.ReactElement => {
         const isoFormat = isoString.replace(' ', 'T');
         const date = new Date(isoFormat);
       
@@ -45,6 +48,7 @@ const TabEmailLog:FC = () => {
         const formattedTime = new Intl.DateTimeFormat('en-US', {
           hour: '2-digit',
           minute: '2-digit',
+          second: '2-digit',
           hour12: true,
           timeZone: userTimeZone,
         }).format(date);
@@ -68,14 +72,19 @@ const TabEmailLog:FC = () => {
       
         // Convert both dates to local timezone (but times stay in UTC for correct duration)
         const diffMs = Math.abs(endDateUTC.getTime() - startDateUTC.getTime());
-        const totalMinutes = Math.floor(diffMs / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
-        const minutes = (totalMinutes % 60).toString().padStart(2, '0');
+        const totalSeconds = Math.floor(diffMs / 1000);
+
+        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+
+        const formatted = `${hours}:${minutes}:${seconds}`;
+
       
         return (
           <p className="font-semibold ">
-            {hours} {parseInt(hours) === 1 ? 'hr' : 'hrs'} {minutes}{' '}
-            {parseInt(minutes) === 1 ? 'min' : 'mins'}
+            {`${hours}:${minutes}:${seconds}`}
+           
           </p>
         );
       };
@@ -144,15 +153,85 @@ const TabEmailLog:FC = () => {
         },300);
         return () => clearTimeout(delayDebounce);
       }, [filter.name,initialAgentLogs]);
-      
+      const onConfirm = async()=>{
+        const parseTime = (isoString:string):string => {
+          const isoFormat = isoString.replace(' ', 'T');
+          const date = new Date(isoFormat);
+          if (isNaN(date.getTime())) {
+            return "Invalid Time";
+          }
+          // Use user's local time
+          const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const formattedTime = new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+            timeZone: userTimeZone,
+          }).format(date);
+          return formattedTime;
+        }
+        const parseTimeDuration = (startIso: string, endIso: string): string => {
+          const isoFormatStart = startIso.replace(' ', 'T');
+          const isoFormatEnd = endIso.replace(' ', 'T');
+        
+          const startDateUTC = new Date(isoFormatStart);
+          const endDateUTC = new Date(isoFormatEnd);
+        
+          if (isNaN(startDateUTC.getTime()) || isNaN(endDateUTC.getTime())) {
+            return 'Invalid Duration';
+          }
+        
+          // Convert both dates to local timezone (but times stay in UTC for correct duration)
+          const diffMs = Math.abs(endDateUTC.getTime() - startDateUTC.getTime());
+          const totalSeconds = Math.floor(diffMs / 1000);
+  
+          const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+          const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+          const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+          return `${hours}:${minutes}:${seconds}`;
+        };
+        try {
+           if(agentLogs) {
+            const parseFormat = ():AgentLogsFormat[] => {
+              let response:AgentLogsFormat[] = [];
+              agentLogs.forEach(log => {
+                response.push({
+                  Date: formatToUserLocalTime(log.created_at),
+                  "Company ID": log.user.company_id,
+                  "First Name": log.user.first_name,
+                  "Last Name": log.user.last_name,
+                  Type: log.phone_or_email,
+                  Driver: log.driver,
+                  Details: log.phone_or_email,
+                  "Start Time": parseTime(log?.start_time ?? ""),
+                  "End Time": parseTime(log?.end_time ?? ""),
+                  Duration: parseTimeDuration(log?.start_time ?? "",log?.end_time?? ""),
+                 
+                })
+              });
+              return response;
+            }
+            await ExportToExcelAgentLogs(parseFormat(),`${selectedTeam?.name}`);
+           }
+        } catch (error) {
+            console.error(error);
+        }
+    };
     return (<>
-        <div className="relative grid w-1/3 items-center mb-2">
-              <div className='flex items-center w-full'>
-                  <div className="w-full relative">                 
-                      <Input  onChange={search} placeholder="Search Agent Name / ID"  className=" w-full text-sm" />
-                  </div>
-                  <RiSearch2Line size={18} className="absolute right-3  " />
-              </div>
+        <div className="flex items-center justify-between pb-2">
+          <div className="relative grid w-1/3 items-center">
+                <div className='flex items-center w-full'>
+                    <div className="w-full relative">                 
+                        <Input  onChange={search} placeholder="Search Agent Name / ID"  className=" w-full text-sm" />
+                    </div>
+                    <RiSearch2Line size={18} className="absolute right-3  " />
+                </div>
+          </div>
+          <Button onClick={onConfirm} className='font-semibold text-sm flex items-center justify-center space-x-0.5'>
+              <RiFileExcel2Fill size={18} />
+              <span >Download Agent Logs</span>
+          </Button>
         </div>
         <div className="flex-1 flex flex-col overflow-auto rounded h-[350px] border rounded-xl">
           <Table className="w-full">
@@ -194,8 +273,8 @@ const TabEmailLog:FC = () => {
                       <TableCell>{log.driver}</TableCell>
                       <TableCell>{log.phone_or_email}</TableCell>
                       <TableCell >{formatTo12Hour(log?.start_time ?? "")}</TableCell>
-                      <TableCell >{formatTo12Hour(log.created_at)}</TableCell>
-                      <TableCell className="text-right">{getTimeDuration(log?.start_time ?? "",log.created_at)}</TableCell>
+                      <TableCell >{formatTo12Hour(log?.end_time?? "")}</TableCell>
+                      <TableCell className="text-right">{getTimeDuration(log?.start_time ?? "",log?.end_time?? "")}</TableCell>
                   </TableRow>)
                   }
               </TableBody>
