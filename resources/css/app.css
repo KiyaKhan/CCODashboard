@@ -97,3 +97,18 @@ tspan{
     @apply !tracking-tighter !break-all 
 }
 
+@keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+.row {
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+
