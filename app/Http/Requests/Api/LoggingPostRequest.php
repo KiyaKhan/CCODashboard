@@ -18,14 +18,16 @@ class LoggingPostRequest extends FormRequest
     public function rules()
     {
         return [
-            'session_id' => ['required','exists:App\Models\AgentSession,id'],
+            'session_id' => ['required', 'exists:App\Models\AgentSession,id'],
             'type' => ['required'],
-            'driver' => ['required','string'],
-            'phone_or_email' => ['required','string']
+            'driver' => ['required', 'string'],
+            'phone_or_email' => ['required', 'string'],
+            'start_time' => ['required', 'date']
         ];
     }
 
-    public function failedValidation(Validator $validator){
+    public function failedValidation(Validator $validator)
+    {
 
         throw new HttpResponseException(response()->json([
 
@@ -36,6 +38,5 @@ class LoggingPostRequest extends FormRequest
             'data'      => $validator->errors()
 
         ]));
-
     }
 }

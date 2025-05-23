@@ -112,7 +112,7 @@ class SyncIntranetData implements ShouldQueue
                         $personnel->is_sync = 1;
                         if (isset($ip->team) && isset($ip->team->user)) {
                             $intranet_tl_company_id = strtoupper($ip->team->user->company_id);
-                            error_log('company_id: ' . $intranet_tl_company_id);
+                            // error_log('company_id: ' . $intranet_tl_company_id);
                             if (!empty($intranet_tl_company_id) && isset($cross_team_ref[$intranet_tl_company_id])) {
                                 $personnel->team_id = $cross_team_ref[$intranet_tl_company_id];
                             }

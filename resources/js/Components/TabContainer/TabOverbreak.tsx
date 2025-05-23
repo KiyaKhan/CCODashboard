@@ -30,8 +30,7 @@ const TabOverbreak:FC = () => {
 
     const currentOverBreaks = useMemo(()=>{
         const onBreakAgents = agents?.filter(agent=>(agent.status.id==3||agent.status.id==4||agent.status.id==5));
-        return onBreakAgents?.filter(agent=> 
-            
+        return onBreakAgents?.filter(agent=>
             ((agent.status.id===3 && differenceInMinutes(new Date(),new Date(agent.updated_at))>15) 
             ||(agent.status.id===4 && differenceInMinutes(new Date(),new Date(agent.updated_at))>5) 
             ||(agent.status.id===5 && differenceInMinutes(new Date(),new Date(agent.updated_at))>60))  
@@ -77,7 +76,7 @@ const TabOverbreak:FC = () => {
             </div>
             <OverBreakLogDialog onOpenChange={()=>setOpen(false)} open={open} teamId={selectedTeam?.id} />
         </>
-    )
+    );
 }
 
 export default TabOverbreak

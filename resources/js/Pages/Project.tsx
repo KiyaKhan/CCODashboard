@@ -174,7 +174,6 @@ const ProjectItem = ({isOpen, onOpen, project} : ProjectItemsProps) => {
                         </form>
                     )
                 }
-                
             </TableCell>
             <TableCell>{users.length}</TableCell>
             <TableCell className='space-x-2'> 

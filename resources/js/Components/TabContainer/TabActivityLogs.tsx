@@ -43,10 +43,6 @@ const TabActivityLogs:FC = () => {
     const {logs,setLogs}=useActivityLogs();
     const agentPopoverData:AgentPopoverData[]|undefined = useMemo(()=>agents?.map(agent=>({id:agent.id,name:`${agent.first_name} ${agent.last_name}, ${agent.company_id}`})),[agents]);
 
-
-    
-    
-
     const getActivityLogs = useCallback(async ()=>{
         if(!selectedAgent) return toast.info('Select Agent First....');
         const {id} = selectedAgent;

@@ -7,7 +7,6 @@ import useSelectedTeam from '@/Hooks/useSelectedTeam'
 import TabActivityLogs from './TabActivityLogs'
 import TabOverbreak from './TabOverbreak'
 import TabLates from './TabLates'
-import TabCommunicationLogs from './TabCommunicationLogs'
 
 const TabContainer:FC = () => {
     
@@ -36,25 +35,22 @@ const TabContainer:FC = () => {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
-                <TabOverview />
+                <TabOverview/>
             </TabsContent>
             <TabsContent value="agents" className="space-y-4">
-                <TabAgents />
+                <TabAgents/>
             </TabsContent>
             <TabsContent value="notifications" className="space-y-4">
-                <TabNotifications />
+                <TabNotifications/>
             </TabsContent>
             <TabsContent value="logs" className="space-y-4">
-                <TabActivityLogs />
+                <TabActivityLogs/>
             </TabsContent>
             <TabsContent value="o_break" className="space-y-4">
                 <TabOverbreak />
             </TabsContent>
             <TabsContent value="lates" className="space-y-4">
                 <TabLates />
-            </TabsContent>
-            <TabsContent value="com_logs" className="space-y-4">
-                <TabCommunicationLogs />
             </TabsContent>
         </>
     )

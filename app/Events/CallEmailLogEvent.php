@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Notification;
+use App\Models\CallEmailLog;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -12,27 +12,25 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class AgentChangeStatusEvent implements ShouldBroadcast
+class CallEmailLogEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user;
+    public $log;
     public $notification;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $user, int $status_id)
+
+    public function __construct(CallEmailLog $log, User $user)
     {
+        //
         $this->user = $user;
-        $status = Status::find($status_id);
-        @$this->notification = Notification::create([
-            'user_id' => $user->id,
-            'team_id' => $user->group->id ?? $user->team_id,
-            'status_id' => $status_id,
-            'message' => $user->first_name . " " . $user->last_name . " is now on '" . $status->name . "'."
-        ]);
+        @$this->log = $log;
     }
 
     /**
@@ -42,6 +40,7 @@ class AgentChangeStatusEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return  new PresenceChannel('global_channel');
+        error_log('🔥 Broadcasting AgentLogEvent!');
+        return new PresenceChannel('global_channel');
     }
 }

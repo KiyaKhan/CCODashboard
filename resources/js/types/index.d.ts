@@ -116,6 +116,17 @@ export interface IAgentSession{
     updated_at:string;
 
 }
+export interface IAgentLogs{
+    id:number;
+    user_id: number;
+    user:User;
+    driver:string;
+    type:string;
+    phone_or_email:string;
+    start_time:string; // as Start Time
+    created_at:string; // as End Time
+    updated_at: string;
+}
 
 declare global {
     interface Window {

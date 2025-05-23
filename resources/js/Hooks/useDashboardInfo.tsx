@@ -1,5 +1,5 @@
 
-import { INotification } from '@/types';
+import { IAgentLogs, INotification } from '@/types';
 import {create} from 'zustand'
 
 export type AgentBreakdown={
@@ -24,11 +24,14 @@ export type BarChart = [
 ]
 interface IDashboardInfo{
     recentNotifications?:INotification[];
+    agentLogs?: IAgentLogs[];
     agentBreakdown?:AgentBreakdown;
     barChart?:BarChart;
     setAgentBreakdown:(agentBreakdown:AgentBreakdown)=>void;
     setRecentNotifications:(notifications:INotification[])=>void;
     appendRecentNotifications:(notification:INotification)=>void;
+    setAgentLogs:(logs:IAgentLogs[]) => void;
+    appendAgentLogs:(log:IAgentLogs) => void;
     setBarChart:(chart:BarChart)=>void;
 }
 
@@ -36,6 +39,7 @@ const useDashboardInfo = create<IDashboardInfo>(set=>({
     agentBreakdown:undefined,
     recentNotifications:undefined,
     barChart:undefined,
+    agentLogs:undefined,
     setRecentNotifications:(notifications)=>set({
         recentNotifications:notifications
     }),
@@ -46,6 +50,11 @@ const useDashboardInfo = create<IDashboardInfo>(set=>({
     setBarChart:(chart)=>set({
         barChart:chart
     }),
+    setAgentLogs: (logs) => set({
+        agentLogs:logs
+    }),
+    // Prevent from duplicate record (id unique).
+    appendAgentLogs: (log) => set(dashBoardItems=>({...dashBoardItems, agentLogs: [log, ...(dashBoardItems.agentLogs || []).filter((item, index, self) => index === self.findIndex((t) => t.id === item.id))]})),
 }));
 
 

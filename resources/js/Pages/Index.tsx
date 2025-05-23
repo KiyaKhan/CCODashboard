@@ -4,7 +4,7 @@ import TabContainer from '@/Components/TabContainer/TabContainer';
 import { Button } from '@/Components/ui/button';
 import { Tabs } from '@/Components/ui/tabs';
 import useCurrentUser from '@/Hooks/useCurrentUser';
-import { INotification, ITeam, PageProps, User, formattedReport, reportResponse } from '@/types'
+import { IAgentLogs, INotification, ITeam, PageProps, User, formattedReport, reportResponse } from '@/types'
 import { Head, Link, usePage } from '@inertiajs/react'
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import { BiCircle } from 'react-icons/bi';
@@ -33,13 +33,14 @@ type GetDataResponse = {
         recent_notifications:INotification[],
         dashboard_cards:AgentBreakdown,
         bar_chart:BarChart
+        agent_logs: IAgentLogs[];
     };
 }
 
 const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
     const {selectTeam,selectedTeam} = useSelectedTeam();
     const [loading,setLoading] = useState<boolean>(true);
-    const {setRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
+    const {setRecentNotifications,setAgentBreakdown,setBarChart,setAgentLogs} = useDashboardInfo();
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: addDays(new Date,-7),
         to: new Date,
@@ -60,6 +61,7 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
             setRecentNotifications(data.recent_notifications);
             setAgentBreakdown(data.dashboard_cards);
             setBarChart(data.bar_chart);
+            setAgentLogs(data.agent_logs);
         } catch (e) {
             toast.error('Something went wront. Please refresh the page and try again')
         }
@@ -71,7 +73,6 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
         } catch (error) {
             console.error(error);
         }
-
     };
 
 
@@ -152,7 +153,6 @@ const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm
             team_id:team.id,
             date
         })).then(async ({data}:{data:reportResponse})=>{
-            console.log(data);
             if(!data.report_items||data.report_items.length<1){
                 return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
             }

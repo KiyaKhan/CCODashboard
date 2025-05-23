@@ -3,13 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import TabOverviewCards from './TabOverviewCards'
 import TabOverviewPanel from './TabOverviewPanel';
 import TabNotificationContainer from './TabNotificationContainer';
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
+import useDashboardInfo from '@/Hooks/useDashboardInfo';
+import TabEmailLog from './TabEmailLog';
+  
 
 
 
 const TabOverview:FC = () => {
-    
-    
     return (
         <>
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
@@ -24,17 +25,18 @@ const TabOverview:FC = () => {
                         <TabOverviewPanel />
                     </CardContent>
                 </Card>
-                <Card className="w-full 2xl:w-[35%] max-h-[24rem] overflow-y-auto">
-                    <CardHeader>
-                        <CardTitle>Recent Notifications</CardTitle>
-                        <CardDescription>
-                            Agent Status
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className='w-full'>
+                <Tabs defaultValue="agent_logs" className="w-full">
+                    <TabsList>
+                        <TabsTrigger value="agent_logs">Agent Logs</TabsTrigger>
+                        <TabsTrigger value="recent_notifications">Recent Notifications</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="agent_logs">
+                        <TabEmailLog/>
+                    </TabsContent>
+                    <TabsContent value="recent_notifications">
                         <TabNotificationContainer />
-                    </CardContent>
-                </Card>
+                    </TabsContent>
+                </Tabs>
             </div>
         </>
     )

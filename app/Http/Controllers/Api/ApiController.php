@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\AgentChangeStatusEvent;
+use App\Events\AgentLogEvent;
 use App\Events\AgentLogInEvent;
 use App\Events\AgentLogOutEvent;
 use App\Events\AgentRegisteredEvent;
+use App\Events\CallEmailLogEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\APi\ApiPostRegisterRequest;
 use App\Http\Requests\Api\ChangeStatusPostRequest;
@@ -158,7 +160,6 @@ class ApiController extends Controller
             ],
         ];
     }
-
 
     public function logout(Request $request)
     {
@@ -343,14 +344,18 @@ class ApiController extends Controller
             'type' => $request->type,
             'driver' =>  $request->driver,
             'user_id' => $request->user()->id,
-            'phone_or_email' => $request->phone_or_email
+            'phone_or_email' => $request->phone_or_email,
+            'start_time' => $request->start_time
         ]);
+        $log->load('user');
+        broadcast(new CallEmailLogEvent($log, $request->user()));
         return [
             'log_id' => $log->id,
             'type' => $log->type,
             'driver' => $log->driver,
             'session_id' => $log->agent_session_id,
-            'start_time' => $log->created_at
+            'start_time' => $log->start_time,
+            'end_time' => $log->created_at,
         ];
     }
 
@@ -361,6 +366,7 @@ class ApiController extends Controller
         $log->update([
             'updated_at' => $now
         ]);
+        broadcast(new CallEmailLogEvent($log, $request->user()));
         return ['message' => 'Done!', 'End Time' => $now];
     }
 }

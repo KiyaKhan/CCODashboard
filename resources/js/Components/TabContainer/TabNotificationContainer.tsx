@@ -4,7 +4,8 @@ import useDashboardInfo from '@/Hooks/useDashboardInfo'
 import { INotification } from '@/types';
 import {  formatDistanceToNow, parseISO } from 'date-fns';
 import { format,  } from 'date-fns';
-
+import { ScrollArea } from '../ui/scroll-area';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 const TabNotificationContainer:FC = () => {
     const {recentNotifications} = useDashboardInfo();
     if(!recentNotifications){
@@ -14,20 +15,22 @@ const TabNotificationContainer:FC = () => {
             </div>
         )
     }
-
-    
-
-    
-
     return (
-        <div className="space-y-8">
-            {
-                recentNotifications.map(notitifcation=>(
-                    <NotificationItem key={notitifcation.id} notification={notitifcation} />
-                ))
-            }
-            
-        </div>
+        <ScrollArea className="w-full 2xl:w-[35%] h-[24rem]  border p-4 rounded-xl">
+            <CardHeader className='pb-1 mb-2 pt-0 pl-2 border-b sticky top-0 x-10 bg-background'>
+                <CardTitle>Recent Notifications</CardTitle>
+                <CardDescription>
+                    Agent Status
+                </CardDescription>
+            </CardHeader>
+            <div className="space-y-8">
+                {
+                    recentNotifications.map(notitifcation=>(
+                        <NotificationItem key={notitifcation.id} notification={notitifcation} />
+                    ))
+                }
+            </div>
+        </ScrollArea>
     )
 }
 

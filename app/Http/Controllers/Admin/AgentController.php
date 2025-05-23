@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\SyncIntranetData;
 use App\Models\AgentLog;
+use App\Models\CallEmailLog;
 use App\Models\IntranetTeam;
 use App\Models\IntranetUser;
 use App\Models\Notification;
@@ -52,7 +53,17 @@ class AgentController extends Controller
             ->when($team_id != 0, function ($q) use ($team_id) {
                 $q->where('team_id', $team_id);
             });
+        $agent_logs = CallEmailLog::with(['user'])
+            ->when($team_id != 0, function ($q) use ($team_id) {
+                $q->whereHas('user', function ($query) use ($team_id) {
+                    $query->where('team_id', $team_id);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return [
+            'agent_logs' => $agent_logs,
             'recent_notifications' => $recent_notifications,
             'dashboard_cards' => [
                 'team_size' => $user->count(),

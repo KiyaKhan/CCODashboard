@@ -5,7 +5,7 @@ import useGetAgents from '@/Hooks/useGetAgents';
 import useGetNotifications from '@/Hooks/useGetNotifications';
 import useSelectedTeam from '@/Hooks/useSelectedTeam';
 import useToggleNotification from '@/Hooks/useToggleNotification';
-import { INotification, PageProps, User } from '@/types';
+import { IAgentLogs, INotification, PageProps, User } from '@/types';
 import axios from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
@@ -13,12 +13,13 @@ import { toast } from 'react-toastify';
 type EchoEvent ={
     notification:INotification;
     user:User;
+    log:IAgentLogs;
 }
 
 const EchoCointainer:FC = () => {
     const {showNotif} = useToggleNotification();
     const {setEcho} = useEcho();
-    const {appendRecentNotifications,setAgentBreakdown,setBarChart} = useDashboardInfo();
+    const {appendRecentNotifications,appendAgentLogs,setAgentBreakdown,setBarChart} = useDashboardInfo();
     const {selectedTeam} = useSelectedTeam();
     const { previousFilters,previousStatusId,getAgents,isAgentsTabOpen } =useGetAgents();
     
@@ -41,10 +42,8 @@ const EchoCointainer:FC = () => {
         .then(({data})=>setBarChart(data))
         .catch(e=>toast.error('Something went wrong. Please refresh the page'))
     },[selectedTeam,setAgentBreakdown]);
-    
 
     useEffect(()=>{
-        
         setEcho(null);
         const echo=window.Echo.join('global_channel')
         .listen('AgentLogInEvent', (e:EchoEvent)=>{
@@ -82,6 +81,11 @@ const EchoCointainer:FC = () => {
             if(isAgentsTabOpen && selectedTeam)getAgents(selectedTeam.id,previousFilters,previousStatusId);
             if(isNotificationsTabOpen && selectedTeam)getNotifications(selectedTeam.id);
 
+        })
+        .listen('CallEmailLogEvent', (e:EchoEvent) => {
+            appendAgentLogs(e.log);
+            refreshCards();
+            refreshBar();
         }); 
         setEcho(echo);
         return ()=>window.Echo.leave('global_channel');
