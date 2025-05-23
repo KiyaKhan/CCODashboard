@@ -169,6 +169,7 @@ const TabEmailLog:FC = () => {
                     <TableHead>Agent</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Driver</TableHead>
+                    <TableHead>Details</TableHead>
                     <TableHead>Start Time</TableHead>
                     <TableHead>End Time</TableHead>
                     <TableHead className="text-right">
@@ -191,6 +192,7 @@ const TabEmailLog:FC = () => {
                       </TableCell>
                       <TableCell>{log.type}</TableCell>
                       <TableCell>{log.driver}</TableCell>
+                      <TableCell>{log.phone_or_email}</TableCell>
                       <TableCell >{formatTo12Hour(log?.start_time ?? "")}</TableCell>
                       <TableCell >{formatTo12Hour(log.created_at)}</TableCell>
                       <TableCell className="text-right">{getTimeDuration(log?.start_time ?? "",log.created_at)}</TableCell>
