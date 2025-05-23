@@ -115,8 +115,8 @@ const TabEmailLog:FC = () => {
       }
       const sortDuration = () => {
         const result = (agentLogs||[]).sort((a,b) => {
-            const sec_a = getSeconds(a.start_time, a.created_at);
-            const sec_b = getSeconds(b.start_time, b.created_at);
+            const sec_a = getSeconds(a?.start_time?? "", a.created_at);
+            const sec_b = getSeconds(b?.start_time?? "", b.created_at);
             console.log(sec_a, sec_b);
             return filter.sort_duration? sec_a - sec_b : sec_b - sec_a;
         });
