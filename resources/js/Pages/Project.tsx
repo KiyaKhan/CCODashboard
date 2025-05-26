@@ -421,51 +421,7 @@ const SettingsDialog = ({open, onOpenChange, project:initial_project} : Settings
                         Assign Attributes such as Tags/Status and Driver
                     </DialogDescription>
                 </DialogHeader>
-                <Tabs defaultValue="tags" className="m-auto w-[300px]">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="tags">Tags</TabsTrigger>
-                        <TabsTrigger value="driver">Driver</TabsTrigger>
-                    </TabsList>
-                    {/* TAGS */}
-                    <TabsContent value="tags">
-                    <div className="flex w-full max-w-sm items-center space-x-2 p-5">
-                        <Input value={dataStatus.name} type="email" placeholder="Tag (Press Enter to Add)" onKeyDown={(e) => {if(e.key === 'Enter') {SaveStatus()}}} onChange={(e) => setStatus('name',e.currentTarget.value) }/>
-                        <Button type="submit" onClick={() => {SaveStatus()}}>Add</Button>
-                    </div>
-                    <div className="flex items-center space-x-2 pl-3 pb-3">
-                        <Checkbox checked={stateConfig.tagShowOptions} onCheckedChange={selectAllTag}  />
-                        {(!stateConfig.tagShowOptions && !stateConfig.tagOnDelete) && <label
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                           Select All Tags
-                        </label>}
-                        {stateConfig.tagShowOptions && <div className='space-x-2'>
-                            <Button onClick={DeleteTags} variant={'ghost'} size={'sm'} ><TrashIcon className='mr-2'/> Delete</Button>
-                        </div>}
-                    </div>
-                    <ScrollArea className='h-[300px] w-full overflow-y-auto'>
-                        {((project.statuses || []).length < 1 &&  <p className='text-center w-full'>- No Records Found - </p>)}
-                        <DndContext sensors={sensorsTag} collisionDetection={closestCenter} onDragEnd={handleDragEndTag}>
-                            <SortableContext items={(project.statuses || [])} strategy={verticalListSortingStrategy}>
-                                {(project.statuses || []).map((data) => {
-                                    const tagConfig:configuration = {type:'tag', confirm:false, delete:stateConfig.tagOnDelete, editable:false};
-                                    return <Carditem 
-                                    checked={tagIDS.includes(data.id)}
-                                    key={`status${data.id}`} 
-                                    update={(name:string)=>SaveStatus(data.id,name)} 
-                                    handleCheck={(id:number)=>{handleCheckboxTag(id)}} 
-                                    config={tagConfig} id={data.id} 
-                                    name={data.name}
-                                    project_id={data.project_id}
-                                    />;
-                                })}
-                            </SortableContext>
-                        </DndContext>
-                    </ScrollArea>
-                    </TabsContent>
-                    {/* DRIVER */}
-                    <TabsContent value="driver">
-                    <div className="flex w-full max-w-sm items-center space-x-2 p-5">
+                <div className="flex w-full max-w-sm items-center space-x-2 p-5">
                         <Input value={dataDriver.driver} type="email" placeholder="Driver (Press Enter to Add)" onKeyDown={(e) => {if(e.key === 'Enter') {SaveDriver()}}} onChange={(e) => setDriver('driver',e.currentTarget.value)} />
                         <Button type="submit" onClick={() => SaveDriver()}>Add</Button>
                     </div>
@@ -499,9 +455,7 @@ const SettingsDialog = ({open, onOpenChange, project:initial_project} : Settings
                             })}
                         </SortableContext>
                     </DndContext>
-                    </ScrollArea>
-                    </TabsContent>
-                </Tabs>
+                </ScrollArea>
             </DialogContent>
     </Dialog>
     </>
