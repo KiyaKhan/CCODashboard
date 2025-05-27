@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-
+use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -120,7 +120,14 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
             'company_id' => ['string', 'max:255', 'unique:users', 'required'],
             'email' => ['max:255', 'unique:users', 'nullable'],
         ]);
-
+        // DEFAULT PASSWORD
+        //********************************************************************/
+        $ID = Str::upper($request->company_id);
+        $LN = Str::lower(
+            Str::replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $request->last_name)
+        );
+        $password = Hash::make($ID . "_" . $LN);
+        //********************************************************************/
 
         User::create([
             "company_id" => $request->company_id,
@@ -131,7 +138,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
             "shift_end" => "23:00",
             "project_id" => $request->project_id,
             "status_id" => 10,
-            "password" => Hash::make('password'),
+            "password" => $password,
             "user_level" => 1
         ]);
     })->name('admin.store');
