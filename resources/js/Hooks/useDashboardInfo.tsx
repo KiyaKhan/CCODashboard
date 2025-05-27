@@ -47,10 +47,10 @@ const useDashboardInfo = create<IDashboardInfo>(set=>({
     setAgentBreakdown:(breakdown)=>set({
         agentBreakdown:breakdown
     }),
-    setBarChart:(chart)=>set({
+    setBarChart:(chart) => set({
         barChart:chart
     }),
-    setAgentLogs: (logs) => set({
+    setAgentLogs:(logs) => set({
         agentLogs:logs
     }),
     // Prevent from duplicate record (id unique).

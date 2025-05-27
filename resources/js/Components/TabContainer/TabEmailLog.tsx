@@ -84,7 +84,6 @@ const TabEmailLog:FC = () => {
         return (
           <p className="font-semibold ">
             {`${hours}:${minutes}:${seconds}`}
-           
           </p>
         );
       };
@@ -206,8 +205,7 @@ const TabEmailLog:FC = () => {
                   Details: log.phone_or_email,
                   "Start Time": parseTime(log?.start_time ?? ""),
                   "End Time": parseTime(log?.end_time ?? ""),
-                  Duration: parseTimeDuration(log?.start_time ?? "",log?.end_time?? ""),
-                 
+                  Duration: parseTimeDuration(log?.start_time ?? "",log?.end_time?? "")
                 })
               });
               return response;

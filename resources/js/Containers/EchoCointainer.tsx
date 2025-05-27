@@ -83,9 +83,13 @@ const EchoCointainer:FC = () => {
 
         })
         .listen('CallEmailLogEvent', (e:EchoEvent) => {
-            appendAgentLogs(e.log);
-            refreshCards();
-            refreshBar();
+            if(e.log.user.team_id === selectedTeam?.id || selectedTeam?.id === 0)
+            {
+                appendAgentLogs(e.log);
+                refreshCards();
+                refreshBar();
+            }
+            
         }); 
         setEcho(echo);
         return ()=>window.Echo.leave('global_channel');
