@@ -23,6 +23,7 @@ import NewAgentDialog from '@/Components/Dialogs/NewAgentDialog';
 import EditAgentDialog from '@/Components/Dialogs/EditAgentDialog';
 import ResignModal from '@/Components/Modals/ResignModal';
 import useAgentLogFilter from '@/Hooks/useAgentLogFilter';
+import { parseDateRange } from '@/Libs/Utils';
 
 interface IndexProps {
     teams: ITeam[];
@@ -56,9 +57,11 @@ const Index: FC<IndexProps> = ({ teams, available_team_leaders }) => {
 
     const getDashboardData = async (team: ITeam) => {
         const team_id = team.id;
+        const date_logged = log_date ? parseDateRange(log_date) : null;
         try {
             const { data } = await axios.get(route('get_data', {
                 team_id,
+                date: date_logged,
             })) as GetDataResponse;
 
             setRecentNotifications(data.recent_notifications);

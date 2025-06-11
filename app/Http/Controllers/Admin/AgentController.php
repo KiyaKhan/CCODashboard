@@ -45,6 +45,8 @@ class AgentController extends Controller
     public function get_data(Request $request)
     {
         $team_id = $request->team_id;
+        $singleDate = isset($filter['from']) && $filter['from'] === $filter['to'];
+        $rangeDate = isset($filter['from']) && $filter['from'] !== $filter['to'];
         $recent_notifications = Notification::with(['user'])
             ->when($team_id != 0, function ($q) use ($team_id) {
                 $q->where('team_id', $team_id);
