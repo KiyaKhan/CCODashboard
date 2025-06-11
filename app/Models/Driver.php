@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Driver extends Model
 {
     use HasFactory;
-    protected $fillable = ['driver', 'project_id'];
+    protected $fillable = ['driver', 'project_id', 'tag_id'];
     protected $with = [];
 
     public function project()

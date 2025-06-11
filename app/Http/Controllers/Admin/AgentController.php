@@ -53,15 +53,22 @@ class AgentController extends Controller
             ->when($team_id != 0, function ($q) use ($team_id) {
                 $q->where('team_id', $team_id);
             });
-        $agent_logs = CallEmailLog::with(['user'])
+        $agent_logs = [];
+
+        CallEmailLog::with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name', 'project_id', 'company_id'); // 👈 Replace with desired columns
+        }])
             ->when($team_id != 0, function ($q) use ($team_id) {
                 $q->whereHas('user', function ($query) use ($team_id) {
                     $query->where('team_id', $team_id);
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->get();
-
+            ->chunk(100, function ($logsChunk) use (&$agent_logs) {
+                foreach ($logsChunk as $log) {
+                    $agent_logs[] = $log;
+                }
+            });
         return [
             'agent_logs' => $agent_logs,
             'recent_notifications' => $recent_notifications,

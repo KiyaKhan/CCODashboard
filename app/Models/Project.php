@@ -16,13 +16,16 @@ class Project extends Model
     {
         return $this->hasMany(User::class);
     }
-    public function statuses()
+    public function tags()
     {
-        return $this->hasMany(Status::class)->orderBy('position', 'asc');
+        return $this->hasMany(DriverTag::class);
     }
-
     public function drivers()
     {
         return $this->hasMany(Driver::class)->orderBy('position', 'asc');
+    }
+    public function settings()
+    {
+        return $this->hasOne(ProjectSettings::class);
     }
 }

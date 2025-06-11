@@ -32,6 +32,7 @@ Route::post('/register', [ApiController::class, 'register'])->name('register');
 Route::post('/reset', [ApiController::class, 'forgotPassword'])->name('reset');
 Route::post('/login', [ApiController::class, 'login']);
 Route::get('/drivers/{project_id?}', [ApiController::class, 'drivers'])->name('drivers');
+Route::get('/drivers-all', [ApiController::class, 'driversByProject'])->name('drivers.all');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ApiController::class, 'logout']);

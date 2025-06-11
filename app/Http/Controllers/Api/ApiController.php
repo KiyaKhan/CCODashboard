@@ -330,11 +330,23 @@ class ApiController extends Controller
                 ->orderBy('position', 'asc')
                 ->get();
         }
-        $response = Driver::select(['driver', 'project_id'])
+        $response = Driver::select(['driver', 'project_id', 'id'])
             ->where('project_id', $project_id)
             ->orderBy('position', 'asc')
             ->get();
         return $response;
+    }
+    public function driversByProject()
+    {
+        $projects = Project::all();
+        $drivers = Driver::all()->groupBy('project_id');
+        $response = [];
+        foreach ($projects as $project) {
+            if (isset($drivers[$project->id])) {
+                $response[$project->name] = $drivers[$project->id];
+            }
+        }
+        return response()->json($response);
     }
 
     public function start_log(LoggingPostRequest $request)
@@ -343,12 +355,13 @@ class ApiController extends Controller
             'agent_session_id' => $request->session_id,
             'type' => $request->type,
             'driver' =>  $request->driver,
+            'driver_id' =>  $request->driver_id,
             'user_id' => $request->user()->id,
             'phone_or_email' => $request->phone_or_email,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time
         ]);
-        $log->load('user');
+        $log->load(['user', 'driver_obj']);
         broadcast(new CallEmailLogEvent($log, $request->user()));
         return [
             'log_id' => $log->id,

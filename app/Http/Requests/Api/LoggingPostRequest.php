@@ -21,6 +21,7 @@ class LoggingPostRequest extends FormRequest
             'session_id' => ['required', 'exists:App\Models\AgentSession,id'],
             'type' => ['required'],
             'driver' => ['required', 'string'],
+            'driver_id' => ['required', 'numeric'],
             'phone_or_email' => ['required', 'string'],
             'start_time' => ['required', 'date']
         ];

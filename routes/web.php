@@ -98,12 +98,17 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
         Route::post('/store', [ProjectController::class, 'store'])->name('store');
         Route::post('/update', [ProjectController::class, 'update'])->name('update');
+        Route::post('/delete', [ProjectController::class, 'destroy'])->name('delete');
         Route::post('/save-status', [ProjectController::class, 'save_status'])->name('status.save');
         Route::post('/delete-status', [ProjectController::class, 'delete_status'])->name('status.delete');
         Route::post('/save-status-position', [ProjectController::class, 'save_order_status'])->name('status.position.save');
         Route::post('/save-driver', [ProjectController::class, 'save_driver'])->name('driver.save');
         Route::post('/delete-driver', [ProjectController::class, 'delete_driver'])->name('driver.delete');
         Route::post('/save-driver-position', [ProjectController::class, 'save_order_driver'])->name('driver.position.save');
+        Route::post('/save-tag', [ProjectController::class, 'save_tag_driver'])->name('tag.save');
+        Route::post('/delete-tag', [ProjectController::class, 'delete_tag_driver'])->name('tag.delete');
+        Route::post('/add-settings', [ProjectController::class, 'add_settings'])->name('settings.add');
+        Route::get('/monitored-project/{team_id?}', [ProjectController::class, 'project_monitoring'])->name('settings.monitored');
     });
     Route::prefix('statuses')->name('statuses.')->group(function () {
         Route::get('/', [StatusController::class, ''])->name('index');
@@ -147,7 +152,6 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::prefix('profile')->name('profile.')->group(function () {
-
         Route::get('/index', function () {
             return Inertia::render('Profile', [
                 'teams' => Team::all(),

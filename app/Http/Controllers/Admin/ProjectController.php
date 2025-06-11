@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
+use App\Models\DriverTag;
 use App\Models\Project;
+use App\Models\ProjectSettings;
 use App\Models\Status;
 use App\Models\Team;
 use App\Models\User;
@@ -20,33 +22,38 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::with(['users', 'statuses', 'drivers'])->get();
+        $projects = Project::with(['users', 'tags', 'drivers', 'settings'])->get();
         return Inertia::render('Project', [
             'projects' => $projects,
             'teams' => Team::with(['user', 'users'])->get(),
             'available_team_leaders' => User::where('user_level', 2)->doesnthave('team')->get()
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         Project::create(['name' => $request->name]);
+    }
+    public function update(Request $request)
+    {
+        $project = Project::findOrFail($request->id);
+        $project->update([
+            'name' => $request->name
+        ]);
+    }
+    public function destroy(Request $request)
+    {
+        $project = Project::findOrFail($request->id);
+        $project->delete();
+    }
+    public function project_monitoring($team_id = null)
+    {
+        $project_ids = User::where('team_id', $team_id)->pluck('project_id');
+        $projects = Project::when($team_id || $team_id > 0, function ($query) use ($project_ids) {
+            $query->whereIn('id', $project_ids);
+        })
+            ->with('settings', 'tags')
+            ->get();
+        return response()->json($projects);
     }
     public function save_status(Request $request)
     {
@@ -70,9 +77,14 @@ class ProjectController extends Controller
     }
     public function save_driver(Request $request)
     {
+        $tag_id = isset($request->tag_id) ? ($request->tag_id > 0 ? $request->tag_id : null) : null;
         Driver::updateOrCreate(
             ['id' => $request->id],
-            ['driver' => $request->driver, 'project_id' => $request->project_id]
+            [
+                'driver' => $request->driver,
+                'project_id' => $request->project_id,
+                'tag_id' => $tag_id
+            ]
         );
         return redirect()->back();
     }
@@ -102,51 +114,32 @@ class ProjectController extends Controller
         });
         return redirect()->back();
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    /*TAG DRIVER*/
+    public function save_tag_driver(Request $request)
     {
-        //
+        DriverTag::updateOrCreate(
+            ['id' => $request->id],
+            ['name' => $request->name, 'project_id' => $request->project_id]
+        );
+        return redirect()->back();
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function delete_tag_driver(Request $request)
     {
-        //
+        $ids = $request->ids;
+        $tags = DriverTag::whereIn('id', $ids);
+        $tags->delete();
+        return redirect()->back();
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
+    public function add_settings(Request $request)
     {
-        $project = Project::findOrFail($request->id);
-        $project->update([
-            'name' => $request->name
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        ProjectSettings::updateOrCreate(
+            [
+                'project_id' => $request->project_id,
+            ],
+            [
+                'is_monitored' => $request->is_monitored
+            ]
+        );
+        return redirect()->back();
     }
 }

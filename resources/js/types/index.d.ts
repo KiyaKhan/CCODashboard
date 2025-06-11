@@ -33,23 +33,29 @@ export interface Position {
 interface IProject{
     id:number;
     name:string;
+    users:User[];
+    drivers: Driver[];
+    tags: Tag[];
+    settings?: ProjectSettings;
     created_at:string;
     updated_at:string;
-    users:User[];
-    statuses: Status[];
-    drivers: Driver[];
 }
-interface Status {
+interface ProjectSettings {
+    id: number;
+    project_id:number;
+    is_monitored:number;
+}
+interface Tag {
     id:number;
     name:string;
     project_id: number;
-    position: number;
 }
 interface  Driver {
     id:number;
     driver:string;
     project_id: number;
     position:number;
+    tag_id:number | null | undefined;
 }
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
@@ -120,6 +126,8 @@ export interface IAgentLogs{
     id:number;
     user_id: number;
     user:User;
+    driver_id:number;
+    tag_id:number|null;
     driver:string;
     type:string;
     phone_or_email:string;

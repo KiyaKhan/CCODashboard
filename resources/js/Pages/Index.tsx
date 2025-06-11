@@ -22,42 +22,45 @@ import ExportToExcel from '@/Libs/ExportToExcel';
 import NewAgentDialog from '@/Components/Dialogs/NewAgentDialog';
 import EditAgentDialog from '@/Components/Dialogs/EditAgentDialog';
 import ResignModal from '@/Components/Modals/ResignModal';
+import useAgentLogFilter from '@/Hooks/useAgentLogFilter';
 
-interface IndexProps{
-    teams:ITeam[];
-    available_team_leaders:User[];
+interface IndexProps {
+    teams: ITeam[];
+    available_team_leaders: User[];
 }
 
 type GetDataResponse = {
-    data:{
-        recent_notifications:INotification[],
-        dashboard_cards:AgentBreakdown,
-        bar_chart:BarChart
+    data: {
+        recent_notifications: INotification[],
+        dashboard_cards: AgentBreakdown,
+        bar_chart: BarChart
         agent_logs: IAgentLogs[];
     };
 }
 
-const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
-    const {selectTeam,selectedTeam} = useSelectedTeam();
-    const [loading,setLoading] = useState<boolean>(true);
-    const {setRecentNotifications,setAgentBreakdown,setBarChart,setAgentLogs} = useDashboardInfo();
+const Index: FC<IndexProps> = ({ teams, available_team_leaders }) => {
+    const { users, driver_id, date: log_date } = useAgentLogFilter();
+    const { selectTeam, selectedTeam } = useSelectedTeam();
+    const [loading, setLoading] = useState<boolean>(true);
+    const { setRecentNotifications, setAgentBreakdown, setBarChart, setAgentLogs } = useDashboardInfo();
     const [date, setDate] = React.useState<DateRange | undefined>({
-        from: addDays(new Date,-7),
+        from: addDays(new Date, -7),
         to: new Date,
     });
-    const [showConfirmDialog,setShowConfirmDialog] = useState(false);
-    
-    const handleDownloadConfirmation = useCallback(() =>{
-        if(!date) return toast.error('Pick a date before Proceeding...');
-        setShowConfirmDialog(true);
-    },[date]);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    const getDashboardData =async(team:ITeam)=>{
-        const team_id=team.id;
+    const handleDownloadConfirmation = useCallback(() => {
+        if (!date) return toast.error('Pick a date before Proceeding...');
+        setShowConfirmDialog(true);
+    }, [date]);
+
+    const getDashboardData = async (team: ITeam) => {
+        const team_id = team.id;
         try {
-            const {data} = await axios.get(route('get_data',{
-                team_id
+            const { data } = await axios.get(route('get_data', {
+                team_id,
             })) as GetDataResponse;
+
             setRecentNotifications(data.recent_notifications);
             setAgentBreakdown(data.dashboard_cards);
             setBarChart(data.bar_chart);
@@ -67,38 +70,38 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
         }
     }
 
-    const onConfirm = async(report:formattedReport[])=>{
+    const onConfirm = async (report: formattedReport[]) => {
         try {
-            await ExportToExcel(report,`RMS_Report_${selectedTeam?.name}_${report[0]['Week Ending']}_${report[0].Date}`);
+            await ExportToExcel(report, `RMS_Report_${selectedTeam?.name}_${report[0]['Week Ending']}_${report[0].Date}`);
         } catch (error) {
             console.error(error);
         }
     };
 
 
-    useEffect(()=>{
-        if(teams) selectTeam(teams[0]);
-        
-    },[]);
+    useEffect(() => {
+        if (teams) selectTeam(teams[0]);
 
-    useEffect(()=>{
-        if(!selectedTeam)return;
-        const fetchData = async() =>{
+    }, []);
+
+    useEffect(() => {
+        if (!selectedTeam) return;
+        const fetchData = async () => {
             setLoading(true);
             await getDashboardData(selectedTeam);
             setLoading(false);
         }
 
         fetchData();
-        
-        const interval = setInterval(async() => {
-            if(!selectedTeam)return;
+
+        const interval = setInterval(async () => {
+            if (!selectedTeam) return;
             await getDashboardData(selectedTeam);
         }, 60000);
         return () => clearInterval(interval);
-        
-        
-    },[selectedTeam]);
+
+
+    }, [selectedTeam]);
 
     return (
         <>
@@ -117,15 +120,15 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
                         </div>
                     </div>
                     <Tabs defaultValue="overview" className="space-y-4 h-full w-full">
-                        {loading?<div className='w-full flex items-center justify-center'><BiCircle size={96}  className='text-sky-500 animate-ping mt-48' /></div>:<TabContainer />}
+                        {loading ? <div className='w-full flex items-center justify-center'><BiCircle size={96} className='text-sky-500 animate-ping mt-48' /></div> : <TabContainer />}
                     </Tabs>
                 </div>
             </div>
             <EchoCointainer />
             {
-                (date&&selectedTeam)&&<ConfirmDownload onConfirm={onConfirm} date={date} team={selectedTeam} isOpen={showConfirmDialog} onClose={()=>setShowConfirmDialog(false)} />
+                (date && selectedTeam) && <ConfirmDownload onConfirm={onConfirm} date={date} team={selectedTeam} isOpen={showConfirmDialog} onClose={() => setShowConfirmDialog(false)} />
             }
-            
+
             <NewAgentDialog />
             <EditAgentDialog />
             <ResignModal />
@@ -135,89 +138,89 @@ const Index:FC<IndexProps> = ({teams,available_team_leaders}) => {
 
 export default Index
 
-interface ConfirmDownloadProps{
-    isOpen?:boolean;
-    onClose:()=>void;
-    team:ITeam;
-    date:DateRange;
-    onConfirm:(report:formattedReport[])=>void
+interface ConfirmDownloadProps {
+    isOpen?: boolean;
+    onClose: () => void;
+    team: ITeam;
+    date: DateRange;
+    onConfirm: (report: formattedReport[]) => void
 }
 
 
-const ConfirmDownload:FC<ConfirmDownloadProps> = ({isOpen,onClose,team,onConfirm,date}) =>{
-    const {selectedTeam} = useSelectedTeam();
-    const [loading,setLoading] = useState(false);
-    const handleConfirm = useCallback(async()=>{
+const ConfirmDownload: FC<ConfirmDownloadProps> = ({ isOpen, onClose, team, onConfirm, date }) => {
+    const { selectedTeam } = useSelectedTeam();
+    const [loading, setLoading] = useState(false);
+    const handleConfirm = useCallback(async () => {
         setLoading(true);
-        axios.get(route('teams.reports',{
-            team_id:team.id,
+        axios.get(route('teams.reports', {
+            team_id: team.id,
             date
-        })).then(async ({data}:{data:reportResponse})=>{
-            if(!data.report_items||data.report_items.length<1){
+        })).then(async ({ data }: { data: reportResponse }) => {
+            if (!data.report_items || data.report_items.length < 1) {
                 return toast.info('No Logs to report within the selected date/s. Try increasing the date range or select another team.')
             }
-            let report:formattedReport[] = [];
-            try{
-                report = await formatReport(data,selectedTeam?.name||'Overall');
-            }catch(e){
+            let report: formattedReport[] = [];
+            try {
+                report = await formatReport(data, selectedTeam?.name || 'Overall');
+            } catch (e) {
                 console.error(e);
             }
 
-            
+
             onConfirm(report);
-        }).catch(e=>{
+        }).catch(e => {
             console.error(e);
             toast.error('Something went wrong. Please try again...');
-        }).finally(()=>setLoading(false));
+        }).finally(() => setLoading(false));
 
-                
-        
-    },[date,team]);
 
-    
-    
 
-    return(
+    }, [date, team]);
+
+
+
+
+    return (
         <AlertDialog open={isOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{`${loading?'Generating Reports...':'Confirm Download'}`}</AlertDialogTitle>
+                    <AlertDialogTitle>{`${loading ? 'Generating Reports...' : 'Confirm Download'}`}</AlertDialogTitle>
                     <AlertDialogDescription className='flex flex-col space-y-1.5'>
                         <span>Generate Report for {team.name}</span>
-                        <span>From: { format( date.from!,'P')}</span>
+                        <span>From: {format(date.from!, 'P')}</span>
                         {
-                            date.to&& <span>{`To: ${format(date.to,'P')}`}</span>
+                            date.to && <span>{`To: ${format(date.to, 'P')}`}</span>
                         }
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                <AlertDialogCancel className='font-semibold' disabled={loading} onClick={onClose}>Cancel</AlertDialogCancel>
-                <AlertDialogAction className='font-semibold flex items-center justify-center space-x-1.5' disabled={loading} onClick={handleConfirm}>
-                    {loading&&<FaCircleNotch size={18} className='animate-spin' />}
-                    <span>{`${loading?'Please wait...':'Continue'}`}</span>
-                </AlertDialogAction>
+                    <AlertDialogCancel className='font-semibold' disabled={loading} onClick={onClose}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className='font-semibold flex items-center justify-center space-x-1.5' disabled={loading} onClick={handleConfirm}>
+                        {loading && <FaCircleNotch size={18} className='animate-spin' />}
+                        <span>{`${loading ? 'Please wait...' : 'Continue'}`}</span>
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
     );
 }
 
-const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedReport[]>= async({report_items,from,to},teamName) =>{
-    try{
+const formatReport: (reports: reportResponse, teamName: string) => Promise<formattedReport[]> = async ({ report_items, from, to }, teamName) => {
+    try {
 
-    }catch(e){
+    } catch (e) {
         console.error(e);
     }
-    const formattedReport:formattedReport[] = report_items.map(({agent,breakdown})=>{
+    const formattedReport: formattedReport[] = report_items.map(({ agent, breakdown }) => {
         const {
             calls,
             emails,
-            break:Break,
+            break: Break,
             bio_break,
-            lunch:Lunch,
-            training:Training,
-            coaching:Coaching,
-            meeting:Meeting,
+            lunch: Lunch,
+            training: Training,
+            coaching: Coaching,
+            meeting: Meeting,
             system_issue,
             floor_support,
             special_assignment,
@@ -228,19 +231,19 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             special_assignment_remarks,
             early_departure_reason,
             overtime_reason,
-            session_date            
+            session_date
         } = breakdown;
-        const totalMins=calls+emails+Break+bio_break+Lunch+Training+Coaching+Meeting+system_issue+floor_support+special_assignment;
-        return{
-            Month: `${format(parseISO(from),'MMM').toString()}-${format(parseISO(from),'yy').toString()}`,
-            "Week Ending":getFriday(session_date),
-            "Date":session_date,
-            Site:agent.site,
-            Project:agent?.project?.name || 'N/A',
-            "DDC ID#":agent.company_id,
-            "Name":`${agent.last_name}, ${agent.first_name}`,
-            "Total Hours":  minsToDuration(totalMins),
-            "Login Time":login_time,
+        const totalMins = calls + emails + Break + bio_break + Lunch + Training + Coaching + Meeting + system_issue + floor_support + special_assignment;
+        return {
+            Month: `${format(parseISO(from), 'MMM').toString()}-${format(parseISO(from), 'yy').toString()}`,
+            "Week Ending": getFriday(session_date),
+            "Date": session_date,
+            Site: agent.site,
+            Project: agent?.project?.name || 'N/A',
+            "DDC ID#": agent.company_id,
+            "Name": `${agent.last_name}, ${agent.first_name}`,
+            "Total Hours": minsToDuration(totalMins),
+            "Login Time": login_time,
             "Online - Calls": minsToDuration(calls),
             "Online - Emails": minsToDuration(emails),
             Break: minsToDuration(Break),
@@ -252,19 +255,19 @@ const formatReport:(reports:reportResponse,teamName:string)=>Promise<formattedRe
             "System Issue": minsToDuration(system_issue),
             "Floor Support": minsToDuration(special_assignment),
             "Special Assignment": minsToDuration(special_assignment),
-            "Early Departure Time":totalMins<535?end_of_shift_time:"",
-            "Overtime Hours":totalMins>540?minsToDuration(totalMins-540):"",
-            "End of Shift Time":end_of_shift_time,
-            "Unallocated Hours":minsToDuration(not_ready),
-            "Special Assignment Remarks":special_assignment_remarks,
-            "Early Departure Reason":early_departure_reason,
-            "Overtime Reason":overtime_reason
-        } 
+            "Early Departure Time": totalMins < 535 ? end_of_shift_time : "",
+            "Overtime Hours": totalMins > 540 ? minsToDuration(totalMins - 540) : "",
+            "End of Shift Time": end_of_shift_time,
+            "Unallocated Hours": minsToDuration(not_ready),
+            "Special Assignment Remarks": special_assignment_remarks,
+            "Early Departure Reason": early_departure_reason,
+            "Overtime Reason": overtime_reason
+        }
     });
     return formattedReport;
 }
 
-export const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
+export const minsToDuration: (minutes: number) => string = (minutes: number) => {
     // Create a new date object with the minutes as milliseconds
     const date = new Date(minutes * 60 * 1000);
     // Use UTC methods to avoid time zone issues
@@ -280,20 +283,20 @@ export const minsToDuration:(minutes:number)=>string = (minutes:number) =>{
 }
 
 
-const getFriday = (dt:string) =>{
-    try{
+const getFriday = (dt: string) => {
+    try {
         let d = new Date(dt);
-        d.setHours(0,0,0,0);
+        d.setHours(0, 0, 0, 0);
         const day = d.getDay();
-        let diff=5-day;
-        if(diff<0){
-            diff+=7;
+        let diff = 5 - day;
+        if (diff < 0) {
+            diff += 7;
         }
-        d.setDate (d.getDate () + diff);
-        return format(d,'yyyy-MM-dd');
-    }catch(e){
+        d.setDate(d.getDate() + diff);
+        return format(d, 'yyyy-MM-dd');
+    } catch (e) {
         console.error(e);
         return 'Undefined';
     }
-    
+
 }
