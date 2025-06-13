@@ -62,6 +62,7 @@ const TabOverview: FC = () => {
     const [driversProject, setDriversProject] = useState();
 
     const initialize_data_tag_monitoring = (initialize_project?: IProject[], modified_logs?: IAgentLogs[]) => {
+        console.log('Triggered Loaded!');
         const ref_dataset = modified_logs ?? agentLogs;
         const dataset: ProjectMonitoring[] = (projects || initialize_project || []).map((project) => {
             const tagData: TagData[] = (project.tags || []).map(tag => {
@@ -132,15 +133,13 @@ const TabOverview: FC = () => {
             (agentLogs || [])?.some(al => al.user.project_id === project.id)
         );
         if (hasRecords) {
-            // initialize_data_tag_monitoring();
             OnPressFilter();
         }
     }, [projects, agentLogs])
     useEffect(() => {
-        selectDate(undefined);
-        setUsers([])
-        selectDriver(undefined);
+        OnPressClear();
         setDrivers(driversProject ? driversProject[tab] ?? [] : []);
+
     }, [tab])
     return (
         <>
