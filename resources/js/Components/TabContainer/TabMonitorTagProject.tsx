@@ -2,21 +2,16 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { RiArrowDownLine, RiArrowUpLine, RiFileExcel2Fill, RiFilter2Fill, RiPriceTag2Fill, RiPriceTag3Line, RiPriceTagLine } from "react-icons/ri";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { AgentLogsFormat, IAgentLogs, IProject, Tag } from "@/types";
+import { AgentLogsFormat, IAgentLogs, IProject, LogData, ProjectMonitoring, Tag, TagData } from "@/types";
 import { cn } from "@/Libs/Utils";
 import useSelectedTeam from "@/Hooks/useSelectedTeam";
 import ExportToExcelAgentLogs from "@/Libs/ExportToExcelAgentLogs";
 import { Button } from "../ui/button";
 import { EmailLogDataTable } from "./TabEmailLogComponents/EmailLogDataTable";
 import { EmailLogColumn } from "./TabEmailLogComponents/EmailLogColumn";
-type TagData = {
-    tag: Tag,
-    breakDown: IAgentLogs[]
-}
-type ProjectMonitoring = {
-    project_name: string;
-    data: TagData[];
-};
+import { Skeleton } from "../ui/skeleton";
+import { Loader } from "./TabAgents";
+
 interface Props {
     filter: { open: boolean, data: TagData | undefined };
     onFilter: (b: { open: boolean, data: TagData | undefined }) => void;
@@ -26,6 +21,8 @@ const TabMonitorTagProject = ({ dataset, filter, onFilter }: Props) => {
     const [tagData, setTagData] = useState<TagData | undefined>(dataset.data[0] ?? undefined);
     const { selectedTeam } = useSelectedTeam();
     const [isDesc, setDesc] = useState(true);
+    const [breakdownRows, setbreakdownRows] = useState<LogData[]>([]);
+    const [loading, setLoading] = useState(true);
     const onConfirm = async () => {
         const parseTime = (isoString: string): string => {
             const isoFormat = isoString.replace(' ', 'T');
@@ -206,19 +203,46 @@ const TabMonitorTagProject = ({ dataset, filter, onFilter }: Props) => {
             };
         });
     }, [dataset.data]);
-    const breakdownRows = useMemo(() => {
-        return (tagData?.breakDown || []).map(log => ({
-            createdAt: formatToUserLocalTime(log.created_at),
-            fullName: `${log.user.first_name} ${log.user.last_name}`,
-            companyId: log.user.company_id,
-            type: log.type,
-            driver: log.driver,
-            details: log.phone_or_email,
-            start: formatTo12Hour(log?.start_time ?? ""),
-            end: formatTo12Hour(log?.end_time ?? ""),
-            duration: getTimeDuration(log?.start_time ?? "", log?.end_time ?? "")
-        }));
+    // const breakdownRows = useMemo(() => {
+    //     return (tagData?.breakDown || []).map(log => ({
+    //         createdAt: formatToUserLocalTime(log.created_at),
+    //         fullName: `${log.user.first_name} ${log.user.last_name}`,
+    //         companyId: log.user.company_id,
+    //         type: log.type,
+    //         driver: log.driver,
+    //         details: log.phone_or_email,
+    //         start: formatTo12Hour(log?.start_time ?? ""),
+    //         end: formatTo12Hour(log?.end_time ?? ""),
+    //         duration: getTimeDuration(log?.start_time ?? "", log?.end_time ?? "")
+    //     }));
+    // }, [tagData]);
+
+    useEffect(() => {
+        if (!tagData?.breakDown) return;
+
+        setLoading(true); // 🌀 Show spinner or skeleton
+
+        const processRows = () => {
+            const rows = tagData.breakDown.map(log => ({
+                createdAt: formatToUserLocalTime(log.created_at),
+                fullName: `${log.user.first_name} ${log.user.last_name}`,
+                companyId: log.user.company_id,
+                type: log.type,
+                driver: log.driver,
+                details: log.phone_or_email,
+                start: formatTo12Hour(log?.start_time ?? ""),
+                end: formatTo12Hour(log?.end_time ?? ""),
+                duration: getTimeDuration(log?.start_time ?? "", log?.end_time ?? "")
+            }));
+
+            setbreakdownRows(rows);
+            setLoading(false); // ✅ Done loading
+        };
+
+        // Optional: Delay execution to prevent blocking UI immediately
+        setTimeout(processRows, 0);
     }, [tagData]);
+
     return <>
         <div className="flex items-center pb-2 space-x-2">
             {(summarizedTagData || []).map(data => {
@@ -252,7 +276,10 @@ const TabMonitorTagProject = ({ dataset, filter, onFilter }: Props) => {
                 </Button>
             </div>
         </div>
-        <EmailLogDataTable columns={EmailLogColumn} data={breakdownRows} />
+        {loading && <Skeleton className="h-[350px]">
+            <Loader />
+        </Skeleton>}
+        {!loading && <EmailLogDataTable columns={EmailLogColumn} data={breakdownRows} />}
         {/* <div className="flex-1 flex flex-col overflow-auto rounded h-[350px] border rounded-xl">
             <Table className="w-full">
                 <TableHeader className="bg-background z-50 sticky top-0">

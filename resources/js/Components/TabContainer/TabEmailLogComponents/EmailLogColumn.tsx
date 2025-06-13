@@ -15,19 +15,10 @@ id: number;
 
 import { Button } from "@/Components/ui/button";
 import { TableHead } from "@/Components/ui/table";
+import { LogData } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { RiArrowLeftRightFill } from "react-icons/ri";
-type LogData = {
-    createdAt: string;
-    fullName: string;
-    companyId: string;
-    type: string;
-    driver: string;
-    details: string;
-    start: React.ReactElement;
-    end: React.ReactElement;
-    duration: React.ReactElement;
-}
+
 export const EmailLogColumn
 
     : ColumnDef<LogData>[] = [

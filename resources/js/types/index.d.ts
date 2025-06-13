@@ -219,3 +219,23 @@ type AgentLogsFormat = {
     ["End Time"]:string;
     Duration:string;
 }
+type TagData = {
+    tag: Tag,
+    breakDown: IAgentLogs[]
+}
+type ProjectMonitoring = {
+    project_name: string;
+    data: TagData[];
+};
+
+type LogData = {
+    createdAt: string;
+    fullName: string;
+    companyId: string;
+    type: string;
+    driver: string;
+    details: string;
+    start: React.ReactElement;
+    end: React.ReactElement;
+    duration: React.ReactElement;
+}
